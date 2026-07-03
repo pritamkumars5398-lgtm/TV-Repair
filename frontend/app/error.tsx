@@ -2,10 +2,13 @@
 
 import { useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { logger } from '@/lib/logger';
+
+const appLogger = logger.withCategory('app');
 
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
-    console.error(error);
+    appLogger.error('Unhandled application exception occurred:', error);
   }, [error]);
 
   return (
