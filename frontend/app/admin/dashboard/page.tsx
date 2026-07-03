@@ -1,12 +1,12 @@
 'use client';
 
-import { Users, Ticket, IndianRupee, Wrench, CreditCard, CheckCircle2, TrendingUp, TrendingDown, MapPin, Activity, ArrowRight, Clock, Package } from 'lucide-react';
+import { Users, Ticket, IndianRupee, Wrench, CreditCard, CheckCircle2, TrendingUp, TrendingDown, MapPin, Activity, ArrowRight, Clock, Package, type LucideIcon } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, Area, AreaChart, CartesianGrid, BarChart, Bar } from 'recharts';
 import { adminApi } from '@/lib/api/admin';
 import type { RevenueDataPoint, LeadSourceDataPoint } from '@/types';
 
-const KPI_CONFIG = [
+const KPI_CONFIG: Array<{ key: string; label: string; icon: LucideIcon; color: string; shadow: string; prefix?: string }> = [
   { key: 'newLeadsToday',       label: 'New Leads',          icon: Users,        color: 'from-blue-500 to-cyan-400', shadow: 'shadow-blue-500/20' },
   { key: 'activeTickets',       label: 'Active Tickets',     icon: Ticket,       color: 'from-amber-500 to-orange-400', shadow: 'shadow-orange-500/20' },
   { key: 'completedJobsToday',  label: 'Completed Today',    icon: CheckCircle2, color: 'from-teal-500 to-emerald-400', shadow: 'shadow-teal-500/20' },

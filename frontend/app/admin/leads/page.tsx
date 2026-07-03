@@ -65,9 +65,10 @@ export default function AdminLeadsPage() {
     onError: () => toast.error('Failed to create lead'),
   });
 
-  const leads: Lead[] = data?.items ?? [];
-  const total = data?.total ?? 0;
-  const totalPages = data?.totalPages ?? 1;
+  const paginatedData = data?.data;
+  const leads: Lead[] = paginatedData?.items ?? [];
+  const total = paginatedData?.total ?? 0;
+  const totalPages = paginatedData?.totalPages ?? 1;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-7xl mx-auto">
@@ -135,9 +136,9 @@ export default function AdminLeadsPage() {
                   </td>
                   <td className="px-6 py-4 font-medium text-slate-600">{lead.serviceType?.replace(/_/g, ' ') ?? '—'}</td>
                   <td className="px-6 py-4">
-                    {lead.notes ? (
-                      <p className="text-xs text-slate-500 font-medium line-clamp-2 max-w-[200px]" title={lead.notes}>
-                        {lead.notes}
+                    {lead.message ? (
+                      <p className="text-xs text-slate-500 font-medium line-clamp-2 max-w-[200px]" title={lead.message}>
+                        {lead.message}
                       </p>
                     ) : (
                       <span className="text-xs text-slate-300 italic">—</span>

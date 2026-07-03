@@ -22,8 +22,9 @@ export default function AdminPaymentsPage() {
     queryFn: () => adminApi.getPayments({ status: statusFilter || undefined, page, limit: 20 }),
   });
 
-  const payments: Payment[] = data?.items ?? [];
-  const totalPages = data?.totalPages ?? 1;
+  const paginatedData = data?.data;
+  const payments: Payment[] = paginatedData?.items ?? [];
+  const totalPages = paginatedData?.totalPages ?? 1;
   const total = payments.filter((p) => p.status === 'CAPTURED').reduce((s, p) => s + p.amount, 0);
 
   return (
@@ -37,7 +38,7 @@ export default function AdminPaymentsPage() {
           </div>
           <div>
             <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Payments & Transactions</h1>
-            <p className="text-sm text-slate-500 font-medium">{data?.total ?? 0} transactions processed</p>
+            <p className="text-sm text-slate-500 font-medium">{paginatedData?.total ?? 0} transactions processed</p>
           </div>
         </div>
       </div>

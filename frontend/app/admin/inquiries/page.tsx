@@ -52,9 +52,10 @@ export default function AdminInquiriesPage() {
     onError: () => toast.error('Update failed'),
   });
 
-  const inquiries: Lead[] = data?.items ?? [];
-  const total = data?.total ?? 0;
-  const totalPages = data?.totalPages ?? 1;
+  const paginatedData = data?.data;
+  const inquiries: Lead[] = paginatedData?.items ?? [];
+  const total = paginatedData?.total ?? 0;
+  const totalPages = paginatedData?.totalPages ?? 1;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-7xl mx-auto">
@@ -116,9 +117,9 @@ export default function AdminInquiriesPage() {
                     <span className={`text-xs font-bold px-3 py-1 rounded-full ${SOURCE_COLORS[inquiry.source]}`}>{inquiry.source}</span>
                   </td>
                   <td className="px-6 py-4">
-                    {inquiry.notes ? (
+                    {inquiry.message ? (
                       <p className="text-sm text-slate-700 font-medium whitespace-pre-wrap">
-                        {inquiry.notes}
+                        {inquiry.message}
                       </p>
                     ) : (
                       <span className="text-xs text-slate-300 italic">—</span>

@@ -15,8 +15,9 @@ export default function AdminCustomersPage() {
     queryFn: () => adminApi.getCustomers({ search: search || undefined, page, limit: 20 }),
   });
 
-  const customers: Customer[] = data?.items ?? [];
-  const totalPages = data?.totalPages ?? 1;
+  const paginatedData = data?.data;
+  const customers: Customer[] = paginatedData?.items ?? [];
+  const totalPages = paginatedData?.totalPages ?? 1;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-7xl mx-auto">
@@ -29,7 +30,7 @@ export default function AdminCustomersPage() {
           </div>
           <div>
             <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Customers</h1>
-            <p className="text-sm text-slate-500 font-medium">{data?.total ?? 0} registered customers</p>
+            <p className="text-sm text-slate-500 font-medium">{paginatedData?.total ?? 0} registered customers</p>
           </div>
         </div>
       </div>
