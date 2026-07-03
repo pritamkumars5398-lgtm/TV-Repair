@@ -3,8 +3,15 @@ import { logger } from '../logger';
 
 const apiLogger = logger.withCategory('api');
 
+// Normalize API URL to ensure the /api/v1 prefix is always present
+let apiBaseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+if (apiBaseURL && !apiBaseURL.includes('/api/v1')) {
+  const cleanBase = apiBaseURL.endsWith('/') ? apiBaseURL.slice(0, -1) : apiBaseURL;
+  apiBaseURL = `${cleanBase}/api/v1`;
+}
+
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1',
+  baseURL: apiBaseURL,
   headers: { 'Content-Type': 'application/json' },
   timeout: 10000,
 });
