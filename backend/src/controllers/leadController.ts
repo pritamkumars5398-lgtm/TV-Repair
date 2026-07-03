@@ -57,13 +57,16 @@ export const getLeads = async (req: Request, res: Response): Promise<void> => {
     const total = await Lead.countDocuments(query);
 
     res.json({
-      items,
-      total,
-      page,
-      totalPages: Math.ceil(total / limit),
+      success: true,
+      data: {
+        items,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (error: any) {
-    res.status(500).json({ message: error.message || 'Server Error' });
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
   }
 };
 
@@ -73,9 +76,12 @@ export const getLeads = async (req: Request, res: Response): Promise<void> => {
 export const createLead = async (req: Request, res: Response): Promise<void> => {
   try {
     const lead = await Lead.create(req.body);
-    res.status(201).json(lead);
+    res.status(201).json({
+      success: true,
+      data: lead,
+    });
   } catch (error: any) {
-    res.status(500).json({ message: error.message || 'Server Error' });
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
   }
 };
 
@@ -91,11 +97,14 @@ export const updateLead = async (req: Request, res: Response): Promise<void> => 
         new: true,
         runValidators: true,
       });
-      res.json(updatedLead);
+      res.json({
+        success: true,
+        data: updatedLead,
+      });
     } else {
-      res.status(404).json({ message: 'Lead not found' });
+      res.status(404).json({ success: false, message: 'Lead not found' });
     }
   } catch (error: any) {
-    res.status(500).json({ message: error.message || 'Server Error' });
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
   }
 };

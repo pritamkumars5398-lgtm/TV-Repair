@@ -92,71 +92,76 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in max-w-7xl mx-auto">
-      <div className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-        <div>
-          <h1 className="text-3xl font-extrabold text-slate-800">Product Catalog</h1>
-          <p className="text-slate-500 mt-1">Manage public facing products</p>
+    <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-7xl mx-auto">
+      
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-primary-500 to-cyan-500 rounded-xl text-white shadow-sm shrink-0">
+            <Package className="h-5 w-5" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-slate-800 tracking-tight">Product Catalog</h1>
+            <p className="text-xs text-slate-400 font-semibold">Manage public facing products</p>
+          </div>
         </div>
-        <button
-          onClick={() => { resetForm(); setModalOpen(true); }}
-          className="flex items-center gap-2 bg-primary-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-primary-500/30 hover:-translate-y-0.5 transition-all"
-        >
-          <Plus className="h-5 w-5" /> Add Product
+        <button onClick={() => { resetForm(); setModalOpen(true); }}
+          className="flex items-center gap-1.5 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition-all">
+          <Plus className="h-4 w-4" /> Add Product
         </button>
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center p-10"><Loader2 className="h-8 w-8 animate-spin text-primary-500" /></div>
+        <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-cyan-500 mx-auto" /></div>
       ) : (
-        <div className="bg-white rounded-3xl shadow-[0_0_40px_rgba(0,0,0,0.03)] border border-slate-100 overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-xs">
               <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-100/80">
-                  <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Product Info</th>
-                  <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Category</th>
-                  <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Pricing</th>
-                  <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Visibility</th>
-                  <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  <th className="px-4 py-3 text-left">Product Info</th>
+                  <th className="px-4 py-3 text-left">Category</th>
+                  <th className="px-4 py-3 text-left">Pricing</th>
+                  <th className="px-4 py-3 text-left">Visibility</th>
+                  <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-slate-100">
                 {products.map((p: any) => (
-                  <tr key={p._id} className="hover:bg-primary-50/30 transition-all group">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
-                        <div className="relative h-14 w-14 rounded-xl overflow-hidden bg-slate-100 shadow-sm shrink-0">
-                          <Image src={p.img || '/placeholder.png'} alt={p.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <tr key={p._id} className="hover:bg-slate-50/50 transition-colors group">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="relative h-10 w-10 rounded-lg overflow-hidden bg-slate-100 shadow-sm shrink-0">
+                          <Image src={p.img || '/placeholder.png'} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                         </div>
                         <div>
-                          <p className="text-sm font-extrabold text-slate-800">{p.name}</p>
-                          <p className="text-xs font-medium text-slate-500 mt-1 max-w-[280px] truncate">{p.desc}</p>
+                          <p className="font-semibold text-slate-800 text-xs">{p.name}</p>
+                          <p className="text-[10px] text-slate-400 font-semibold mt-0.5 max-w-[240px] truncate">{p.desc}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide bg-slate-100 text-slate-600 border border-slate-200 shadow-sm">
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide bg-slate-100 text-slate-600 border border-slate-200 shadow-sm">
                         {p.category}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm font-black text-slate-800">{p.price}</p>
+                    <td className="px-4 py-3 font-semibold text-slate-700">
+                      {p.price}
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-4 py-3">
                       <button 
                         onClick={() => updateMutation.mutate({ _id: p._id, isApproved: !p.isApproved })} 
-                        className={`inline-flex items-center px-4 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm ${p.isApproved ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/50 hover:bg-emerald-100 hover:shadow-emerald-100' : 'bg-amber-50 text-amber-600 border border-amber-200/50 hover:bg-amber-100 hover:shadow-amber-100'}`}
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-all ${p.isApproved ? 'bg-emerald-50 text-emerald-600 border-emerald-250' : 'bg-amber-50 text-amber-600 border-amber-250'}`}
                       >
                         {p.isApproved ? 'Published' : 'Hidden'}
                       </button>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-3">
-                        <button onClick={() => handleEdit(p)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary-600 bg-primary-50 hover:bg-primary-600 hover:text-white rounded-lg transition-colors border border-primary-100 hover:border-primary-600 shadow-sm">
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => handleEdit(p)} className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-bold text-primary-600 bg-primary-50 border border-primary-100 hover:bg-primary-600 hover:text-white rounded-lg transition-colors shadow-sm">
                           <Edit3 className="h-3.5 w-3.5" /> Edit
                         </button>
-                        <button onClick={() => { if(confirm('Are you sure?')) deleteMutation.mutate(p._id); }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white rounded-lg transition-colors border border-rose-100 hover:border-rose-600 shadow-sm">
+                        <button onClick={() => { if(confirm('Are you sure?')) deleteMutation.mutate(p._id); }} className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-100 hover:bg-rose-600 hover:text-white rounded-lg transition-colors shadow-sm">
                           <Trash2 className="h-3.5 w-3.5" /> Delete
                         </button>
                       </div>
@@ -165,11 +170,11 @@ export default function AdminProductsPage() {
                 ))}
                 {products.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-6 py-16 text-center">
+                    <td colSpan={5} className="py-12 text-center">
                       <div className="flex flex-col items-center justify-center text-slate-400">
-                        <Package className="h-10 w-10 mb-3 opacity-20" />
-                        <p className="font-bold text-slate-500">No products found</p>
-                        <p className="text-xs mt-1">Click "Add Product" to create your first item.</p>
+                        <Package className="h-8 w-8 mb-2 opacity-50" />
+                        <p className="font-semibold text-slate-500">No products found</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">Click "Add Product" to create your first item.</p>
                       </div>
                     </td>
                   </tr>
@@ -181,19 +186,19 @@ export default function AdminProductsPage() {
       )}
 
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 relative">
-            <h2 className="text-2xl font-bold text-slate-800 mb-6">{editingId ? 'Edit Product' : 'Add New Product'}</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-4 relative">
+            <h2 className="text-sm font-bold text-slate-800 mb-4">{editingId ? 'Edit Product' : 'Add New Product'}</h2>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-2">Product Name</label>
-                  <input required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary-500/20" />
+                  <label className="block text-xs font-bold text-slate-500 mb-1">Product Name</label>
+                  <input required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary-500/20" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-2">Category</label>
-                  <select required value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary-500/20 appearance-none">
+                  <label className="block text-xs font-bold text-slate-500 mb-1">Category</label>
+                  <select required value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary-500/20 bg-white">
                     <option value="" disabled>Select a category</option>
                     <option value="Home Theater">Home Theater</option>
                     <option value="Home Audio">Home Audio</option>
@@ -207,35 +212,35 @@ export default function AdminProductsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2">Price Range</label>
-                <input required value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} placeholder="e.g. ₹5,000 – ₹9,000" className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary-500/20" />
+                <label className="block text-xs font-bold text-slate-500 mb-1">Price Range</label>
+                <input required value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} placeholder="e.g. ₹5,000 – ₹9,000" className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary-500/20" />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2">Description</label>
-                <textarea required rows={3} value={formData.desc} onChange={(e) => setFormData({...formData, desc: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary-500/20 resize-none" />
+                <label className="block text-xs font-bold text-slate-500 mb-1">Description</label>
+                <textarea required rows={2} value={formData.desc} onChange={(e) => setFormData({...formData, desc: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary-500/20 resize-none" />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2">Specs (Comma separated)</label>
-                <input value={formData.specs} onChange={(e) => setFormData({...formData, specs: e.target.value})} placeholder="e.g. 120W Output, 2.1 Channel, IP54 Rated" className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary-500/20" />
+                <label className="block text-xs font-bold text-slate-500 mb-1">Specs (Comma separated)</label>
+                <input value={formData.specs} onChange={(e) => setFormData({...formData, specs: e.target.value})} placeholder="e.g. 120W Output, 2.1 Channel, IP54 Rated" className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary-500/20" />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2">Image URL</label>
+                <label className="block text-xs font-bold text-slate-500 mb-1">Image URL</label>
                 <div className="flex gap-2">
-                  <input required value={formData.img} onChange={(e) => setFormData({...formData, img: e.target.value})} placeholder="https://..." className="flex-1 px-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary-500/20" />
+                  <input required value={formData.img} onChange={(e) => setFormData({...formData, img: e.target.value})} placeholder="https://..." className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary-500/20" />
                   {formData.img && (
-                    <div className="h-11 w-11 shrink-0 rounded-xl overflow-hidden relative border border-slate-200">
+                    <div className="h-8 w-8 shrink-0 rounded-lg overflow-hidden relative border border-slate-200">
                        <Image src={formData.img} alt="Preview" fill className="object-cover" unoptimized />
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="flex gap-3 pt-4 border-t border-slate-100">
-                <button type="button" onClick={() => setModalOpen(false)} className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-xl transition-colors">Cancel</button>
-                <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="flex-1 bg-primary-600 hover:bg-primary-500 text-white text-sm font-bold py-3 rounded-xl shadow-lg shadow-primary-500/20 disabled:opacity-60 transition-colors">
+              <div className="flex gap-2 pt-2 border-t border-slate-100">
+                <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-lg transition-colors">Cancel</button>
+                <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="flex-1 bg-primary-600 hover:bg-primary-500 text-white text-xs font-bold py-2 rounded-lg shadow-sm disabled:opacity-60 transition-colors">
                   {(createMutation.isPending || updateMutation.isPending) ? 'Saving...' : 'Save Product'}
                 </button>
               </div>

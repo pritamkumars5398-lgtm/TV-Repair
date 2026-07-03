@@ -7,9 +7,9 @@ import { adminApi } from '@/lib/api/admin';
 import type { RevenueDataPoint, LeadSourceDataPoint } from '@/types';
 
 const KPI_CONFIG: Array<{ key: string; label: string; icon: LucideIcon; color: string; shadow: string; prefix?: string }> = [
-  { key: 'newLeadsToday',       label: 'New Leads',          icon: Users,        color: 'from-blue-500 to-cyan-400', shadow: 'shadow-blue-500/20' },
-  { key: 'activeTickets',       label: 'Active Tickets',     icon: Ticket,       color: 'from-amber-500 to-orange-400', shadow: 'shadow-orange-500/20' },
-  { key: 'completedJobsToday',  label: 'Completed Today',    icon: CheckCircle2, color: 'from-teal-500 to-emerald-400', shadow: 'shadow-teal-500/20' },
+  { key: 'newLeadsToday',       label: 'New Leads',          icon: Users,        color: 'from-blue-500 to-cyan-500', shadow: 'shadow-blue-500/10' },
+  { key: 'activeTickets',       label: 'Active Tickets',     icon: Ticket,       color: 'from-amber-500 to-orange-500', shadow: 'shadow-orange-500/10' },
+  { key: 'completedJobsToday',  label: 'Completed Today',    icon: CheckCircle2, color: 'from-teal-500 to-emerald-500', shadow: 'shadow-teal-500/10' },
 ];
 
 const PIE_COLORS = ['#06b6d4', '#8b5cf6', '#f59e0b', '#10b981', '#f43f5e', '#64748b'];
@@ -49,166 +49,164 @@ export default function AdminDashboardPage() {
   });
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
       
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Activity className="h-5 w-5 text-cyan-500 animate-pulse" />
-            <span className="text-xs font-bold uppercase tracking-widest text-cyan-600 bg-cyan-50 px-2 py-0.5 rounded-full">Live Overview</span>
-          </div>
-          <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight mt-2">
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
             Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-cyan-500">Admin</span> 👋
           </h1>
-          <p className="text-sm text-slate-500 mt-1 font-medium">Here is what's happening with your repair business today.</p>
+          <p className="text-xs text-slate-500 font-medium">Here is what's happening with your repair business today.</p>
+        </div>
+        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-cyan-600 bg-cyan-50 px-2.5 py-1 rounded-full border border-cyan-100">
+          <Activity className="h-3.5 w-3.5 text-cyan-500 animate-pulse" />
+          <span>Live Overview</span>
         </div>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 xl:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {KPI_CONFIG.map(({ key, label, icon: Icon, color, prefix, shadow }) => {
           const raw = stats?.[key as keyof typeof stats] ?? 0;
           const value = prefix ? `${prefix}${Number(raw).toLocaleString('en-IN')}` : String(raw);
           return (
-            <div key={key} className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-5 relative overflow-hidden group hover:border-cyan-200 transition-colors">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-slate-50 to-slate-100 rounded-bl-full -mr-8 -mt-8 z-0 transition-transform group-hover:scale-110"></div>
-              
-              <div className={`relative z-10 w-12 h-12 rounded-2xl bg-gradient-to-br ${color} ${shadow} flex items-center justify-center text-white mb-4 shadow-lg transform group-hover:-translate-y-1 transition-transform`}>
-                <Icon className="h-6 w-6" />
+            <div key={key} className="bg-white rounded-xl border border-slate-200/80 p-4 shadow-sm flex items-center gap-4 hover:border-cyan-300 transition-colors">
+              <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${color} ${shadow} flex items-center justify-center text-white shrink-0`}>
+                <Icon className="h-5 w-5" />
               </div>
-              <p className="relative z-10 text-3xl font-black text-slate-800 tracking-tight mb-1">{stats ? value : '—'}</p>
-              <p className="relative z-10 text-xs font-bold text-slate-400 uppercase tracking-wider">{label}</p>
+              <div>
+                <p className="text-2xl font-bold text-slate-800 tracking-tight">{stats ? value : '—'}</p>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">{label}</p>
+              </div>
             </div>
           );
         })}
       </div>
 
-      {/* Charts & Map Row */}
-      <div className="grid lg:grid-cols-3 gap-6">
+      {/* Charts Row */}
+      <div className="grid lg:grid-cols-3 gap-5">
         
         {/* Revenue trend */}
-        <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary-50 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-primary-600" />
+        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200/80 shadow-sm p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 bg-primary-50 rounded-lg">
+                <TrendingUp className="h-4 w-4 text-primary-600" />
               </div>
               <div>
-                <h2 className="font-bold text-slate-800 text-lg">Revenue Overview</h2>
-                <p className="text-xs text-slate-500 font-medium">Performance over the last 30 days</p>
+                <h2 className="font-bold text-slate-800 text-sm">Revenue Overview</h2>
+                <p className="text-[10px] text-slate-400 font-medium">Performance over the last 30 days</p>
               </div>
             </div>
           </div>
           {revenue?.length ? (
-            <ResponsiveContainer width="100%" height={280}>
-              <AreaChart data={revenue} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <ResponsiveContainer width="100%" height={220}>
+              <AreaChart data={revenue} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
+                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.2}/>
                     <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b' }} tickFormatter={(v: string) => new Date(v).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b' }} tickFormatter={(v: number) => `₹${(v / 1000).toFixed(0)}k`} />
+                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} tickFormatter={(v: string) => new Date(v).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} dy={5} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} tickFormatter={(v: number) => `₹${(v / 1000).toFixed(0)}k`} />
                 <Tooltip 
-                  contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', fontWeight: 'bold' }}
+                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '11px', fontWeight: 'bold' }}
                   formatter={(v: number) => [`₹${v.toLocaleString('en-IN')}`, 'Revenue']} 
                 />
-                <Area type="monotone" dataKey="revenue" stroke="#06b6d4" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+                <Area type="monotone" dataKey="revenue" stroke="#06b6d4" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[280px] flex items-center justify-center text-sm text-slate-400 font-medium">No data yet</div>
+            <div className="h-[220px] flex items-center justify-center text-xs text-slate-400 font-medium">No data yet</div>
           )}
         </div>
 
         {/* Lead sources pie */}
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 flex flex-col">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-indigo-50 rounded-lg">
-              <TrendingDown className="h-5 w-5 text-indigo-600" />
+        <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-5 flex flex-col">
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="p-1.5 bg-indigo-50 rounded-lg">
+              <TrendingDown className="h-4 w-4 text-indigo-600" />
             </div>
             <div>
-              <h2 className="font-bold text-slate-800 text-lg">Lead Sources</h2>
-              <p className="text-xs text-slate-500 font-medium">Where your business comes from</p>
+              <h2 className="font-bold text-slate-800 text-sm">Lead Sources</h2>
+              <p className="text-[10px] text-slate-400 font-medium">Where your business comes from</p>
             </div>
           </div>
           {leadSources?.length ? (
-            <div className="flex-1 min-h-[280px]">
+            <div className="flex-1 min-h-[220px] relative">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={leadSources} dataKey="count" nameKey="source" cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={5} stroke="none">
+                  <Pie data={leadSources} dataKey="count" nameKey="source" cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={4} stroke="none">
                     {leadSources.map((_: LeadSourceDataPoint, i: number) => (
                       <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
-                  <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, fontWeight: 600, paddingTop: '20px' }} />
+                  <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '11px' }} />
+                  <Legend iconType="circle" iconSize={6} wrapperStyle={{ fontSize: 10, fontWeight: 600, paddingTop: '10px' }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-sm text-slate-400 font-medium">No data yet</div>
+            <div className="flex-1 flex items-center justify-center text-xs text-slate-400 font-medium">No data yet</div>
           )}
         </div>
       </div>
 
-      {/* Lower Section: Map & Quick Actions */}
-      <div className="grid lg:grid-cols-3 gap-6">
+      {/* Weekly & Products breakdown */}
+      <div className="grid lg:grid-cols-3 gap-5">
         
-        {/* Weekly Activity Bar Chart */}
-        <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-rose-50 rounded-lg">
-                <Activity className="h-5 w-5 text-rose-500" />
-              </div>
-              <div>
-                <h2 className="font-bold text-slate-800 text-lg">Weekly Performance Activity</h2>
-                <p className="text-xs text-slate-500 font-medium">New Leads vs Completed Jobs</p>
-              </div>
+        {/* Weekly Performance Bar Chart */}
+        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200/80 shadow-sm p-5">
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="p-1.5 bg-rose-50 rounded-lg">
+              <Activity className="h-4 w-4 text-rose-500" />
+            </div>
+            <div>
+              <h2 className="font-bold text-slate-800 text-sm">Weekly Performance</h2>
+              <p className="text-[10px] text-slate-400 font-medium">New Leads vs Completed Jobs</p>
             </div>
           </div>
           
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={WEEKLY_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={WEEKLY_DATA} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b', fontWeight: 500 }} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b' }} />
+              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 500 }} dy={5} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
               <Tooltip 
-                contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', fontWeight: 'bold' }}
+                contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '11px', fontWeight: 'bold' }}
                 cursor={{ fill: '#f8fafc' }}
               />
-              <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, fontWeight: 600, paddingTop: '10px' }} />
-              <Bar dataKey="leads" name="New Leads" fill="#06b6d4" radius={[4, 4, 0, 0]} barSize={24} />
-              <Bar dataKey="completed" name="Completed Jobs" fill="#8b5cf6" radius={[4, 4, 0, 0]} barSize={24} />
+              <Legend iconType="circle" iconSize={6} wrapperStyle={{ fontSize: 10, fontWeight: 600, paddingTop: '5px' }} />
+              <Bar dataKey="leads" name="New Leads" fill="#06b6d4" radius={[3, 3, 0, 0]} barSize={12} />
+              <Bar dataKey="completed" name="Completed Jobs" fill="#8b5cf6" radius={[3, 3, 0, 0]} barSize={12} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Products Repaired Breakdown */}
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 flex flex-col">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-amber-50 rounded-lg">
-              <Package className="h-5 w-5 text-amber-500" />
+        {/* Products breakdown */}
+        <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-5 flex flex-col">
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="p-1.5 bg-amber-50 rounded-lg">
+              <Package className="h-4 w-4 text-amber-500" />
             </div>
             <div>
-              <h2 className="font-bold text-slate-800 text-lg">Product Repairs</h2>
-              <p className="text-xs text-slate-500 font-medium">Top serviced devices</p>
+              <h2 className="font-bold text-slate-800 text-sm">Product Services</h2>
+              <p className="text-[10px] text-slate-400 font-medium">Top serviced categories</p>
             </div>
           </div>
           
-          <div className="space-y-6 flex-1 justify-center flex flex-col">
+          <div className="space-y-4 flex-1 justify-center flex flex-col">
             {PRODUCT_STATS.map((item, i) => (
               <div key={i}>
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="font-bold text-slate-700">{item.name}</span>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="font-semibold text-slate-700">{item.name}</span>
                   <span className="font-bold text-slate-500">{item.count} units</span>
                 </div>
-                <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                  <div className={`h-2.5 rounded-full ${item.color}`} style={{ width: `${item.percentage}%` }}></div>
+                <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                  <div className={`h-2 rounded-full ${item.color}`} style={{ width: `${item.percentage}%` }}></div>
                 </div>
               </div>
             ))}
@@ -216,23 +214,23 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Quick Activity Horizontal List */}
-      <div className="grid sm:grid-cols-3 gap-6">
+      {/* Quick Actions horizontal navigation */}
+      <div className="grid sm:grid-cols-3 gap-4">
         {[
-          { href: '/admin/leads',   label: 'Manage New Leads',   sub: 'View and assign incoming leads', icon: Users, color: 'text-blue-500', bg: 'bg-blue-50', border: 'hover:border-blue-200' },
-          { href: '/admin/tickets', label: 'Monitor Tickets',   sub: 'Track active repair statuses', icon: Ticket, color: 'text-orange-500', bg: 'bg-orange-50', border: 'hover:border-orange-200' },
-          { href: '/admin/reports', label: 'Financial Reports',        sub: 'Revenue & performance metrics', icon: IndianRupee, color: 'text-emerald-500', bg: 'bg-emerald-50', border: 'hover:border-emerald-200' },
+          { href: '/admin/leads',   label: 'Manage New Leads',   sub: 'View and assign incoming leads', icon: Users, color: 'text-blue-500', bg: 'bg-blue-50', border: 'hover:border-blue-300' },
+          { href: '/admin/tickets', label: 'Monitor Tickets',   sub: 'Track active repair statuses', icon: Ticket, color: 'text-orange-500', bg: 'bg-orange-50', border: 'hover:border-orange-300' },
+          { href: '/admin/reports', label: 'Financial Reports',        sub: 'Revenue & performance metrics', icon: IndianRupee, color: 'text-emerald-500', bg: 'bg-emerald-50', border: 'hover:border-emerald-300' },
         ].map((item) => (
           <a key={item.href} href={item.href}
-            className={`flex items-center gap-4 p-5 rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ${item.border} hover:shadow-lg transition-all group bg-white`}>
-            <div className={`p-4 rounded-2xl ${item.bg} ${item.color} group-hover:scale-110 transition-transform`}>
-              <item.icon className="h-6 w-6" />
+            className={`flex items-center gap-3.5 p-4 rounded-xl border border-slate-200/80 shadow-sm ${item.border} hover:shadow-md transition-all group bg-white`}>
+            <div className={`p-3 rounded-xl ${item.bg} ${item.color} group-hover:scale-105 transition-transform`}>
+              <item.icon className="h-5 w-5" />
             </div>
-            <div className="flex-1">
-              <p className="font-bold text-slate-800 text-base group-hover:text-primary-600 transition-colors">{item.label}</p>
-              <p className="text-xs text-slate-500 font-medium mt-1">{item.sub}</p>
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-slate-800 text-sm group-hover:text-primary-600 transition-colors truncate">{item.label}</p>
+              <p className="text-[10px] text-slate-400 font-semibold mt-0.5 truncate">{item.sub}</p>
             </div>
-            <ArrowRight className="h-5 w-5 text-slate-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
+            <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all shrink-0" />
           </a>
         ))}
       </div>

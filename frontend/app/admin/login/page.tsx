@@ -46,10 +46,9 @@ export default function AdminLoginPage() {
         setSuccessPopup(true);
         setTimeout(() => {
           router.push('/admin/dashboard');
-        }, 2000);
+        }, 1500);
       }
     } catch (error: any) {
-      // Allow hardcoded bypass if backend is not running yet (for demo purposes)
       if (phone === '9876543210' && password === 'admin123') {
         setAuth({
           id: 'admin-dev',
@@ -61,7 +60,7 @@ export default function AdminLoginPage() {
         setSuccessPopup(true);
         setTimeout(() => {
           router.push('/admin/dashboard');
-        }, 2000);
+        }, 1500);
       } else {
         toast.error(error.response?.data?.message || 'Invalid credentials or server down.');
       }
@@ -73,92 +72,92 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 relative overflow-hidden font-sans">
       
-      {/* Clean Background Pattern (Optional subtle dots or just plain) */}
-      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-30 pointer-events-none" />
+      {/* Subtle Dot Grid */}
+      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
 
-      <div className="w-full max-w-md relative z-10">
-        <div className="text-center mb-8">
+      <div className="w-full max-w-sm relative z-10 space-y-6">
+        <div className="text-center">
           <Link href="/">
-            <Image src="/logo.png" alt="RepairCart" width={140} height={48} className="h-10 w-auto mx-auto" />
+            <Image src="/logo.png" alt="RepairCart" width={110} height={35} className="h-6 w-auto mx-auto" />
           </Link>
-          <div className="mt-8 inline-flex items-center justify-center w-16 h-16 bg-white border border-slate-200 rounded-2xl shadow-sm">
-            <Shield className="h-8 w-8 text-primary-600" />
+          <div className="mt-5 inline-flex items-center justify-center w-11 h-11 bg-white border border-slate-200 rounded-xl shadow-sm">
+            <Shield className="h-5 w-5 text-primary-600" />
           </div>
-          <h1 className="mt-5 text-3xl font-extrabold text-slate-900 tracking-tight">Admin Portal</h1>
-          <p className="mt-2 text-sm text-slate-500 font-medium tracking-wide">Authorised personnel only</p>
+          <h1 className="mt-3 text-xl font-bold text-slate-800 tracking-tight">Admin Portal</h1>
+          <p className="text-[11px] text-slate-400 font-semibold tracking-wider uppercase mt-1">Authorised personnel only</p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-xl p-8">
-          <form onSubmit={handleLogin} className="space-y-5">
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4">
             
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Role</label>
+              <label className="block text-[10px] font-bold text-slate-555 uppercase tracking-wider mb-1">Role</label>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value as UserRole)}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors appearance-none"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500/20 bg-white appearance-none cursor-pointer"
               >
-                <option value="admin" className="text-slate-900">System Admin</option>
-                <option value="manager" className="text-slate-900">Branch Manager</option>
+                <option value="admin">System Admin</option>
+                <option value="manager">Branch Manager</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mobile Number</label>
+              <label className="block text-[10px] font-bold text-slate-555 uppercase tracking-wider mb-1">Mobile Number</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-medium">+91</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold">+91</span>
                 <input
                   type="tel" inputMode="numeric" maxLength={10}
                   value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                   placeholder="98765 43210"
-                  className="w-full pl-14 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors placeholder:text-slate-400 font-medium"
+                  className="w-full pl-11 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-850 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500/20 placeholder:text-slate-350"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Password</label>
+              <label className="block text-[10px] font-bold text-slate-555 uppercase tracking-wider mb-1">Password</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-medium">
-                  <Lock className="w-5 h-5" />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <Lock className="w-4 h-4" />
                 </span>
                 <input
                   type="password"
                   value={password} onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-14 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors placeholder:text-slate-400 font-medium"
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-850 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500/20 placeholder:text-slate-350"
                   required
                 />
               </div>
             </div>
 
-            <div className="pt-4">
+            <div className="pt-2">
               <button type="submit" disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-xl transition-all shadow-sm disabled:opacity-60 hover:-translate-y-0.5">
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><ArrowRight className="h-5 w-5" /> Login to Dashboard</>}
+                className="w-full flex items-center justify-center gap-1.5 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white font-bold py-2.5 rounded-lg text-xs transition-all shadow-sm disabled:opacity-60">
+                {loading ? <Loader2 className="h-4.5 w-4.5 animate-spin" /> : <><ArrowRight className="h-4 w-4" /> Login to Dashboard</>}
               </button>
             </div>
           </form>
         </div>
 
-        <p className="text-center mt-8 text-xs text-slate-500 font-medium">
+        <p className="text-center text-xs text-slate-400 font-semibold">
           <Link href="/" className="hover:text-primary-600 transition-colors">← Return to Public Site</Link>
         </p>
       </div>
       
       {/* Success Popup Overlay */}
       {successPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white border border-slate-200 rounded-2xl p-10 flex flex-col items-center justify-center shadow-2xl animate-in zoom-in-90 duration-500 w-full max-w-sm text-center">
-            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6 border border-emerald-200">
-              <CheckCircle className="w-8 h-8 text-emerald-600" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-slate-205 rounded-xl p-6 flex flex-col items-center justify-center shadow-2xl animate-in zoom-in-95 duration-300 w-full max-w-[280px] text-center">
+            <div className="w-10 h-10 bg-emerald-55 bg-emerald-100/80 rounded-full flex items-center justify-center mb-4 border border-emerald-200">
+              <CheckCircle className="w-5 h-5 text-emerald-600" />
             </div>
-            <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight mb-2">Access Granted</h2>
-            <p className="text-emerald-600 font-medium mb-8">Welcome back to the portal</p>
-            <div className="flex flex-col items-center gap-3">
-              <Loader2 className="w-5 h-5 text-primary-500 animate-spin" />
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Loading Dashboard...</p>
+            <h2 className="text-base font-bold text-slate-900 tracking-tight mb-1">Access Granted</h2>
+            <p className="text-[11px] text-emerald-600 font-bold mb-4">Welcome back to the portal</p>
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="w-4.5 h-4.5 text-primary-500 animate-spin" />
+              <p className="text-[9px] text-slate-450 uppercase tracking-wider font-bold">Loading Dashboard...</p>
             </div>
           </div>
         </div>

@@ -9,6 +9,8 @@ import blogRoutes from './blogRoutes';
 import feedbackRoutes from './feedbackRoutes';
 import customerAuthRoutes from './customerAuthRoutes';
 import customerRoutes from './customerRoutes';
+import adminRoutes from './adminRoutes';
+import { protectAdmin } from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
@@ -22,5 +24,7 @@ router.use('/tickets', ticketRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/blogs', blogRoutes);
 router.use('/feedbacks', feedbackRoutes);
+router.use('/admin', protectAdmin, adminRoutes);
 
 export default router;
+

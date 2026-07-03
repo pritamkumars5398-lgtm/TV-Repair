@@ -18,13 +18,13 @@ const STATUS_LABELS: Record<TicketStatus, string> = {
 };
 
 const STATUS_COLORS: Record<TicketStatus, string> = {
-  tv_received:         'bg-blue-100 text-blue-700',
-  diagnosis_completed: 'bg-cyan-100 text-cyan-700',
-  parts_ordered:       'bg-orange-100 text-orange-700',
-  repair_in_progress:  'bg-yellow-100 text-yellow-800',
-  quality_check:       'bg-indigo-100 text-indigo-700',
-  ready_for_delivery:  'bg-teal-100 text-teal-700',
-  delivered:           'bg-green-100 text-green-700',
+  tv_received:         'bg-blue-50 text-blue-700 border border-blue-200',
+  diagnosis_completed: 'bg-cyan-50 text-cyan-700 border border-cyan-200',
+  parts_ordered:       'bg-orange-50 text-orange-700 border border-orange-200',
+  repair_in_progress:  'bg-yellow-50 text-yellow-800 border border-yellow-200',
+  quality_check:       'bg-indigo-50 text-indigo-700 border border-indigo-200',
+  ready_for_delivery:  'bg-teal-50 text-teal-700 border border-teal-200',
+  delivered:           'bg-green-50 text-green-700 border border-green-200',
 };
 
 const ALL_STATUSES = Object.keys(STATUS_LABELS) as TicketStatus[];
@@ -56,76 +56,76 @@ export default function AdminTicketsPage() {
   const totalPages = paginatedData?.totalPages ?? 1;
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-7xl mx-auto">
+    <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-7xl mx-auto">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-primary-500 to-cyan-500 rounded-2xl shadow-lg shadow-cyan-500/20 text-white">
-            <TicketIcon className="h-6 w-6" />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-primary-500 to-cyan-500 rounded-xl text-white shadow-sm shrink-0">
+            <TicketIcon className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Support Tickets</h1>
-            <p className="text-sm text-slate-500 font-medium">{paginatedData?.total ?? 0} active tickets in system</p>
+            <h1 className="text-xl font-bold text-slate-800 tracking-tight">Support Tickets</h1>
+            <p className="text-xs text-slate-400 font-semibold">{paginatedData?.total ?? 0} active tickets in system</p>
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+      <div className="flex flex-col sm:flex-row gap-3 bg-white p-3 rounded-xl border border-slate-200/80 shadow-sm">
         <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <input type="text" placeholder="Search by ticket ID or customer name..." value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 font-medium text-slate-700 placeholder:text-slate-400" />
+            className="w-full pl-10 pr-3.5 py-2 bg-slate-50 border border-slate-200/80 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500/20 font-medium text-slate-700 placeholder:text-slate-400 transition-shadow" />
         </div>
         <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="px-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 font-medium text-slate-700 w-full sm:w-64 appearance-none cursor-pointer">
+          className="px-3.5 py-2 bg-slate-50 border border-slate-200/80 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500/20 font-medium text-slate-700 w-full sm:w-48 cursor-pointer transition-shadow">
           <option value="">All Statuses</option>
           {ALL_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
         </select>
       </div>
 
       {/* Table Card */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-xs">
             <thead>
-              <tr className="bg-slate-50/50 border-b border-slate-100 text-xs font-bold uppercase tracking-wider text-slate-500">
-                <th className="px-6 py-4 text-left rounded-tl-3xl">Ticket ID</th>
-                <th className="px-6 py-4 text-left">Customer</th>
-                <th className="px-6 py-4 text-left">Service Type</th>
-                <th className="px-6 py-4 text-left">Technician</th>
-                <th className="px-6 py-4 text-left">Status</th>
-                <th className="px-6 py-4 text-left rounded-tr-3xl">Scheduled</th>
+              <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                <th className="px-4 py-3 text-left">Ticket ID</th>
+                <th className="px-4 py-3 text-left">Customer</th>
+                <th className="px-4 py-3 text-left">Service Type</th>
+                <th className="px-4 py-3 text-left">Technician</th>
+                <th className="px-4 py-3 text-left">Status</th>
+                <th className="px-4 py-3 text-left">Scheduled</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-100">
               {isLoading ? (
-                <tr><td colSpan={6} className="py-20 text-center"><Loader2 className="h-8 w-8 animate-spin text-cyan-500 mx-auto" /></td></tr>
+                <tr><td colSpan={6} className="py-12 text-center"><Loader2 className="h-6 w-6 animate-spin text-cyan-500 mx-auto" /></td></tr>
               ) : tickets.length === 0 ? (
-                <tr><td colSpan={6} className="py-20 text-center text-slate-400 font-medium">No tickets found matching your criteria.</td></tr>
+                <tr><td colSpan={6} className="py-12 text-center text-slate-400 font-semibold">No tickets found matching your criteria.</td></tr>
               ) : tickets.map((ticket) => (
-                <tr key={ticket.id} className="hover:bg-slate-50/80 transition-colors group">
-                  <td className="px-6 py-4">
-                    <span className="font-mono text-xs font-bold text-cyan-700 bg-cyan-50 px-3 py-1.5 rounded-lg border border-cyan-100">{ticket.ticketId}</span>
+                <tr key={ticket.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <td className="px-4 py-3">
+                    <span className="font-mono text-[10px] font-bold text-cyan-700 bg-cyan-50 border border-cyan-150 px-2 py-1 rounded-md">{ticket.ticketId}</span>
                   </td>
-                  <td className="px-6 py-4">
-                    <p className="font-bold text-slate-800">{ticket.customerName}</p>
-                    <p className="text-xs font-medium text-slate-500 mt-0.5">{ticket.customerPhone}</p>
+                  <td className="px-4 py-3">
+                    <p className="font-semibold text-slate-800 text-xs">{ticket.customerName}</p>
+                    <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{ticket.customerPhone}</p>
                   </td>
-                  <td className="px-6 py-4 font-medium text-slate-600">{SERVICE_LABELS[ticket.serviceType] ?? ticket.serviceType}</td>
-                  <td className="px-6 py-4 font-medium text-slate-600">
-                    {ticket.technicianName ?? <span className="text-slate-400 italic">Unassigned</span>}
+                  <td className="px-4 py-3 font-semibold text-slate-500">{SERVICE_LABELS[ticket.serviceType] ?? ticket.serviceType}</td>
+                  <td className="px-4 py-3 font-semibold text-slate-500">
+                    {ticket.technicianName ?? <span className="text-slate-300 italic">Unassigned</span>}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-3">
                     <select value={ticket.status}
                       onChange={(e) => updateMutation.mutate({ id: ticket.id, status: e.target.value })}
-                      className={`text-xs font-bold px-3 py-1 rounded-full border-none cursor-pointer focus:ring-2 focus:ring-cyan-500/20 appearance-none text-center ${STATUS_COLORS[ticket.status]}`}>
-                      {ALL_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
+                      className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-transparent cursor-pointer focus:ring-1 focus:ring-cyan-500/25 appearance-none text-center ${STATUS_COLORS[ticket.status]}`}>
+                      {ALL_STATUSES.map((s) => <option key={s} value={s} className="bg-white text-slate-800 font-normal">{STATUS_LABELS[s]}</option>)}
                     </select>
                   </td>
-                  <td className="px-6 py-4 text-slate-500 text-xs font-medium">
+                  <td className="px-4 py-3 text-slate-400 font-semibold">
                     {ticket.scheduledAt ? new Date(ticket.scheduledAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
                   </td>
                 </tr>
@@ -136,16 +136,16 @@ export default function AdminTicketsPage() {
         
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50/50">
-            <p className="text-sm font-medium text-slate-500">Showing page <span className="font-bold text-slate-700">{page}</span> of {totalPages}</p>
-            <div className="flex gap-2">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50/50">
+            <p className="text-xs font-semibold text-slate-400">Showing page <span className="font-bold text-slate-600">{page}</span> of {totalPages}</p>
+            <div className="flex gap-1.5">
               <button onClick={() => setPage((p) => p - 1)} disabled={page === 1} 
-                className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 disabled:opacity-40 transition-all shadow-sm">
-                <ChevronLeft className="h-5 w-5 text-slate-600" />
+                className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 transition-all shadow-sm">
+                <ChevronLeft className="h-4 w-4 text-slate-600" />
               </button>
               <button onClick={() => setPage((p) => p + 1)} disabled={page === totalPages} 
-                className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 disabled:opacity-40 transition-all shadow-sm">
-                <ChevronRight className="h-5 w-5 text-slate-600" />
+                className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 transition-all shadow-sm">
+                <ChevronRight className="h-4 w-4 text-slate-600" />
               </button>
             </div>
           </div>

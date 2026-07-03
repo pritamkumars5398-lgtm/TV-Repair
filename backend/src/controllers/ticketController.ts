@@ -29,13 +29,16 @@ export const getTickets = async (req: Request, res: Response): Promise<void> => 
     const total = await Ticket.countDocuments(query);
 
     res.json({
-      items,
-      total,
-      page,
-      totalPages: Math.ceil(total / limit),
+      success: true,
+      data: {
+        items,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (error: any) {
-    res.status(500).json({ message: error.message || 'Server Error' });
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
   }
 };
 
@@ -60,11 +63,14 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
         new: true,
         runValidators: true,
       });
-      res.json(updatedTicket);
+      res.json({
+        success: true,
+        data: updatedTicket,
+      });
     } else {
-      res.status(404).json({ message: 'Ticket not found' });
+      res.status(404).json({ success: false, message: 'Ticket not found' });
     }
   } catch (error: any) {
-    res.status(500).json({ message: error.message || 'Server Error' });
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
   }
 };

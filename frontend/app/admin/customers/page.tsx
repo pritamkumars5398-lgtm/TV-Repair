@@ -20,72 +20,72 @@ export default function AdminCustomersPage() {
   const totalPages = paginatedData?.totalPages ?? 1;
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-7xl mx-auto">
+    <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-7xl mx-auto">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-primary-500 to-cyan-500 rounded-2xl shadow-lg shadow-cyan-500/20 text-white">
-            <UserCheck className="h-6 w-6" />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-br from-primary-500 to-cyan-500 rounded-xl text-white shadow-sm shrink-0">
+            <UserCheck className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Customers</h1>
-            <p className="text-sm text-slate-500 font-medium">{paginatedData?.total ?? 0} registered customers</p>
+            <h1 className="text-xl font-bold text-slate-800 tracking-tight">Customers</h1>
+            <p className="text-xs text-slate-400 font-semibold">{paginatedData?.total ?? 0} registered customers</p>
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+      <div className="flex flex-col sm:flex-row gap-3 bg-white p-3 rounded-xl border border-slate-200/80 shadow-sm">
         <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <input type="text" placeholder="Search by customer name or phone number..." value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 font-medium text-slate-700 placeholder:text-slate-400" />
+            className="w-full pl-10 pr-3.5 py-2 bg-slate-50 border border-slate-200/80 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500/20 font-medium text-slate-700 placeholder:text-slate-400 transition-shadow" />
         </div>
       </div>
 
       {/* Table Card */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-xs">
             <thead>
-              <tr className="bg-slate-50/50 border-b border-slate-100 text-xs font-bold uppercase tracking-wider text-slate-500">
-                <th className="px-6 py-4 text-left rounded-tl-3xl">Customer Profile</th>
-                <th className="px-6 py-4 text-left">Phone</th>
-                <th className="px-6 py-4 text-left">Email</th>
-                <th className="px-6 py-4 text-left">Total Repairs</th>
-                <th className="px-6 py-4 text-left">Total Spent</th>
-                <th className="px-6 py-4 text-left rounded-tr-3xl">Joined</th>
+              <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                <th className="px-4 py-3 text-left">Customer Profile</th>
+                <th className="px-4 py-3 text-left">Phone</th>
+                <th className="px-4 py-3 text-left">Email</th>
+                <th className="px-4 py-3 text-left">Total Repairs</th>
+                <th className="px-4 py-3 text-left">Total Spent</th>
+                <th className="px-4 py-3 text-left">Joined</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-100">
               {isLoading ? (
-                <tr><td colSpan={6} className="py-20 text-center"><Loader2 className="h-8 w-8 animate-spin text-cyan-500 mx-auto" /></td></tr>
+                <tr><td colSpan={6} className="py-12 text-center"><Loader2 className="h-6 w-6 animate-spin text-cyan-500 mx-auto" /></td></tr>
               ) : customers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-20 text-center">
-                    <UserCheck className="h-12 w-12 text-slate-200 mx-auto mb-3" />
-                    <p className="text-slate-400 font-medium">No customers found matching your criteria.</p>
+                  <td colSpan={6} className="py-12 text-center">
+                    <UserCheck className="h-8 w-8 text-slate-200 mx-auto mb-2 opacity-50" />
+                    <p className="text-slate-400 font-semibold">No customers found matching your criteria.</p>
                   </td>
                 </tr>
               ) : customers.map((c) => (
-                <tr key={c.id} className="hover:bg-slate-50/80 transition-colors group">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-cyan-50 to-primary-50 text-cyan-700 flex items-center justify-center text-sm font-black shrink-0 border border-cyan-100 shadow-sm shadow-cyan-100/50">
+                <tr key={c.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-50 to-primary-50 text-cyan-700 flex items-center justify-center text-xs font-bold shrink-0 border border-cyan-100 shadow-sm">
                         {c.name[0].toUpperCase()}
                       </div>
-                      <span className="font-bold text-slate-800">{c.name}</span>
+                      <span className="font-semibold text-slate-800 text-xs">{c.name}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 font-medium text-slate-600">{c.phone}</td>
-                  <td className="px-6 py-4 font-medium text-slate-500">{c.email ?? '—'}</td>
-                  <td className="px-6 py-4">
-                    <span className="font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-lg">{c.totalRepairs}</span>
+                  <td className="px-4 py-3 font-semibold text-slate-500">{c.phone}</td>
+                  <td className="px-4 py-3 font-semibold text-slate-500">{c.email ?? '—'}</td>
+                  <td className="px-4 py-3">
+                    <span className="font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/50">{c.totalRepairs}</span>
                   </td>
-                  <td className="px-6 py-4 font-black text-emerald-600">₹{c.totalSpent.toLocaleString('en-IN')}</td>
-                  <td className="px-6 py-4 text-slate-500 text-xs font-medium">{new Date(c.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                  <td className="px-4 py-3 font-bold text-emerald-600">₹{c.totalSpent.toLocaleString('en-IN')}</td>
+                  <td className="px-4 py-3 text-slate-400 font-semibold">{new Date(c.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
                 </tr>
               ))}
             </tbody>
@@ -94,16 +94,16 @@ export default function AdminCustomersPage() {
         
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50/50">
-            <p className="text-sm font-medium text-slate-500">Showing page <span className="font-bold text-slate-700">{page}</span> of {totalPages}</p>
-            <div className="flex gap-2">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50/50">
+            <p className="text-xs font-semibold text-slate-400">Showing page <span className="font-bold text-slate-600">{page}</span> of {totalPages}</p>
+            <div className="flex gap-1.5">
               <button onClick={() => setPage((p) => p - 1)} disabled={page === 1} 
-                className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 disabled:opacity-40 transition-all shadow-sm">
-                <ChevronLeft className="h-5 w-5 text-slate-600" />
+                className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 transition-all shadow-sm">
+                <ChevronLeft className="h-4 w-4 text-slate-600" />
               </button>
               <button onClick={() => setPage((p) => p + 1)} disabled={page === totalPages} 
-                className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 disabled:opacity-40 transition-all shadow-sm">
-                <ChevronRight className="h-5 w-5 text-slate-600" />
+                className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 transition-all shadow-sm">
+                <ChevronRight className="h-4 w-4 text-slate-600" />
               </button>
             </div>
           </div>

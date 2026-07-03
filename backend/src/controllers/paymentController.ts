@@ -19,12 +19,15 @@ export const getPayments = async (req: Request, res: Response): Promise<void> =>
     const total = await Payment.countDocuments(query);
 
     res.json({
-      items,
-      total,
-      page,
-      totalPages: Math.ceil(total / limit),
+      success: true,
+      data: {
+        items,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (error: any) {
-    res.status(500).json({ message: error.message || 'Server Error' });
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
   }
 };
