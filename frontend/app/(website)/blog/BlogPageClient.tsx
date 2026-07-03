@@ -68,7 +68,7 @@ export default function BlogPageClient() {
                       {featuredPost.title}
                     </Link>
                   </h2>
-                  <p className="text-slate-300 text-lg leading-relaxed mb-8 line-clamp-3">
+                  <p className="text-slate-340 text-lg leading-relaxed mb-8 line-clamp-3">
                     {featuredPost.content}
                   </p>
                   <div className="flex items-center justify-between mt-auto border-t border-white/10 pt-6">
