@@ -10,8 +10,8 @@ import { HeroSlideshow } from '@/components/website/HeroSlideshow';
 import Repair from '../../assets/img/repai12.jpg'
 
 export const metadata: Metadata = {
-  title: 'Longwell Electronics — Electronics Repair & Manufacturing',
-  description: 'Longwell Electronics — World class manufacturing and repair environment. LED TV Panel Repair, Mobile Glass Repair, Speaker Manufacturing, DOA Management.',
+  title: 'RC RepairCart — Electronics Repair & Manufacturing',
+  description: 'RC RepairCart — World class manufacturing and repair environment. LED TV Panel Repair, Mobile Glass Repair, Speaker Manufacturing, DOA Management.',
 };
 
 const services = [
@@ -75,7 +75,7 @@ const blogPosts = [
 const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
-  name: 'Longwell Electronics',
+  name: 'RC RepairCart',
   description: 'World class manufacturing and repair environment for LED TVs, Mobile phones, and Speakers.',
   url: 'https://www.longwellelectronics.com',
   telephone: '+919811881117',
@@ -110,7 +110,7 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
             <div>
               <p className="text-primary-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-4" data-aos="fade-up">
-                Longwell Electronics
+                RC RepairCart
               </p>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-5" data-aos="fade-up" data-aos-delay="100">
                 Total Solutions for<br />
@@ -235,7 +235,7 @@ export default function HomePage() {
                 Quality service and<br />customer satisfaction.
               </h2>
               <p className="text-slate-500 leading-relaxed mb-8 text-sm font-medium">
-                Longwell Electronics provides remarkable quality in products and services at best prices. With a 20,000 sq ft facility, clean rooms, and close relationships with Chinese spare part manufacturers, we ensure high yield percentages.
+                RC RepairCart provides remarkable quality in products and services at best prices. With a 20,000 sq ft facility, clean rooms, and close relationships with Chinese spare part manufacturers, we ensure high yield percentages.
               </p>
               <div className="grid sm:grid-cols-2 gap-4 mb-8">
                 {features.map((f) => (
@@ -318,7 +318,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary-900/40 via-slate-900 to-slate-900" />
         <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center" data-aos="zoom-in">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">Partner with us today</h2>
-          <p className="text-slate-400 text-sm max-w-xl mx-auto mb-8 font-medium">Whether it's bulk DOA management, panel repairs, or sourcing high-quality speakers, Longwell Electronics is your trusted B2B partner.</p>
+          <p className="text-slate-400 text-sm max-w-xl mx-auto mb-8 font-medium">Whether it's bulk DOA management, panel repairs, or sourcing high-quality speakers, RC RepairCart is your trusted B2B partner.</p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-3">
             <Link href="/book" className="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-md transition-all shadow-sm">

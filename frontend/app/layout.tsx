@@ -8,15 +8,18 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
   title: {
-    default: 'Longwell Electronics',
-    template: '%s | Longwell',
+    default: 'RC RepairCart',
+    template: '%s | RC RepairCart',
   },
-  description: 'Longwell Electronics — Professional TV repair, speaker manufacturing, and home theater installation.',
-  keywords: ['TV repair', 'LED TV repair', 'Smart TV repair', 'speaker manufacturing', 'home theater', 'Longwell', 'Electronics'],
+  description: 'RC RepairCart — Professional TV repair, speaker manufacturing, and home theater installation.',
+  keywords: ['TV repair', 'LED TV repair', 'Smart TV repair', 'speaker manufacturing', 'home theater', 'RC', 'RepairCart'],
+  icons: {
+    icon: '/logo.png',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_IN',
-    siteName: 'Longwell Electronics',
+    siteName: 'RC RepairCart',
   },
 };
 
