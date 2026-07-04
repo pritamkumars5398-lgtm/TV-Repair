@@ -15,8 +15,12 @@ const app = express();
 
 // Ensure uploads directory exists and serve uploaded files
 const uploadsDir = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (error) {
+  console.warn('Could not create uploads directory (expected in read-only environments like Vercel):', error);
 }
 app.use('/uploads', express.static(uploadsDir));
 
