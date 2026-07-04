@@ -90,6 +90,11 @@ export const adminApi = {
   createBlog: (data: any) =>
     apiClient.post<ApiResponse<any>>('/blogs', data).then((r) => r.data),
 
+  uploadBlogImage: (formData: FormData) =>
+    apiClient.post<{ imageUrl: string }>('/blogs/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then((r) => r.data),
+
   updateBlog: (id: string, data: any) =>
     apiClient.put<ApiResponse<any>>(`/blogs/${id}`, data).then((r) => r.data),
 

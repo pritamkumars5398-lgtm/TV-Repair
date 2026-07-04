@@ -19,14 +19,20 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.3",
+<<<<<<< HEAD
+    "multer": "^2.2.0",
+    "razorpay": "^2.9.6"
+=======
     "razorpay": "^2.9.6",
     "tv-repair-root": "file:.."
+>>>>>>> 4454fe1e6ec83b843492f9f97439d5aa430f3f3d
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.2.0",
     "@types/node": "^26.1.0",
     "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",

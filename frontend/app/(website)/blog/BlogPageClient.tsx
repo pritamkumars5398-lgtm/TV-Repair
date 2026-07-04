@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Search, Calendar, Clock } from 'lucide-react';
 import { useState } from 'react';
@@ -18,6 +17,11 @@ export default function BlogPageClient() {
     queryKey: ['public-blogs'],
     queryFn: () => publicApi.getBlogs(),
   });
+
+  const defaultRepairImage =
+    'https://images.unsplash.com/photo-1514489383739-55b8e387a112?auto=format&fit=crop&w=1200&q=80';
+  const defaultRepairText =
+    'Expert repair tips and service insights for TVs, appliances, and electronics.';
 
   const featuredPost = blogs.find((p: any) => p.featured);
 
@@ -44,39 +48,40 @@ export default function BlogPageClient() {
           </div>
 
           {featuredPost && (
-            <div data-aos="fade-up" data-aos-delay="100" className="group relative rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl bg-white/5 backdrop-blur-md">
+            <div data-aos="fade-up" data-aos-delay="100" className="group relative rounded-none overflow-hidden border border-slate-200 bg-white">
               <div className="grid lg:grid-cols-2 gap-0 items-stretch">
                 <div className="relative h-64 lg:h-full min-h-[300px] lg:min-h-[400px] overflow-hidden">
                   <img
-                    src={featuredPost.imageUrl || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&q=80'}
-                    alt={featuredPost.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    src={featuredPost.imageUrl || defaultRepairImage}
+                    alt={featuredPost.title || 'Repair Service'}
+                    className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent lg:hidden" />
                 </div>
-                <div className="p-8 sm:p-12 lg:p-16 flex flex-col justify-center">
-                  <div className="flex items-center gap-4 mb-6">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary-500/20 text-primary-300 text-xs font-bold uppercase tracking-wider border border-primary-500/30">
-                      Featured
-                    </span>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-wider border border-white/10">
-                      {featuredPost.category}
-                    </span>
+                <div className="p-8 sm:p-12 lg:p-16 flex flex-col justify-between bg-slate-50">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-3 mb-6">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary-600 text-white text-xs font-bold uppercase tracking-wider">
+                        Featured
+                      </span>
+                      <span className="inline-flex items-center px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold uppercase tracking-wider">
+                        {featuredPost.category || 'Repair'}
+                      </span>
+                    </div>
+                    <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4 leading-tight">
+                      <Link href={`/blog/${featuredPost.slug}`}>
+                        {featuredPost.title}
+                      </Link>
+                    </h2>
+                    <p className="text-slate-700 text-lg leading-relaxed mb-8 line-clamp-3">
+                      {featuredPost.content || defaultRepairText}
+                    </p>
                   </div>
-                  <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 leading-tight group-hover:text-primary-300 transition-colors">
-                    <Link href={`/blog/${featuredPost.slug}`}>
-                      {featuredPost.title}
-                    </Link>
-                  </h2>
-                  <p className="text-slate-340 text-lg leading-relaxed mb-8 line-clamp-3">
-                    {featuredPost.content}
-                  </p>
-                  <div className="flex items-center justify-between mt-auto border-t border-white/10 pt-6">
-                    <div className="flex items-center gap-4 text-sm text-slate-400 font-medium">
+                  <div className="flex items-center justify-between border-t border-slate-200 pt-6 text-sm text-slate-500">
+                    <div className="flex items-center gap-4 font-medium">
                       <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> {new Date(featuredPost.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                       <span className="hidden sm:flex items-center gap-1.5"><Clock className="h-4 w-4" /> {featuredPost.readTime}</span>
                     </div>
-                    <Link href={`/blog/${featuredPost.slug}`} className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-primary-600 text-white hover:bg-primary-500 transition-colors hover:scale-110">
+                    <Link href={`/blog/${featuredPost.slug}`} className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-primary-600 text-white hover:bg-primary-500 transition-colors">
                       <ArrowRight className="h-5 w-5" />
                     </Link>
                   </div>
@@ -123,40 +128,40 @@ export default function BlogPageClient() {
 
           {/* Grid */}
           {isLoading ? (
-            <div className="text-center py-20"><div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto"></div></div>
+            <div className="text-center py-20"><div className="w-8 h-8 border-4 border-primary-500 border-t-transparent  animate-spin mx-auto"></div></div>
           ) : filteredPosts.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredPosts.map((post: any, index: number) => (
-                <div key={post.id} data-aos="fade-up" data-aos-delay={index * 50} className="group flex flex-col bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:border-primary-100 hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+                <div key={post.id} data-aos="fade-up" data-aos-delay={index * 50} className="group flex flex-col bg-white rounded-none border border-slate-200 transition-all duration-300 overflow-hidden">
                   <div className="relative h-64 overflow-hidden">
                     <img
-                      src={post.imageUrl || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&q=80'}
-                      alt={post.title}
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                      src={post.imageUrl || defaultRepairImage}
+                      alt={post.title || 'Repair Blog'}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent opacity-80" />
                     <div className="absolute top-5 left-5">
-                      <span className="bg-white/90 backdrop-blur-md text-primary-700 text-xs font-bold px-4 py-2 rounded-full shadow-lg">
+                      <span className="bg-slate-900/90 text-white text-xs font-semibold px-4 py-2">
                         {post.category}
                       </span>
                     </div>
                   </div>
                   <div className="p-8 flex flex-col flex-1">
                     <div className="flex items-center gap-4 text-xs text-slate-500 font-medium mb-4">
-                      <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4 text-primary-400" /> {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                      <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-primary-400" /> {post.readTime}</span>
+                      <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4 text-slate-400" /> {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                      <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-slate-400" /> {post.readTime}</span>
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900 leading-tight mb-4 group-hover:text-primary-600 transition-colors">
+                    <h3 className="text-2xl font-semibold text-slate-900 leading-tight mb-4">
                       <Link href={`/blog/${post.slug}`}>
                         {post.title}
                       </Link>
                     </h3>
                     <p className="text-slate-600 text-sm leading-relaxed mb-8 flex-1 line-clamp-3">
-                      {post.content}
+                      {post.content || defaultRepairText}
                     </p>
                     <div className="mt-auto">
-                      <Link href={`/blog/${post.slug}`} className="inline-flex items-center gap-2 text-sm font-bold text-primary-600 bg-primary-50 hover:bg-primary-100 px-6 py-3 rounded-full transition-colors group-hover:pr-4">
-                        Read article <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      <Link href={`/blog/${post.slug}`} className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 px-6 py-3 rounded-xl transition-all">
+                        Read article <ArrowRight className="h-4 w-4" />
                       </Link>
                     </div>
                   </div>

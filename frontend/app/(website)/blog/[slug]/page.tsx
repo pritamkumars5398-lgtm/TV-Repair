@@ -32,60 +32,45 @@ export default function BlogDetailPage({ params }: { params: { slug: string } })
   }
 
   return (
-    <div className="bg-slate-50 min-h-screen pb-24">
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-24 overflow-hidden bg-slate-950">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-900/40 via-slate-950 to-slate-950" />
-        
-        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <Link href="/blog" className="inline-flex items-center gap-2 text-primary-400 hover:text-primary-300 transition-colors text-sm font-bold mb-8 uppercase tracking-wider">
-            <ArrowLeft className="h-4 w-4" /> Back to Insights
-          </Link>
-          
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <span className="bg-white/10 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-white/10">
-              {blog.category}
-            </span>
-          </div>
-
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-8 leading-tight">
-            {blog.title}
-          </h1>
-
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-300 font-medium">
-            <span className="flex items-center gap-2"><User className="h-4 w-4 text-primary-400" /> {blog.author || 'Longwell Team'}</span>
-            <span className="flex items-center gap-2"><Calendar className="h-4 w-4 text-primary-400" /> {new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-            <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary-400" /> {blog.readTime}</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Content Section */}
-      <section className="relative -mt-12 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 z-10">
-        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8 sm:p-12 lg:p-16">
-          
-          {/* Featured Image */}
+    <div className="bg-slate-50 min-h-screen pb-24 flex items-start justify-center pt-12">
+      <div className="w-full max-w-3xl px-4">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-lg overflow-hidden">
+          {/* Top image */}
           {blog.imageUrl && (
-            <div className="relative h-[300px] sm:h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-12 shadow-sm border border-slate-100">
-              <img 
-                src={blog.imageUrl} 
-                alt={blog.title}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+            <div className="h-64 sm:h-80 md:h-96 w-full overflow-hidden">
+              <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover" />
             </div>
           )}
 
-          {/* Article Content */}
-          <article className="prose prose-slate prose-lg max-w-none prose-headings:font-bold prose-headings:text-slate-800 prose-a:text-primary-600 prose-img:rounded-xl">
-            {/* Split content by double line breaks to create paragraphs if HTML isn't used */}
-            {blog.content.split('\n\n').map((paragraph: string, idx: number) => (
-              <p key={idx} className="mb-6 leading-relaxed text-slate-600 whitespace-pre-wrap">
-                {paragraph}
-              </p>
-            ))}
-          </article>
+          <div className="p-6 md:p-8">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold text-slate-900 leading-tight mb-2">{blog.title}</h1>
+                <p className="text-sm text-slate-500">{blog.category} • {new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} • {blog.readTime}</p>
+              </div>
+              <div className="hidden md:flex items-center">
+                <Link href="/blog" className="inline-flex items-center px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white font-semibold rounded-full shadow-sm">Back to Blogs</Link>
+              </div>
+            </div>
+
+            <article className="prose prose-slate prose-lg max-w-none prose-headings:font-bold prose-headings:text-slate-800 prose-a:text-primary-600 prose-img:rounded-xl">
+              {blog.content.split('\n\n').map((paragraph: string, idx: number) => (
+                <p key={idx} className="mb-6 leading-relaxed text-slate-700 whitespace-pre-wrap">{paragraph}</p>
+              ))}
+            </article>
+
+            <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-4 text-sm text-slate-500">
+              <div className="flex items-center gap-4">
+                <span className="flex items-center gap-2"><User className="h-4 w-4 text-slate-400" /> {blog.author || 'Longwell Team'}</span>
+                <span className="flex items-center gap-2"><Calendar className="h-4 w-4 text-slate-400" /> {new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+              </div>
+              <div className="md:hidden">
+                <Link href="/blog" className="inline-flex items-center px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white font-semibold rounded-full shadow-sm">Back</Link>
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
