@@ -86,14 +86,17 @@ const seedInitialData = async () => {
 export const connectDB = async () => {
   try {
     const mongoUri = process.env.MONGO_URI || '';
+    if (!mongoUri) {
+      throw new Error('MONGO_URI environment variable is missing.');
+    }
     const conn = await mongoose.connect(mongoUri);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     
     // Seed initial data
     await seedInitialData();
   } catch (error: any) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
+    console.error(`Database Connection Error: ${error.message}`);
+    // Do not call process.exit(1) to prevent crashing the serverless container
   }
 };
 
