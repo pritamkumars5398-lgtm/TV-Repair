@@ -11,6 +11,8 @@ export default function AdminBlogsPage() {
   const [filterCategory, setFilterCategory] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState<any>(null);
+  const [isImageUploading, setIsImageUploading] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -78,6 +80,23 @@ export default function AdminBlogsPage() {
     saveMutation.mutate(formData);
   };
 
+  const handleImageUpload = async (file: File | null) => {
+    if (!file) return;
+    setImageUploadError(null);
+    setIsImageUploading(true);
+
+    try {
+      const payload = new FormData();
+      payload.append('image', file);
+      const response = await adminApi.uploadBlogImage(payload);
+      setFormData((prev) => ({ ...prev, imageUrl: response.imageUrl }));
+    } catch (error) {
+      setImageUploadError('Failed to upload image. Please try again.');
+    } finally {
+      setIsImageUploading(false);
+    }
+  };
+
   const allBlogs = data?.items || [];
   
   const blogs = filterCategory === 'All' 
@@ -87,56 +106,81 @@ export default function AdminBlogsPage() {
   const uniqueCategories = ['All', ...Array.from(new Set(allBlogs.map((b: any) => b.category)))];
 
   return (
-    <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-7xl mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-slate-800">Blog Management</h1>
-          <p className="text-xs text-slate-400 font-semibold">Manage your website's blog posts.</p>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="grid gap-6 xl:grid-cols-[1.8fr_auto]">
+        <div className="rounded-[1rem] border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">Blog Management</h1>
+              <p className="mt-2 text-sm text-slate-500 max-w-2xl">Manage posts, upload images, and keep the admin blog table neat and easy to scan.</p>
+            </div>
+            <button 
+              onClick={handleAddNew}
+              className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold px-4 py3 rounded-xl shadow-sm transition-all"
+            >
+              <Plus className="h-4 w-4" /> Add New Blog
+            </button>
+          </div>
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-[11px] uppercase tracking-[0.24em] text-slate-500">Total posts</p>
+              <p className="mt-3 text-3xl font-semibold text-slate-900">{allBlogs.length}</p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-[11px] uppercase tracking-[0.24em] text-slate-500">Drafts</p>
+              <p className="mt-3 text-3xl font-semibold text-slate-900">{allBlogs.filter((item: any) => item.status === 'DRAFT').length}</p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-[11px] uppercase tracking-[0.24em] text-slate-500">Featured</p>
+              <p className="mt-3 text-3xl font-semibold text-slate-900">{allBlogs.filter((item: any) => item.featured).length}</p>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+
+        <div className="rounded-[1rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-[0.24em] mb-4">Filter by category</h2>
           <select 
             value={filterCategory} 
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="border border-slate-200 bg-white rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-600 focus:ring-1 focus:ring-primary-500 outline-none cursor-pointer"
+            className="w-full border border-slate-200 bg-slate-50 rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
           >
             {uniqueCategories.map((cat: any) => (
               <option key={cat} value={cat}>{cat}</option>
             ))}
           </select>
-          <button 
-            onClick={handleAddNew}
-            className="flex items-center gap-1.5 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm hover:shadow whitespace-nowrap transition-all"
-          >
-            <Plus className="h-4 w-4" /> Add New Blog
-          </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
-        <table className="w-full text-xs text-left">
-          <thead className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50 border-b border-slate-200">
+      <div className="bg-white rounded-[1rem] border border-slate-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm text-left">
+          <thead className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 bg-slate-50 border-b border-slate-200">
             <tr>
+              <th className="px-4 py-3 w-12">Image</th>
               <th className="px-4 py-3">Title</th>
               <th className="px-4 py-3">Category</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="bg-white divide-y divide-slate-200">
             {isLoading ? (
-              <tr><td colSpan={4} className="text-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary-500 mx-auto" /></td></tr>
+              <tr><td colSpan={5} className="text-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary-500 mx-auto" /></td></tr>
             ) : blogs.length === 0 ? (
-              <tr><td colSpan={4} className="text-center py-12 text-slate-400 font-semibold">No blogs found.</td></tr>
+              <tr><td colSpan={5} className="text-center py-12 text-slate-400 font-semibold">No blogs found.</td></tr>
             ) : (
               blogs.map((blog: any) => (
-                <tr key={blog.id} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="px-4 py-3 font-semibold text-slate-800">{blog.title}</td>
-                  <td className="px-4 py-3 font-semibold text-slate-500">{blog.category}</td>
+                <tr key={blog.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-3">
+                    <img src={blog.imageUrl || 'https://images.unsplash.com/photo-1514489383739-55b8e387a112?w=60&h=60&fit=crop'} alt="blog" className="h-10 w-10 rounded object-cover" />
+                  </td>
+                  <td className="px-4 py-3 font-medium text-slate-900">{blog.title}</td>
+                  <td className="px-4 py-3 text-slate-600 text-sm">{blog.category}</td>
                   <td className="px-4 py-3">
                     <button 
                       onClick={() => saveMutation.mutate({ ...blog, status: blog.status === 'APPROVED' ? 'DRAFT' : 'APPROVED' })}
                       disabled={saveMutation.isPending}
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-all ${blog.status === 'APPROVED' ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100' : 'bg-yellow-50 text-yellow-705 border-yellow-250 hover:bg-yellow-100'}`}
+                      className={`px-2 py-1 rounded text-xs font-semibold border transition-all ${blog.status === 'APPROVED' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'}`}
                       title="Click to toggle status"
                     >
                       {blog.status}
@@ -144,8 +188,8 @@ export default function AdminBlogsPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-1">
-                      <button onClick={() => handleEdit(blog)} className="text-blue-600 hover:text-blue-800 p-1.5 hover:bg-slate-100 rounded-md"><Edit className="h-3.5 w-3.5" /></button>
-                      <button onClick={() => { if(confirm('Are you sure?')) deleteMutation.mutate(blog.id); }} className="text-red-600 hover:text-red-800 p-1.5 hover:bg-slate-100 rounded-md"><Trash2 className="h-3.5 w-3.5" /></button>
+                      <button onClick={() => handleEdit(blog)} className="p-1.5 text-slate-600 hover:bg-slate-100 rounded transition" title="Edit"><Edit className="h-4 w-4" /></button>
+                      <button onClick={() => { if(confirm('Are you sure?')) deleteMutation.mutate(blog.id); }} className="p-1.5 text-red-600 hover:bg-red-100 rounded transition" title="Delete"><Trash2 className="h-4 w-4" /></button>
                     </div>
                   </td>
                 </tr>
@@ -153,6 +197,7 @@ export default function AdminBlogsPage() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {isModalOpen && (
@@ -174,7 +219,7 @@ export default function AdminBlogsPage() {
                   <select 
                     value={formData.category} 
                     onChange={e => setFormData({...formData, category: e.target.value})} 
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary-500/20 bg-white font-medium"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary-500/20 font-medium"
                   >
                     <option value="Technology">Technology</option>
                     <option value="Business">Business</option>
@@ -189,6 +234,32 @@ export default function AdminBlogsPage() {
                 </div>
               </div>
               <div>
+                <label className="block text-xs font-bold text-slate-500 mb-2">Upload Image</label>
+                <div className="border border-dashed border-slate-300 rounded-lg bg-slate-50 p-3">
+                  <label htmlFor="blog-image" className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded cursor-pointer hover:bg-slate-50 transition text-sm font-medium text-slate-700">
+                    <Plus className="h-4 w-4" /> Choose file
+                  </label>
+                  <input
+                    id="blog-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e.target.files?.[0] ?? null)}
+                    className="sr-only"
+                  />
+                  <p className="text-xs text-slate-500 mt-2">PNG, JPG (Max 1200x800)</p>
+                </div>
+                {isImageUploading && <p className="mt-1 text-xs text-blue-600">Uploading...</p>}
+                {imageUploadError && <p className="mt-1 text-xs text-red-600">{imageUploadError}</p>}
+              </div>
+              {formData.imageUrl && (
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">Preview</label>
+                  <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-100">
+                    <img src={formData.imageUrl} alt="Blog preview" className="h-40 w-full object-cover" />
+                  </div>
+                </div>
+              )}
+              <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1">Content</label>
                 <textarea required rows={4} value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary-500/20 font-medium resize-none"></textarea>
               </div>
@@ -201,7 +272,7 @@ export default function AdminBlogsPage() {
                   </select>
                 </div>
                 <label className="flex items-center gap-1.5 font-bold text-slate-600 cursor-pointer">
-                  <input type="checkbox" checked={formData.featured} onChange={e => setFormData({...formData, featured: e.target.checked})} className="rounded border-slate-350 text-primary-600 focus:ring-primary-500/20" />
+                  <input type="checkbox" checked={formData.featured} onChange={e => setFormData({...formData, featured: e.target.checked})} className="rounded border-slate-300 text-primary-600 focus:ring-primary-500/20" />
                   Featured Post
                 </label>
               </div>
