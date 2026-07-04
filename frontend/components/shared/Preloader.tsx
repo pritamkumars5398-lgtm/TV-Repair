@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 export function Preloader() {
   const [loading, setLoading] = useState(true);
@@ -58,21 +59,28 @@ export function Preloader() {
       <div className="relative flex flex-col items-center z-10 w-full max-w-sm px-8">
 
         {/* Animated Rings & Logo */}
-        <div className="relative flex items-center justify-center w-20 h-20 mb-8">
+        <div className="relative flex items-center justify-center w-24 h-24 mb-6">
           <div className="absolute inset-0 rounded-full border-t-2 border-r-2 border-primary-500/80 animate-[spin_1.5s_linear_infinite]" />
           <div className="absolute inset-2 rounded-full border-b-2 border-l-2 border-cyan-400/80 animate-[spin_2s_linear_infinite_reverse]" />
           <div className="absolute inset-4 bg-primary-600/20 rounded-full blur-md animate-pulse" />
-          <span className="text-3xl font-black text-white relative z-10">L</span>
+          <div className="relative z-10 w-12 h-12 flex items-center justify-center">
+            <Image
+              src="/logo.png"
+              alt="Longwell Electronics"
+              width={80}
+              height={80}
+              className="object-contain brightness-0 invert"
+              priority
+            />
+          </div>
         </div>
 
         {/* Brand Text */}
-        <div className="text-center mb-10 overflow-hidden">
-          <h1 className="text-2xl md:text-3xl font-black tracking-[0.2em] text-white uppercase mb-1">
-            Longwell
+        <div className="text-center mb-10">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-wide font-display">
+            <span className="text-white">RC Repair</span>
+            <span className="text-orange-500">Cart</span>
           </h1>
-          <p className="text-[10px] text-cyan-400 tracking-[0.3em] uppercase">
-            Electronics
-          </p>
         </div>
 
         {/* Percentage & Bar */}
