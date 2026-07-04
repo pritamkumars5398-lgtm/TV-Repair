@@ -84,6 +84,11 @@ const seedInitialData = async () => {
 };
 
 export const connectDB = async () => {
+  // If already connected or connecting, do not re-establish connection
+  if (mongoose.connection.readyState >= 1) {
+    return;
+  }
+
   try {
     const mongoUri = process.env.MONGO_URI || '';
     if (!mongoUri) {
@@ -92,8 +97,10 @@ export const connectDB = async () => {
     const conn = await mongoose.connect(mongoUri);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     
-    // Seed initial data
-    await seedInitialData();
+    // Only seed initial data in development and if it hasn't been seeded
+    if (process.env.NODE_ENV !== 'production') {
+      await seedInitialData();
+    }
   } catch (error: any) {
     console.error(`Database Connection Error: ${error.message}`);
     // Do not call process.exit(1) to prevent crashing the serverless container
