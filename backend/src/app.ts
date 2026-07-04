@@ -6,7 +6,8 @@ import path from 'path';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import apiRoutes from './routes';
-import { connectDB } from './config/db';
+import mongoose from 'mongoose';
+import { connectDB, getDbError } from './config/db';
 
 // Connect to Database
 connectDB();
@@ -31,7 +32,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // Default Route
 app.get('/', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'ok', message: 'TV Repair CRM API is running' });
+  res.status(200).json({ 
+    status: 'ok', 
+    message: 'TV Repair CRM API is running',
+    database: {
+      readyState: mongoose.connection.readyState,
+      connected: mongoose.connection.readyState === 1,
+      error: getDbError(),
+    }
+  });
 });
 
 // Mount API Routes
