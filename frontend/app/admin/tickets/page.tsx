@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Loader2, ChevronLeft, ChevronRight, Ticket as TicketIcon } from 'lucide-react';
+import { Search, Loader2, ChevronLeft, ChevronRight, ChevronDown, Ticket as TicketIcon } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { adminApi } from '@/lib/api/admin';
@@ -119,11 +119,14 @@ export default function AdminTicketsPage() {
                     {ticket.technicianName ?? <span className="text-slate-300 italic">Unassigned</span>}
                   </td>
                   <td className="px-4 py-3">
-                    <select value={ticket.status}
-                      onChange={(e) => updateMutation.mutate({ id: ticket.id, status: e.target.value })}
-                      className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-transparent cursor-pointer focus:ring-1 focus:ring-cyan-500/25 appearance-none text-center ${STATUS_COLORS[ticket.status]}`}>
-                      {ALL_STATUSES.map((s) => <option key={s} value={s} className="bg-white text-slate-800 font-normal">{STATUS_LABELS[s]}</option>)}
-                    </select>
+                    <div className="relative inline-block">
+                      <select value={ticket.status}
+                        onChange={(e) => updateMutation.mutate({ id: ticket.id, status: e.target.value })}
+                        className={`text-[10px] font-bold pl-2.5 pr-6 py-0.5 rounded-full border border-transparent cursor-pointer focus:ring-1 focus:ring-cyan-500/25 appearance-none text-left ${STATUS_COLORS[ticket.status]}`}>
+                        {ALL_STATUSES.map((s) => <option key={s} value={s} className="bg-white text-slate-800 font-normal">{STATUS_LABELS[s]}</option>)}
+                      </select>
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none opacity-60" />
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     {ticket.scheduledAt ? (
