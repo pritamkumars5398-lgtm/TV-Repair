@@ -14,8 +14,12 @@ export const authAdmin = async (req: Request, res: Response): Promise<void> => {
       $or: [{ email: loginField }, { phone: loginField }]
     });
 
-    // Seed default admin if it doesn't exist (Fixed credentials as requested)
-    if (!admin && (email === 'admin@gmail.com' || phone === '9876543210') && password === 'admin123') {
+    // Check if default admin exists by EITHER email OR phone to prevent duplicate key errors
+    let defaultAdmin = await Admin.findOne({
+      $or: [{ email: 'admin@gmail.com' }, { phone: '9876543210' }]
+    });
+
+    if (!defaultAdmin && (email === 'admin@gmail.com' || phone === '9876543210') && password === 'admin123') {
       admin = await Admin.create({
         name: 'System Admin',
         email: 'admin@gmail.com',
@@ -23,6 +27,14 @@ export const authAdmin = async (req: Request, res: Response): Promise<void> => {
         password: 'admin123',
         role: 'admin',
       });
+    } else if (defaultAdmin && (email === 'admin@gmail.com' || phone === '9876543210')) {
+      admin = defaultAdmin;
+      
+      // Update email if it's missing
+      if (!admin.email) {
+        admin.email = 'admin@gmail.com';
+        await admin.save();
+      }
     }
 
     // Assuming we have added `.matchPassword` to the Admin schema methods
