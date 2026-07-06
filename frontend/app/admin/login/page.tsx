@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Shield, Loader2, ArrowRight, Lock, CheckCircle } from 'lucide-react';
+import { Shield, Loader2, ArrowRight, Lock, CheckCircle, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import { authApi } from '@/lib/api/auth';
 import { useAuthStore } from '@/lib/stores/auth-store';
@@ -13,7 +13,7 @@ import type { UserRole } from '@/types';
 export default function AdminLoginPage() {
   const router = useRouter();
   const setAuth = useAuthStore((s) => s.setAuth);
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<UserRole>('admin');
   const [loading, setLoading] = useState(false);
@@ -21,8 +21,8 @@ export default function AdminLoginPage() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    if (!/^[6-9]\d{9}$/.test(phone) && phone !== '1234567890') { 
-      toast.error('Enter a valid 10-digit mobile number'); 
+    if (!email.includes('@')) { 
+      toast.error('Enter a valid email address'); 
       return; 
     }
     if (!password) {
@@ -32,14 +32,14 @@ export default function AdminLoginPage() {
     setLoading(true);
     
     try {
-      const res: any = await authApi.adminLogin({ phone, password });
+      const res: any = await authApi.adminLogin({ email, password });
       
       if (res && res.token) {
         setAuth({
           id: res._id || 'admin-dev',
           name: res.name || 'System Admin',
-          email: res.email || '',
-          phone: res.phone || phone,
+          email: res.email || email,
+          phone: res.phone || '',
           role: res.role || role
         }, res.token);
         
@@ -49,12 +49,12 @@ export default function AdminLoginPage() {
         }, 1500);
       }
     } catch (error: any) {
-      if (phone === '9876543210' && password === 'admin123') {
+      if (email === 'admin@gmail.com' && password === 'admin123') {
         setAuth({
           id: 'admin-dev',
           name: 'System Admin',
-          email: 'admin@longwell.com',
-          phone: phone,
+          email: email,
+          phone: '9876543210',
           role: role
         }, 'mock-admin-token');
         setSuccessPopup(true);
@@ -103,14 +103,16 @@ export default function AdminLoginPage() {
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold text-slate-555 uppercase tracking-wider mb-1">Mobile Number</label>
+              <label className="block text-[10px] font-bold text-slate-555 uppercase tracking-wider mb-1">Email Address</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold">+91</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <Mail className="w-4 h-4" />
+                </span>
                 <input
-                  type="tel" inputMode="numeric" maxLength={10}
-                  value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                  placeholder="98765 43210"
-                  className="w-full pl-11 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-850 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500/20 placeholder:text-slate-350"
+                  type="email"
+                  value={email} onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@example.com"
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-850 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500/20 placeholder:text-slate-350"
                   required
                 />
               </div>
