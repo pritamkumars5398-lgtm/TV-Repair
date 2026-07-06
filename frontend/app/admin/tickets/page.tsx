@@ -8,7 +8,7 @@ import { adminApi } from '@/lib/api/admin';
 import type { Ticket, TicketStatus } from '@/types';
 
 const STATUS_LABELS: Record<TicketStatus, string> = {
-  tv_received:         'TV Received',
+  tv_received:         'Received',
   diagnosis_completed: 'Diagnosed',
   parts_ordered:       'Parts Ordered',
   repair_in_progress:  'In Progress',
@@ -125,8 +125,29 @@ export default function AdminTicketsPage() {
                       {ALL_STATUSES.map((s) => <option key={s} value={s} className="bg-white text-slate-800 font-normal">{STATUS_LABELS[s]}</option>)}
                     </select>
                   </td>
-                  <td className="px-4 py-3 text-slate-400 font-semibold">
-                    {ticket.scheduledAt ? new Date(ticket.scheduledAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                  <td className="px-4 py-3">
+                    {ticket.scheduledAt ? (
+                      <div className="space-y-0.5">
+                        <p className="font-semibold text-slate-800">
+                          {new Date(ticket.scheduledAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </p>
+                        <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Scheduled</p>
+                      </div>
+                    ) : ticket.preferredDate ? (
+                      <div className="space-y-0.5">
+                        <p className="font-semibold text-slate-700">
+                          {ticket.preferredDate} at {ticket.preferredTime}
+                        </p>
+                        <p className="text-[10px] text-amber-600 font-bold uppercase tracking-wider">Preferred Slot</p>
+                      </div>
+                    ) : (
+                      <span className="text-slate-400 font-semibold">—</span>
+                    )}
+                    {ticket.address && (
+                      <p className="text-[10px] text-slate-400 font-medium truncate max-w-[200px] mt-1" title={ticket.address}>
+                        {ticket.address}
+                      </p>
+                    )}
                   </td>
                 </tr>
               ))}
