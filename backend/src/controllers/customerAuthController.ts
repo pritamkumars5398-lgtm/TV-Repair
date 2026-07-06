@@ -13,7 +13,7 @@ const generateToken = (id: string): string => {
 // @access  Public
 export const registerCustomer = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, phone, password } = req.body;
 
     const customerExists = await Customer.findOne({ email });
 
@@ -25,6 +25,7 @@ export const registerCustomer = async (req: Request, res: Response): Promise<voi
     const customer = await Customer.create({
       name,
       email,
+      phone,
       password,
     });
 
@@ -33,6 +34,7 @@ export const registerCustomer = async (req: Request, res: Response): Promise<voi
         id: customer.id,
         name: customer.name,
         email: customer.email,
+        phone: customer.phone,
         token: generateToken(customer.id),
       });
     } else {
@@ -57,6 +59,7 @@ export const loginCustomer = async (req: Request, res: Response): Promise<void> 
         id: customer.id,
         name: customer.name,
         email: customer.email,
+        phone: customer.phone,
         token: generateToken(customer.id),
       });
     } else {

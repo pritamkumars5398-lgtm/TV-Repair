@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Loader2, UserPlus, Mail, Lock, User } from 'lucide-react';
+import { Loader2, UserPlus, Mail, Lock, User, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 import { publicApi } from '@/lib/api/public';
 import User2 from '../../../assets/img/User1 (2).png';
@@ -12,7 +12,7 @@ import User2 from '../../../assets/img/User1 (2).png';
 export default function WebsiteRegisterPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
 
   function update(field: keyof typeof form, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -22,6 +22,7 @@ export default function WebsiteRegisterPage() {
     e.preventDefault();
     if (form.name.length < 2) { toast.error('Enter your full name'); return; }
     if (!form.email.includes('@')) { toast.error('Enter a valid email address'); return; }
+    if (!/^[6-9]\d{9}$/.test(form.phone)) { toast.error('Enter a valid 10-digit mobile number'); return; }
     if (form.password.length < 6) { toast.error('Password must be at least 6 characters'); return; }
     setLoading(true);
 
@@ -104,6 +105,24 @@ export default function WebsiteRegisterPage() {
                     value={form.email}
                     onChange={(e) => update('email', e.target.value)}
                     placeholder="rajesh@example.com"
+                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500/20 text-slate-850 placeholder:text-slate-350"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-505 uppercase tracking-wider mb-1">Mobile Number</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                    <Phone className="w-4 h-4" />
+                  </span>
+                  <input
+                    type="tel"
+                    value={form.phone}
+                    onChange={(e) => update('phone', e.target.value.replace(/\D/g, ''))}
+                    placeholder="9876543210"
+                    maxLength={10}
                     className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500/20 text-slate-850 placeholder:text-slate-350"
                     required
                   />
