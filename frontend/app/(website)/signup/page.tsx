@@ -44,10 +44,10 @@ export default function WebsiteRegisterPage() {
           src={User2}
           alt="Premium Service"
           fill
-          className="object-cover opacity-80"
+          className="object-cover opacity-100"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+        <div className="absolute inset-0 bg-black/40" />
 
         <div className="absolute bottom-12 left-12 right-12 z-10 text-white animate-in slide-in-from-bottom-4 duration-500 fade-in">
           <div className="inline-block px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-bold mb-4">
@@ -64,64 +64,64 @@ export default function WebsiteRegisterPage() {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 bg-slate-55 pointer-events-auto bg-slate-50 relative overflow-hidden">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-slate-50 relative overflow-hidden">
         {/* Subtle Background Grid */}
         <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
 
-        <div className="w-full max-w-xs relative z-10 animate-in fade-in slide-in-from-right-4 duration-500">
-          <div className="mb-6 text-center lg:text-left">
-            <h1 className="text-xl font-bold text-slate-805 tracking-tight">Create Account</h1>
-            <p className="mt-1 text-xs text-slate-400 font-semibold">Get started with our premium service today.</p>
+        <div className="w-full max-w-md relative z-10 animate-in fade-in slide-in-from-right-4 duration-500">
+          <div className="mb-8 text-center lg:text-left">
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Create Account</h1>
+            <p className="mt-2 text-sm text-slate-500 font-medium">Get started with our premium service today.</p>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 space-y-4">
-            <form onSubmit={handleRegister} className="space-y-4">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8 space-y-6">
+            <form onSubmit={handleRegister} className="space-y-5">
               <div>
-                <label className="block text-[10px] font-bold text-slate-505 uppercase tracking-wider mb-1">Full Name</label>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Full Name</label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                    <User className="w-4 h-4" />
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                    <User className="w-5 h-5" />
                   </span>
                   <input
                     type="text"
                     value={form.name}
                     onChange={(e) => update('name', e.target.value)}
                     placeholder="Rajesh Kumar"
-                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500/20 text-slate-850 placeholder:text-slate-350"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800 placeholder:text-slate-400"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-505 uppercase tracking-wider mb-1">Email Address</label>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Email Address</label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                    <Mail className="w-4 h-4" />
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                    <Mail className="w-5 h-5" />
                   </span>
                   <input
                     type="email"
                     value={form.email}
                     onChange={(e) => update('email', e.target.value)}
                     placeholder="rajesh@example.com"
-                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500/20 text-slate-850 placeholder:text-slate-350"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800 placeholder:text-slate-400"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-505 uppercase tracking-wider mb-1">Password</label>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Password</label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                    <Lock className="w-4 h-4" />
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                    <Lock className="w-5 h-5" />
                   </span>
                   <input
                     type="password"
                     value={form.password}
                     onChange={(e) => update('password', e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500/20 text-slate-850 placeholder:text-slate-350"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800 placeholder:text-slate-400"
                     required
                     minLength={6}
                   />
@@ -131,17 +131,17 @@ export default function WebsiteRegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-1.5 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white font-bold py-2.5 rounded-lg text-xs transition-all shadow-sm disabled:opacity-60 mt-4"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white font-extrabold py-3.5 rounded-xl text-sm transition-all shadow-md hover:shadow-lg active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none mt-6"
               >
-                {loading ? <Loader2 className="h-4.5 w-4.5 animate-spin" /> : <><UserPlus className="h-4 w-4" /> Create Account</>}
+                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><UserPlus className="h-5 w-5" /> Create Account</>}
               </button>
             </form>
           </div>
 
-          <div className="mt-6 text-center">
-            <p className="text-xs font-semibold text-slate-400">
+          <div className="mt-8 text-center">
+            <p className="text-sm font-semibold text-slate-500">
               Already have an account?{' '}
-              <Link href="/login" className="text-primary-650 font-bold hover:text-cyan-650 transition-colors">
+              <Link href="/login" className="text-blue-600 font-bold hover:text-cyan-650 transition-colors">
                 Login here
               </Link>
             </p>

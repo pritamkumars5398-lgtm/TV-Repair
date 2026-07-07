@@ -15,6 +15,27 @@ import img1 from "../../../assets/img/Picture15.png";
 import img2 from "../../../assets/img/Picture16.png";
 import img3 from "../../../assets/img/Picture17.png";
 
+import icon1 from "../../../assets/img/icon1.png";
+import icon2 from "../../../assets/img/icon2.png";
+import icon3 from "../../../assets/img/icon3.png";
+import icon4 from "../../../assets/img/icon4.png";
+import icon5 from "../../../assets/img/icon5.png";
+import icon6 from "../../../assets/img/icon6.png";
+import icon7 from "../../../assets/img/icon7.png";
+import icon8 from "../../../assets/img/icon8.png";
+import icon9 from "../../../assets/img/icon9.png";
+import icon10 from "../../../assets/img/icon10.png";
+import icon11 from "../../../assets/img/icon11.png";
+import icon12 from "../../../assets/img/icon12.png";
+import icon13 from "../../../assets/img/icon13.png";
+import icon14 from "../../../assets/img/icon14.png";
+import icon15 from "../../../assets/img/icon15.png";
+import icon16 from "../../../assets/img/icon16.png";
+import icon17 from "../../../assets/img/icon17.png";
+import icon18 from "../../../assets/img/icon18.png";
+import icon19 from "../../../assets/img/icon19.png.jpg";
+import icon20 from "../../../assets/img/icon20png.png";
+
 const journey = [
   { year: '1984', title: 'Audio Cassettes' },
   { year: '1987', title: 'Push button phone' },
@@ -24,7 +45,7 @@ const journey = [
   { year: '2004', title: 'Multimedia home theater system' },
   { year: '2008', title: 'LED Bulb' },
   { year: '2014', title: 'Mobile phone' },
-  { year: '2018', title: 'LED TV, PCB of AC, Washing machine and other household electronics' },
+  { year: '2018', title: 'LED TV' },
 ];
 
 const infraFeatures = [
@@ -40,10 +61,10 @@ const infraFeatures = [
 ];
 
 const whyUs = [
-  'LONGWELL ELECTRONICS provides remarkable quality in products and services at best price. And our wide experience distinguishes us from others.',
+  'INCHELL CORPARATION provides remarkable quality in products and services at best price. And our wide experience distinguishes us from others.',
   'We have a team of well qualified and experienced service engineers.',
-  'Along with repair and manufacturing, Longwell Electronics is Expertise in import and export and marketing assistance for their client.',
-  'Longwell Electronics has experts to assist their clients how to reduce after sales cost.',
+  'Along with repair and manufacturing, Inchell Corparation is Expertise in import and export and marketing assistance for their client.',
+  'Inchell Corparation has experts to assist their clients how to reduce after sales cost.',
   'We have office in China also (SHENZHEN), so get Original Spare parts At BEST PRICE.'
 ];
 
@@ -62,30 +83,31 @@ const strengths = [
   'Development Source for LED TV Strip.',
   'Motherboard repair up to L4 level.',
   'Own CRM for device tracking and repaired Product life cycle management.',
-  'Reverse Logistics Management.'
+  'Reverse Logistics Management.',
+  '100% OQA Inspection & Quality Assurance.'
 ];
 
 const clientele = [
-  { name: 'INTEX', color: 'text-red-600 font-black text-2xl tracking-tighter uppercase' },
-  { name: 'AIWA', color: 'text-red-500 font-bold text-xl lowercase tracking-widest' },
-  { name: 'SANSUI', color: 'text-slate-800 font-bold text-xl uppercase tracking-widest' },
-  { name: 'BAJAJ', color: 'text-blue-800 font-bold text-lg bg-blue-50 px-2 rounded border border-blue-100' },
-  { name: 'ARGU', color: 'text-blue-500 font-black text-2xl tracking-tighter' },
-  { name: 'OSCAR', color: 'text-black font-black text-2xl uppercase tracking-tighter' },
-  { name: 'ZEBRONICS', color: 'text-black bg-yellow-400 px-3 py-1 font-bold text-lg uppercase rounded' },
-  { name: 'Zopper', color: 'text-slate-800 font-bold text-xl' },
-  { name: 'MODISH', color: 'text-red-800 font-serif text-xl uppercase' },
-  { name: 'VEEGO', color: 'text-purple-700 font-black text-2xl uppercase' },
-  { name: 'FOXSKY', color: 'text-white bg-black px-3 py-1 font-bold text-lg uppercase rounded' },
-  { name: 'amazon', color: 'text-black font-bold text-2xl lowercase border-b-4 border-orange-500 pb-0.5' },
-  { name: 'MELBON', color: 'text-black font-serif font-black text-xl uppercase' },
-  { name: 'croma', color: 'text-white bg-teal-600 px-4 py-1.5 font-bold text-lg lowercase tracking-widest rounded' },
-  { name: 'Flipkart', color: 'text-blue-600 font-bold text-2xl italic' },
-  { name: 'MURPHY', color: 'text-black font-bold text-xl uppercase italic border-2 border-green-600 px-2.5 py-0.5 rounded' },
-  { name: 'F&D', color: 'text-black font-black text-2xl italic' },
-  { name: 'Reliance digital', color: 'text-red-600 font-bold text-xl' },
-  { name: 'impex', color: 'text-white bg-red-600 px-3 py-1 font-bold text-xl lowercase rounded' },
-  { name: 'TMB', color: 'text-white bg-blue-600 px-4 py-1 font-bold text-lg rounded-lg' },
+  { name: 'INTEX', logo: icon1 },
+  { name: 'AIWA', logo: icon2 },
+  { name: 'SANSUI', logo: icon3 },
+  { name: 'BAJAJ', logo: icon4 },
+  { name: 'ARGU', logo: icon5 },
+  { name: 'OSCAR', logo: icon6 },
+  { name: 'ZEBRONICS', logo: icon7 },
+  { name: 'Zopper', logo: icon8 },
+  { name: 'MODISH', logo: icon9 },
+  { name: 'VEEGO', logo: icon10 },
+  { name: 'FOXSKY', logo: icon11 },
+  { name: 'amazon', logo: icon12 },
+  { name: 'MELBON', logo: icon13 },
+  { name: 'croma', logo: icon14 },
+  { name: 'Flipkart', logo: icon15 },
+  { name: 'MURPHY', logo: icon16 },
+  { name: 'F&D', logo: icon17 },
+  { name: 'Reliance digital', logo: icon18 },
+  { name: 'impex', logo: icon19 },
+  { name: 'TMB', logo: icon20 },
 ];
 
 export default function AboutPageClient() {
@@ -97,7 +119,7 @@ export default function AboutPageClient() {
     <div className="bg-slate-50 min-h-screen font-sans text-slate-800">
 
       {/* Premium Hero Section */}
-      <section className="relative pt-28 pb-32 overflow-hidden bg-[#020617] text-white border-b border-slate-800">
+      <section className="relative pt-28 pb-32 overflow-hidden bg-slate-50 text-slate-800 border-b border-slate-200">
         {/* Background Image & Overlay */}
         <div className="absolute inset-0">
           <Image
@@ -105,28 +127,28 @@ export default function AboutPageClient() {
             alt="Facility Background"
             fill
             priority
-            className="object-cover opacity-20 mix-blend-luminosity"
+            className="object-cover opacity-45"
           />
         </div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-300/30 via-[#020617]/90 to-[#020617]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-50/90 via-slate-50/45 to-transparent" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-[1fr_1fr] gap-12 items-center">
 
             {/* Left Content */}
             <div data-aos="fade-right">
-              <span className="inline-block px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 font-bold text-[10px] uppercase tracking-widest mb-4 border border-cyan-500/20">
+              <span className="inline-block px-3 py-1 rounded-full bg-primary-50 text-primary-700 font-bold text-[10px] uppercase tracking-widest mb-4 border border-primary-200">
                 About Us
               </span>
-              <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-5 leading-tight">
-                World class <span className="text-white bg-clip-text bg-gradient-to-r from-primary-400 to-cyan-400">manufacturing & repair</span> environment.
+              <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-5 leading-tight text-slate-900">
+                World class <span className="text-primary-600 bg-clip-text bg-gradient-to-r from-primary-600 to-cyan-600">manufacturing & repair</span> environment.
               </h1>
-              <p className="text-sm text-slate-400 mb-8 leading-relaxed font-medium max-w-lg">
-                LONGWELL ELECTRONICS has a highly trained team dedicated to providing comprehensive electronics excellence.
+              <p className="text-sm text-slate-600 mb-8 leading-relaxed font-medium max-w-lg">
+                INCHELL CORPARATION has a highly trained team dedicated to providing comprehensive electronics excellence.
               </p>
 
-              <div className="bg-white/5 border-l-2 border-cyan-400 p-4 rounded-r-xl backdrop-blur-md mb-8">
-                <p className="text-sm font-bold text-cyan-300 leading-snug">
+              <div className="bg-white border-l-2 border-primary-500 p-4 rounded-r-xl shadow-sm mb-8">
+                <p className="text-sm font-bold text-slate-700 leading-snug">
                   "Quality service and customer satisfaction, we believe the most."
                 </p>
               </div>
@@ -135,7 +157,7 @@ export default function AboutPageClient() {
                 <Link href="/book" className="px-6 py-3 bg-primary-600 text-white text-sm font-bold rounded-md hover:bg-primary-700 transition-all shadow-sm">
                   Book a Repair
                 </Link>
-                <Link href="/contact" className="px-6 py-3 bg-white/5 text-white text-sm font-bold rounded-md border border-white/10 hover:bg-white/10 transition-all">
+                <Link href="/contact" className="px-6 py-3 bg-white text-slate-700 text-sm font-bold rounded-md border border-slate-200 hover:bg-slate-50 transition-all">
                   Contact Us
                 </Link>
               </div>
@@ -143,8 +165,8 @@ export default function AboutPageClient() {
 
             {/* Right Content - Glassmorphism Card */}
             <div data-aos="fade-left" className="relative hidden lg:block">
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-xl">
-                <h3 className="text-lg font-extrabold text-white mb-5 border-b border-white/10 pb-3">Our Expertise</h3>
+              <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-xl shadow-slate-150/30">
+                <h3 className="text-lg font-extrabold text-slate-950 mb-5 border-b border-slate-100 pb-3">Our Expertise</h3>
                 <div className="space-y-4">
                   {[
                     { icon: Tv, text: 'Refurb and repair of LED TV' },
@@ -154,10 +176,10 @@ export default function AboutPageClient() {
                     { icon: Truck, text: 'Door to door pickup and drop service' },
                   ].map((item, i) => (
                     <div key={i} className="flex gap-3 items-center group">
-                      <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-primary-500/20 group-hover:border-primary-500/50 transition-colors">
-                        <item.icon className="w-4 h-4 text-primary-400 group-hover:text-cyan-300 transition-colors" />
+                      <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center shrink-0 border border-slate-100 group-hover:bg-primary-50 group-hover:border-primary-200 transition-colors">
+                        <item.icon className="w-4 h-4 text-slate-500 group-hover:text-primary-600 transition-colors" />
                       </div>
-                      <p className="text-slate-300 text-xs font-medium group-hover:text-white transition-colors">{item.text}</p>
+                      <p className="text-slate-600 text-xs font-medium group-hover:text-slate-900 transition-colors">{item.text}</p>
                     </div>
                   ))}
                 </div>
@@ -194,19 +216,19 @@ export default function AboutPageClient() {
             {/* Vision */}
             <div
               data-aos="fade-up"
-              className="rounded-2xl border border-slate-200 bg-slate-50 p-8 hover:border-primary-500 transition-all duration-300"
+              className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-primary-500 transition-all duration-300"
             >
-              <div className="mb-5 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-100">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-100">
 
                 </div>
 
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-600">
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600">
                   Our Vision
                 </span>
               </div>
 
-              <p className="text-lg font-semibold leading-8 text-slate-900">
+              <p className="text-sm font-semibold leading-relaxed text-slate-700">
                 To become the leading electronics repair company by delivering
                 reliable, high-quality and customer-focused repair solutions.
               </p>
@@ -216,19 +238,19 @@ export default function AboutPageClient() {
             <div
               data-aos="fade-up"
               data-aos-delay="100"
-              className="rounded-2xl border border-slate-200 bg-slate-50 p-8 hover:border-primary-500 transition-all duration-300"
+              className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-primary-500 transition-all duration-300"
             >
-              <div className="mb-5 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-100">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-100">
 
                 </div>
 
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-600">
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600">
                   Our Mission
                 </span>
               </div>
 
-              <p className="text-lg font-semibold leading-8 text-slate-900">
+              <p className="text-sm font-semibold leading-relaxed text-slate-700">
                 To provide world-class repair services for all major electronics
                 brands through skilled professionals, advanced technology and trusted
                 customer support.
@@ -530,7 +552,7 @@ export default function AboutPageClient() {
                     </div>
 
                     {/* Year Circle */}
-                    <div className="z-10 w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold text-lg flex items-center justify-center shadow-lg border-4 border-white">
+                    <div className="z-10 w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold text-lg flex items-center justify-center shadow-lg border-4 border-white shrink-0">
                       {item.year}
                     </div>
 
@@ -587,13 +609,15 @@ export default function AboutPageClient() {
               {clientele.map((client, index) => (
                 <div
                   key={index}
-                  className="flex flex-shrink-0 items-center justify-center h-28 w-48 sm:w-56 mx-3 rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                  className="flex flex-shrink-0 items-center justify-center h-20 w-44 mx-6"
                 >
-                  <span
-                    className={`${client.color} text-center px-4 font-bold tracking-wide grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition whitespace-normal`}
-                  >
-                    {client.name}
-                  </span>
+                  <Image
+                    src={client.logo}
+                    alt={client.name}
+                    width={140}
+                    height={60}
+                    className="max-h-16 w-auto object-contain transition duration-300 hover:scale-110"
+                  />
                 </div>
               ))}
             </div>
@@ -602,13 +626,15 @@ export default function AboutPageClient() {
               {clientele.map((client, index) => (
                 <div
                   key={`copy-${index}`}
-                  className="flex flex-shrink-0 items-center justify-center h-28 w-48 sm:w-56 mx-3 rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                  className="flex flex-shrink-0 items-center justify-center h-20 w-44 mx-6"
                 >
-                  <span
-                    className={`${client.color} text-center px-4 font-bold tracking-wide grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition whitespace-normal`}
-                  >
-                    {client.name}
-                  </span>
+                  <Image
+                    src={client.logo}
+                    alt={client.name}
+                    width={140}
+                    height={60}
+                    className="max-h-16 w-auto object-contain transition duration-300 hover:scale-110"
+                  />
                 </div>
               ))}
             </div>

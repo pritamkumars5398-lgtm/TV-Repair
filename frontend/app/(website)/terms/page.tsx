@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { Scale, FileSpreadsheet, ShieldAlert, Award, ChevronRight } from 'lucide-react';
 
 export const metadata = {
-  title: 'Terms of Service - Longwell Electronics',
-  description: 'Read the terms and conditions for TV repairs and electronics manufacturing services at Longwell Electronics.',
+  title: 'Terms of Service - Inchell Corparation',
+  description: 'Read the terms and conditions for TV repairs and electronics manufacturing services at Inchell Corparation.',
 };
 
 export default function TermsPage() {
@@ -21,7 +21,7 @@ export default function TermsPage() {
             Terms of Service
           </h1>
           <p className="text-slate-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-            Welcome to Longwell Electronics. Please read these terms and conditions carefully before booking any repair services or placing manufacturing orders.
+            Welcome to Inchell Corparation. Please read these terms and conditions carefully before booking any repair services or placing manufacturing orders.
           </p>
           <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-500">
             <span>Last Updated: July 4, 2026</span>
@@ -68,7 +68,7 @@ export default function TermsPage() {
                 <FileSpreadsheet className="w-5 h-5 text-blue-600" /> 1. Agreement to Terms
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                By accessing our website (<Link href="/" className="text-blue-600 font-semibold hover:underline">longwell.in</Link>), accessing the Customer Portal, or submitting a service booking, you agree to comply with and be bound by these Terms of Service. If you do not agree with any part of these terms, you should not access our services.
+                By accessing our website (<Link href="/" className="text-blue-600 font-semibold hover:underline">inchell.in</Link>), accessing the Customer Portal, or submitting a service booking, you agree to comply with and be bound by these Terms of Service. If you do not agree with any part of these terms, you should not access our services.
               </p>
             </div>
 
@@ -106,13 +106,13 @@ export default function TermsPage() {
                 <Award className="w-5 h-5 text-blue-600" /> 4. Limited Warranty Policy
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Longwell Electronics provides a warranty of **up to 90 days** on spare parts replaced during our repair service, unless specified otherwise in your invoice.
+                Inchell Corparation provides a warranty of **up to 90 days** on spare parts replaced during our repair service, unless specified otherwise in your invoice.
               </p>
               <p className="text-xs text-slate-600 leading-relaxed font-semibold text-slate-900">
                 What is NOT covered under warranty:
               </p>
               <ul className="list-disc pl-5 text-xs text-slate-600 space-y-2">
-                <li>Physical damage, liquid logs (water damage), electrical surges, or tampering/repair by anyone outside of Longwell Electronics.</li>
+                <li>Physical damage, liquid logs (water damage), electrical surges, or tampering/repair by anyone outside of Inchell Corparation.</li>
                 <li>Issues unrelated to the specific spare parts replaced during the original repair.</li>
               </ul>
             </div>
@@ -123,7 +123,7 @@ export default function TermsPage() {
                 <ShieldAlert className="w-5 h-5 text-blue-600" /> 5. Limitation of Liability
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                To the maximum extent permitted by law, Longwell Electronics and its directors, employees, or partners shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including data loss (e.g. settings or channel configurations), loss of use, or hardware damage arising out of the inspection, diagnostic, or repair process.
+                To the maximum extent permitted by law, Inchell Corparation and its directors, employees, or partners shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including data loss (e.g. settings or channel configurations), loss of use, or hardware damage arising out of the inspection, diagnostic, or repair process.
               </p>
             </div>
 
@@ -133,13 +133,13 @@ export default function TermsPage() {
                 <Scale className="w-5 h-5 text-blue-600" /> 6. Governing Law
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                These Terms of Service and any service contract entered into with Longwell Electronics are governed by and construed in accordance with the laws of India, and any disputes shall be subject to the exclusive jurisdiction of the courts in Bangalore, Karnataka.
+                These Terms of Service and any service contract entered into with Inchell Corparation are governed by and construed in accordance with the laws of India, and any disputes shall be subject to the exclusive jurisdiction of the courts in Bangalore, Karnataka.
               </p>
             </div>
 
             {/* Support section */}
             <div className="border-t border-slate-100 pt-6 text-xs text-slate-500 space-y-2">
-              <p>For inquiries regarding our Terms of Service, please contact us at <a href="mailto:support@longwell.com" className="text-blue-600 hover:underline">support@longwell.com</a>.</p>
+              <p>For inquiries regarding our Terms of Service, please contact us at <a href="mailto:support@repaircart.co.in" className="text-blue-600 hover:underline">support@repaircart.co.in</a>.</p>
             </div>
 
           </div>

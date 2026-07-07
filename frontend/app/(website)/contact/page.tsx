@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { Phone, Mail, MapPin, Clock, MessageCircle, CheckCircle2, ArrowRight, ShieldCheck, Star } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, MessageCircle, CheckCircle2, ArrowRight, ShieldCheck, Star, Truck, Award } from 'lucide-react';
 import { useState } from 'react';
 import { publicApi } from '@/lib/api/public';
 import { contactSchema, type ContactInput } from '@/lib/validations/booking';
@@ -23,15 +23,15 @@ export default function ContactPage() {
     }
   };
 
-  const wa = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '9811881117';
+  const wa = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '8586887887';
 
   const jsonLdSchema = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    name: 'Longwell Electronics',
-    url: 'https://www.longwellelectronics.com/contact',
-    telephone: '+919811881117',
-    email: 'imrankhanik8463@gmail.com',
+    name: 'Inchell Corparation',
+    url: 'https://www.inchellcorparation.com/contact',
+    telephone: '+918586887887',
+    email: 'support@repaircart.co.in',
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'C-295 Sector 10',
@@ -45,7 +45,7 @@ export default function ContactPage() {
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+919811881117',
+      telephone: '+918586887887',
       contactType: 'customer service',
       availableLanguage: ['en', 'hi'],
     },
@@ -69,22 +69,25 @@ export default function ContactPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSchema) }} />
-      
+
       {/* Hero section */}
-      <section className="relative overflow-hidden bg-slate-950 py-16 sm:py-20 font-sans">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-primary-950/40 via-slate-950 to-slate-950" />
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-650/10 rounded-full blur-[80px] pointer-events-none" />
-        <div className="relative mx-auto max-w-6xl px-4">
+      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50 py-16 sm:py-20 font-sans border-b border-slate-200/60">
+        {/* Technical Grid Pattern overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-primary-100/40 via-white to-white pointer-events-none" />
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1423662055905-359c27314d58?w=1600&q=80')] bg-cover bg-center opacity-25 pointer-events-none mix-blend-luminosity" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-100/20 rounded-full blur-[80px] pointer-events-none" />
+        <div className="relative mx-auto max-w-6xl px-4 z-10">
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-slate-200 backdrop-blur-md shadow-sm mb-4">
-                <ShieldCheck className="h-4 w-4 text-primary-400" />
-                <span>Fast response • Genuine parts • Doorstep service</span>
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary-150 bg-primary-50/50 px-3 py-1.5 text-[11px] font-extrabold text-primary-700 shadow-sm mb-5 backdrop-blur-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-pulse" />
+                <span>Doorstep Repair & Pickup Service</span>
               </div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl leading-tight">
-                Let’s get your device <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-orange-300">fixed.</span>
+              <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl leading-[1.1] mb-4">
+                Let’s get your<br />device <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-indigo-600">fixed.</span>
               </h1>
-              <p className="mt-4 text-sm leading-relaxed text-slate-350 font-normal max-w-lg">
+              <p className="mt-4 text-sm leading-relaxed text-slate-600 font-medium max-w-lg">
                 Whether you need a quick repair quote, an urgent service request, or a product question, our team is ready to help.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
@@ -92,30 +95,37 @@ export default function ContactPage() {
                   href={`https://wa.me/${wa}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow hover:bg-emerald-500 transition-all hover:-translate-y-0.5"
+                  className="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-6 py-3 text-xs font-extrabold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-500 hover:shadow-emerald-500/30 transition-all hover:-translate-y-0.5 active:scale-[0.98]"
                 >
-                  Chat on WhatsApp <MessageCircle className="ml-1.5 h-4 w-4" />
+                  Chat on WhatsApp <MessageCircle className="ml-1.5 h-4.5 w-4.5" />
                 </a>
                 <a
-                  href="tel:9811881117"
-                  className="inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/5 backdrop-blur-md px-5 py-2.5 text-xs font-bold text-white transition-all hover:bg-white/10 hover:border-white/30 hover:-translate-y-0.5"
+                  href="tel:8586887887"
+                  className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-xs font-extrabold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all hover:-translate-y-0.5 shadow-sm active:scale-[0.98]"
                 >
-                  Call Now <Phone className="ml-1.5 h-4 w-4" />
+                  Call Now <Phone className="ml-1.5 h-4.5 w-4.5 text-slate-400" />
                 </a>
               </div>
             </div>
 
-            <div className="rounded-xl border border-white/10 bg-slate-900/40 p-4 shadow-xl backdrop-blur-lg">
-              <div className="grid grid-cols-2 gap-3.5">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
+              <div className="grid grid-cols-2 gap-4">
                 {[
-                  { label: 'Response time', value: 'Within 2 hrs' },
-                  { label: 'Service Coverage', value: 'Doorstep & pickup' },
-                  { label: 'Warranty Policy', value: '30-day guarantee' },
-                  { label: 'Supported Brands', value: 'Samsung, LG, Sony' },
+                  { label: 'Response time', value: 'Within 2 hrs', desc: 'Fastest diagnostic TAT', icon: Clock, color: 'text-blue-650 bg-blue-50/70 border-blue-100' },
+                  { label: 'Service Coverage', value: 'Doorstep & pickup', desc: 'Across Mumbai & Noida', icon: Truck, color: 'text-indigo-650 bg-indigo-50/70 border-indigo-100' },
+                  { label: 'Warranty Policy', value: '30-day guarantee', desc: '100% genuine parts only', icon: ShieldCheck, color: 'text-emerald-655 bg-emerald-50/70 border-emerald-100' },
+                  { label: 'Supported Brands', value: 'Samsung, LG, Sony', desc: 'All leading OEM models', icon: Award, color: 'text-amber-655 bg-amber-50/70 border-amber-100' },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-lg border border-white/5 bg-slate-950/60 p-3.5">
+                  <div key={item.label} className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 transition-all duration-300 hover:shadow-md hover:bg-white hover:border-primary-100/50 group">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className={`w-8 h-8 rounded-lg border flex items-center justify-center ${item.color} transition-all group-hover:scale-110`}>
+                        <item.icon className="w-4.5 h-4.5" strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Verified</span>
+                    </div>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{item.label}</p>
-                    <p className="mt-1 text-sm font-bold text-white">{item.value}</p>
+                    <p className="mt-1 text-xs font-black text-slate-900 leading-tight">{item.value}</p>
+                    <p className="mt-1 text-[9px] text-slate-500 font-semibold">{item.desc}</p>
                   </div>
                 ))}
               </div>
@@ -129,7 +139,7 @@ export default function ContactPage() {
         <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-primary-100/30 rounded-full blur-3xl pointer-events-none" />
         <div className="mx-auto max-w-6xl px-4 relative">
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-            
+
             {/* Contact Form */}
             <div className="rounded-xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-sm">
               <div className="mb-6">
@@ -214,7 +224,7 @@ export default function ContactPage() {
 
             {/* Contacts & Map */}
             <div className="space-y-5">
-              
+
               {/* Simple Clean Map Container */}
               <div className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm h-48">
                 <iframe
@@ -231,28 +241,28 @@ export default function ContactPage() {
               </div>
 
               {/* Contact Details Card */}
-              <div className="rounded-xl border border-slate-900 bg-slate-950 p-5 text-white shadow-lg space-y-4">
-                <h3 className="text-sm font-bold border-b border-white/10 pb-2">Office Locations & Details</h3>
+              <div className="rounded-xl border border-slate-200 bg-white p-5 text-slate-800 shadow-md space-y-4">
+                <h3 className="text-sm font-bold border-b border-slate-100 pb-2 text-slate-900">Office Locations & Details</h3>
                 <div className="grid gap-3.5 text-xs">
                   {[
                     { icon: MapPin, label: 'Head Office', value: 'C-295 Sector 10 Noida, UP-201301' },
-                    { icon: MapPin, label: 'Branch Office', value: 'B115 Sector 5 Noida, UP-201301' },
-                    { icon: Phone, label: 'Phone Support', value: '+91 9811881117, 9811211948', href: 'tel:9811881117' },
-                    { icon: Mail, label: 'Email Support', value: 'imrankhanik8463@gmail.com', href: 'mailto:imrankhanik8463@gmail.com' },
+                    { icon: MapPin, label: 'Branch Office', value: 'B-115 Sector 5 Noida, UP-201301' },
+                    { icon: Phone, label: 'Phone Support', value: '+91 8586887887, 8586807887', href: 'tel:8586887887' },
+                    { icon: Mail, label: 'Email Support', value: 'support@repaircart.co.in , info@repaircart.in', href: 'mailto:support@repaircart.co.in' },
                     { icon: Clock, label: 'Business Hours', value: 'Mon–Sat: 9:00 AM – 7:00 PM' },
                   ].map((item) => (
-                    <div key={item.label} className="flex items-start gap-3 bg-white/5 p-3 rounded-lg border border-white/5 hover:bg-white/10 transition-colors">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white/10 shrink-0">
-                        <item.icon className="h-4.5 w-4.5 text-primary-400" strokeWidth={2} />
+                    <div key={item.label} className="flex items-start gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100 hover:bg-slate-100/50 transition-colors">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white border border-slate-100 shrink-0">
+                        <item.icon className="h-4.5 w-4.5 text-primary-600" strokeWidth={2} />
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{item.label}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{item.label}</p>
                         {item.href ? (
-                          <a href={item.href} className="mt-0.5 block font-semibold text-white hover:text-primary-300">
+                          <a href={item.href} className="mt-0.5 block font-semibold text-slate-800 hover:text-primary-600">
                             {item.value}
                           </a>
                         ) : (
-                          <p className="mt-0.5 font-semibold text-white">{item.value}</p>
+                          <p className="mt-0.5 font-semibold text-slate-800">{item.value}</p>
                         )}
                       </div>
                     </div>

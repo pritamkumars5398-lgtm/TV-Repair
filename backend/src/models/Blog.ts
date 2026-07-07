@@ -39,7 +39,7 @@ const blogSchema = new mongoose.Schema(
     },
     author: {
       type: String,
-      default: 'Longwell Team',
+      default: 'Inchell Team',
     }
   },
   {

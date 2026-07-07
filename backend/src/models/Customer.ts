@@ -21,6 +21,12 @@ const customerSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    resetPasswordOTP: {
+      type: String,
+    },
+    resetPasswordOTPExpires: {
+      type: Date,
+    },
   },
   {
     timestamps: true,

@@ -43,7 +43,7 @@ export function Navbar() {
           <Link href="/" className="shrink-0 flex items-center group">
             <Image
               src="/logo.png"
-              alt="Longwell Electronics"
+              alt="Inchell Corparation"
               width={160}
               height={55}
               className="h-9 w-auto transition-transform group-hover:scale-105"
@@ -86,7 +86,7 @@ export function Navbar() {
             </Link>
             <Link
               href="/book"
-              className="flex items-center gap-1.5 px-6 py-2.5 text-[13px] font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-full transition-all shadow-[0_0_15px_rgba(37,99,235,0.25)] hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:-translate-y-0.5"
+              className="flex items-center gap-1.5 px-6 py-2.5 text-[13px] font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-full transition-all  hover:-translate-y-0.5"
             >
               Book Repair <ArrowRight className="w-4 h-4" />
             </Link>

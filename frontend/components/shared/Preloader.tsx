@@ -66,7 +66,7 @@ export function Preloader() {
           <div className="relative z-10 w-12 h-12 flex items-center justify-center">
             <Image
               src="/logo.png"
-              alt="Longwell Electronics"
+              alt="Inchell Corparation"
               width={80}
               height={80}
               className="object-contain brightness-0 invert"

@@ -34,16 +34,23 @@ export default function BlogPageClient() {
   return (
     <div className="bg-slate-50 min-h-screen">
       {/* ── Hero / Featured Post ── */}
-      <section className="relative pt-32 pb-24 overflow-hidden bg-slate-950">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-900/40 via-slate-950 to-slate-950" />
+      <section className="relative pt-32 pb-24 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50 border-b border-slate-200/60">
+        {/* Technical Grid Pattern overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-100/40 via-white to-white pointer-events-none" />
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80')] bg-cover bg-center opacity-30 pointer-events-none" />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
           <div className="text-center mb-16" data-aos="fade-up">
-            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight text-white mb-6 leading-tight">
-              Insights & <span className="text-white bg-clip-text bg-gradient-to-r from-primary-400 to-orange-300">Perspectives</span>
+            <div className="inline-flex items-center justify-center gap-2 rounded-full border border-primary-150 bg-primary-50/50 px-3.5 py-1.5 text-[11px] font-extrabold text-primary-700 shadow-sm mb-6 backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-pulse" />
+              <span>Insights & Technical Articles</span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 mb-6 leading-[1.08]">
+              Insights & <span className="text-slate-900 font-extrabold">Perspectives</span>
             </h1>
-            <p className="text-slate-300 text-lg max-w-2xl mx-auto font-light leading-relaxed">
-              Dive into the latest industry trends, technical deep-dives, and company news from Longwell Electronics.
+            <p className="text-slate-655 text-sm md:text-base max-w-2xl mx-auto font-medium leading-relaxed">
+              Dive into the latest industry trends, technical deep-dives, and company news from Inchell Corparation.
             </p>
           </div>
 

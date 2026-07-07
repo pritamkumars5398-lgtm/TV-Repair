@@ -56,4 +56,16 @@ export const publicApi = {
   
   loginCustomer: (data: any) =>
     apiClient.post<any>('/customer-auth/login', data).then((r) => r.data),
+
+  forgotPassword: (data: any) =>
+    apiClient.post<any>('/customer-auth/forgot-password', data).then((r) => r.data),
+
+  sendOTP: (data: { email: string }) =>
+    apiClient.post<any>('/customer-auth/send-otp', data).then((r) => r.data),
+
+  verifyOTP: (data: { email: string; otp: string }) =>
+    apiClient.post<any>('/customer-auth/verify-otp', data).then((r) => r.data),
+
+  resetPasswordWithOTP: (data: { email: string; otp: string; newPassword?: string }) =>
+    apiClient.post<any>('/customer-auth/reset-password-otp', data).then((r) => r.data),
 };

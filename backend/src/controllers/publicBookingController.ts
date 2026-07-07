@@ -142,10 +142,13 @@ export const trackTicket = async (req: Request, res: Response): Promise<void> =>
     }
 
     res.json({
-      ticketId: ticket.ticketId,
-      status: ticket.status,
-      serviceType: ticket.serviceType,
-      statusHistory: ticket.statusHistory,
+      success: true,
+      data: {
+        ticketId: ticket.ticketId,
+        status: ticket.status,
+        serviceType: ticket.serviceType,
+        statusHistory: ticket.statusHistory,
+      }
     });
   } catch (error: any) {
     res.status(500).json({ message: error.message || 'Server Error' });

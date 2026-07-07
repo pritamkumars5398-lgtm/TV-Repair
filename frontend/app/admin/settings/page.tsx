@@ -20,11 +20,11 @@ export default function AdminSettingsPage() {
 
   const [general, setGeneral] = useState({
     businessName: 'RepairCart',
-    phone: '+91 98765 43210',
-    email: 'info@repaircart.in',
+    phone: '+91 8586887887 / 8586807887',
+    email: 'support@repaircart.co.in',
     address: '123 Service Street, Electronics Hub, Mumbai – 400001',
     workingHours: 'Mon–Sat: 9:00 AM – 7:00 PM',
-    whatsappNumber: '919876543210',
+    whatsappNumber: '918586887887',
   });
 
   const [notifications, setNotifications] = useState({

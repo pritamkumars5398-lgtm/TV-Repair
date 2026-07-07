@@ -64,7 +64,7 @@ function getBotResponse(input: string): Message {
     id: Date.now().toString(),
     from: 'bot',
     text: 'I didn\'t quite understand that. Would you like to talk to a human agent?',
-    cta: { label: 'Chat on WhatsApp →', href: `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919876543210'}` },
+    cta: { label: 'Chat on WhatsApp →', href: `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '918586887887'}` },
   };
 }
 

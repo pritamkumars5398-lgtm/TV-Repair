@@ -100,8 +100,8 @@ function Step1({ onNext }: { onNext: (data: Step1Input) => void }) {
 
   const minDate = new Date().toISOString().split('T')[0];
 
-  const inputClass = "w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 transition-all placeholder:text-slate-400";
-  const labelClass = "block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5";
+  const inputClass = "w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all placeholder:text-slate-400 focus:bg-white";
+  const labelClass = "block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2";
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -195,7 +195,7 @@ function Step1({ onNext }: { onNext: (data: Step1Input) => void }) {
       </div>
 
       <div className="pt-2">
-        <button type="submit" className="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-md transition-all flex items-center justify-center gap-2 shadow-sm">
+        <button type="submit" className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white text-xs font-extrabold rounded-xl transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-[0.98] uppercase tracking-wider shadow-md">
           Proceed to Address <ChevronRight className="h-4 w-4" />
         </button>
       </div>
@@ -225,8 +225,8 @@ function Step2({ onNext, onBack }: { onNext: (data: Step2Input) => void; onBack:
     onNext(data);
   };
 
-  const inputClass = "w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 transition-all placeholder:text-slate-400";
-  const labelClass = "block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5";
+  const inputClass = "w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all placeholder:text-slate-400 focus:bg-white";
+  const labelClass = "block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2";
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -279,10 +279,10 @@ function Step2({ onNext, onBack }: { onNext: (data: Step2Input) => void; onBack:
       </div>
 
       <div className="flex gap-3 pt-2">
-        <button type="button" onClick={onBack} className="flex-1 py-2.5 bg-slate-100 text-slate-600 text-sm font-bold rounded-md hover:bg-slate-200 transition-all flex items-center justify-center gap-1.5">
+        <button type="button" onClick={onBack} className="flex-1 py-3 bg-slate-100 text-slate-700 text-xs font-extrabold rounded-xl hover:bg-slate-200 transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider hover:-translate-y-0.5">
           <ChevronLeft className="h-4 w-4" /> Back
         </button>
-        <button type="submit" className="flex-[2] py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-md transition-all flex items-center justify-center gap-1.5 shadow-sm">
+        <button type="submit" className="flex-[2] py-3 bg-primary-600 hover:bg-primary-700 text-white text-xs font-extrabold rounded-xl transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider hover:-translate-y-0.5 shadow-md">
           Proceed to Payment <ChevronRight className="h-4 w-4" />
         </button>
       </div>
@@ -403,13 +403,13 @@ function Step3({ onBack }: { onBack: () => void }) {
       </div>
 
       <div className="flex gap-3 pt-2">
-        <button type="button" onClick={onBack} className="px-4 py-2.5 bg-slate-100 text-slate-600 text-sm font-bold rounded-md hover:bg-slate-200 transition-all flex items-center justify-center gap-1.5">
+        <button type="button" onClick={onBack} className="px-4 py-3 bg-slate-100 text-slate-700 text-xs font-extrabold rounded-xl hover:bg-slate-200 transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider hover:-translate-y-0.5">
           <ChevronLeft className="h-4 w-4" /> Back
         </button>
         <button
           onClick={handlePayment}
           disabled={isProcessing}
-          className="flex-1 py-2.5 bg-green-600 hover:bg-green-700 disabled:opacity-70 text-white text-sm font-bold rounded-md transition-all flex items-center justify-center shadow-sm"
+          className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-70 text-white text-xs font-extrabold rounded-xl transition-all flex items-center justify-center uppercase tracking-wider hover:-translate-y-0.5 shadow-md"
         >
           {isProcessing ? 'Processing...' : 'Pay ₹250 & Confirm'}
         </button>
@@ -427,12 +427,21 @@ export default function BookPage() {
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
 
       {/* Very clean minimalist hero */}
-      <section className="bg-slate-900 pt-24 pb-32 border-b border-slate-800">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-2">
+      <section className="relative bg-gradient-to-b from-slate-50 via-white to-slate-50 pt-24 pb-32 border-b border-slate-200/60 overflow-hidden">
+        {/* Technical Grid Pattern & Soft Radial Glow */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-100/40 via-white to-white pointer-events-none" />
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=1600&q=80')] bg-cover bg-center opacity-30 pointer-events-none" />
+
+        <div className="relative max-w-2xl mx-auto px-4 sm:px-6 text-center z-10">
+          <div className="inline-flex items-center justify-center gap-2 rounded-full border border-primary-150 bg-primary-50/50 px-3.5 py-1.5 text-[11px] font-extrabold text-primary-700 shadow-sm mb-5 backdrop-blur-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-pulse" />
+            <span>Book Repair Service in 60 seconds</span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-3 leading-none">
             Book your repair service
           </h1>
-          <p className="text-xs md:text-sm text-slate-400 font-medium">
+          <p className="text-xs md:text-sm text-slate-655 font-semibold">
             Expert technicians at your doorstep. Transparent pricing.
           </p>
         </div>
@@ -441,7 +450,7 @@ export default function BookPage() {
       {/* Clean Form Container */}
       <section className="pb-20 relative z-10 -mt-20">
         <div className="max-w-xl mx-auto px-4 sm:px-6">
-          <div className="bg-white rounded-xl shadow-lg shadow-slate-200/50 border border-slate-200 p-6 sm:p-8">
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200/80 p-6 sm:p-8">
             <StepIndicator currentStep={step} />
 
             <div className="mt-6">

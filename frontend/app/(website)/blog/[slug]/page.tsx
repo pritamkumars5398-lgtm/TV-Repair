@@ -61,7 +61,7 @@ export default function BlogDetailPage({ params }: { params: { slug: string } })
 
             <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-4 text-sm text-slate-500">
               <div className="flex items-center gap-4">
-                <span className="flex items-center gap-2"><User className="h-4 w-4 text-slate-400" /> {blog.author || 'Longwell Team'}</span>
+                <span className="flex items-center gap-2"><User className="h-4 w-4 text-slate-400" /> {blog.author || 'Inchell Team'}</span>
                 <span className="flex items-center gap-2"><Calendar className="h-4 w-4 text-slate-400" /> {new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
               </div>
               <div className="md:hidden">

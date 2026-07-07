@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { Shield, Lock, Eye, FileText, ChevronRight } from 'lucide-react';
 
 export const metadata = {
-  title: 'Privacy Policy - Longwell Electronics',
-  description: 'Learn about how Longwell Electronics collects, uses, and protects your personal information.',
+  title: 'Privacy Policy - Inchell Corparation',
+  description: 'Learn about how Inchell Corparation collects, uses, and protects your personal information.',
 };
 
 export default function PrivacyPage() {
@@ -21,7 +21,7 @@ export default function PrivacyPage() {
             Privacy Policy
           </h1>
           <p className="text-slate-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-            At Longwell Electronics, we prioritize the protection of your personal information and device data. Read below to understand our commitment to your privacy.
+            At Inchell Corparation, we prioritize the protection of your personal information and device data. Read below to understand our commitment to your privacy.
           </p>
           <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-500">
             <span>Last Updated: July 4, 2026</span>
@@ -68,7 +68,7 @@ export default function PrivacyPage() {
                 <FileText className="w-5 h-5 text-blue-600" /> 1. Introduction
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Welcome to Longwell Electronics (accessible at <Link href="/" className="text-blue-600 font-semibold hover:underline">longwell.in</Link>). We respect your privacy and are committed to protecting the personal data we collect from you or that you provide to us through our TV repair CRM, website, and customer portal.
+                Welcome to Inchell Corparation (accessible at <Link href="/" className="text-blue-600 font-semibold hover:underline">inchell.in</Link>). We respect your privacy and are committed to protecting the personal data we collect from you or that you provide to us through our TV repair CRM, website, and customer portal.
               </p>
               <p className="text-xs text-slate-600 leading-relaxed">
                 This Privacy Policy explains what information we collect, how we use it, the conditions under which we may disclose it to others, and how we keep it secure.
@@ -139,9 +139,9 @@ export default function PrivacyPage() {
                 If you have any questions about this Privacy Policy or how we handle your personal data, please reach out to us:
               </p>
               <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-2 text-xs">
-                <p><strong>Email:</strong> privacy@longwell.com</p>
-                <p><strong>Phone:</strong> +91 98765 43210</p>
-                <p><strong>Address:</strong> Longwell Electronics, 20,000 Sq. Ft. Facility, Bangalore, India</p>
+                <p><strong>Email:</strong> support@repaircart.co.in</p>
+                <p><strong>Phone:</strong> +91 8586887887 / 8586807887</p>
+                <p><strong>Address:</strong> Inchell Corparation, 20,000 Sq. Ft. Facility, Bangalore, India</p>
               </div>
             </div>
 

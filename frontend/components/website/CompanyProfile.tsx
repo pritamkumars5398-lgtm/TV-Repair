@@ -27,10 +27,10 @@ const infraFeatures = [
 ];
 
 const whyUs = [
-  'LONGWELL ELECTRONICS provides remarkable quality in products and services at best price. And our wide experience distinguishes us from others.',
+  'INCHELL CORPARATION provides remarkable quality in products and services at best price. And our wide experience distinguishes us from others.',
   'We have a team of well qualified and experienced service engineers.',
-  'Along with repair and manufacturing, Longwell Electronics is Expertise in import and export and marketing assistance for their client.',
-  'Longwell Electronics has experts to assist their clients how to reduce after sales cost.',
+  'Along with repair and manufacturing, Inchell Corparation is Expertise in import and export and marketing assistance for their client.',
+  'Inchell Corparation has experts to assist their clients how to reduce after sales cost.',
   'We have office in China also (SHENZHEN), so get Original Spare parts At BEST PRICE.'
 ];
 
@@ -42,7 +42,8 @@ const strengths = [
   'Development Source for LED TV Strip.',
   'Motherboard repair up to L4 level.',
   'Own CRM for device tracking and repaired Product life cycle management.',
-  'Reverse Logistics Management.'
+  'Reverse Logistics Management.',
+  '100% OQA Inspection & Quality Assurance.'
 ];
 
 export function CompanyProfile() {

@@ -53,7 +53,7 @@ export default function AdminLoginPage() {
         setAuth({
           id: 'admin-dev',
           name: 'System Admin',
-          email: 'admin@longwell.com',
+          email: 'admin@inchell.com',
           phone: phone,
           role: role
         }, 'mock-admin-token');

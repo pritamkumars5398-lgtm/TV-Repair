@@ -249,19 +249,19 @@ export default function ServicesPage() {
   return (
     <div className="bg-slate-50 min-h-screen font-sans">
       {/* Hero */}
-      <section className="relative bg-[#020617] text-white pt-28 pb-32 overflow-hidden border-b border-slate-800">
+      <section className="relative bg-slate-50 text-slate-800 pt-28 pb-32 overflow-hidden border-b border-slate-200">
         <div className="absolute inset-0">
-          <Image src={img1} alt="Services bg" fill priority className="object-cover opacity-20 mix-blend-luminosity" />
+          <Image src={img1} alt="Services bg" fill priority className="object-cover opacity-45" />
         </div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-primary-300/40 via-[#020617]/90 to-[#020617]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50/5 via-slate-50/20 to-slate-50/35" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center" data-aos="zoom-in">
-          <p className="text-primary-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-3">Discover</p>
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
-            Our <span className="text-white bg-clip-text bg-gradient-to-r from-primary-400 to-orange-300">Services</span> & Features
+          <p className="text-primary-700 text-[10px] font-bold uppercase tracking-[0.2em] mb-3">Discover</p>
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4 leading-tight text-slate-900">
+            Our <span className="text-primary-600 bg-clip-text bg-gradient-to-r from-primary-600 to-cyan-600">Services</span> & Features
           </h1>
-          <p className="text-slate-400 text-sm max-w-2xl mx-auto font-medium leading-relaxed">
-            From panel repairs and mobile servicing to high-scale speaker manufacturing, explore the robust infrastructure and unmatched USPs of Longwell Electronics.
+          <p className="text-slate-600 text-sm max-w-2xl mx-auto font-medium leading-relaxed">
+            From panel repairs and mobile servicing to high-scale speaker manufacturing, explore the robust infrastructure and unmatched USPs of Inchell Corparation.
           </p>
         </div>
       </section>
@@ -306,11 +306,11 @@ export default function ServicesPage() {
       </section>
 
       {/* Parts Discrepancy Management */}
-      <section className="relative py-24 bg-gradient-to-br from-slate-950 via-slate-900 to-black overflow-hidden">
+      <section className="relative py-24 bg-[#FAFBFD] border-t border-b border-slate-200/60 overflow-hidden">
 
         {/* Background Effects */}
-        <div className="absolute -top-40 -left-32 h-96 w-96 rounded-full bg-red-600/20 blur-[140px]" />
-        <div className="absolute -bottom-40 -right-32 h-96 w-96 rounded-full bg-blue-600/20 blur-[160px]" />
+        <div className="absolute -top-40 -left-32 h-96 w-96 rounded-full bg-blue-100/40 blur-[120px]" />
+        <div className="absolute -bottom-40 -right-32 h-96 w-96 rounded-full bg-blue-200/20 blur-[140px]" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6">
 
@@ -319,24 +319,24 @@ export default function ServicesPage() {
             {/* Left Side */}
             <div data-aos="fade-right">
 
-              <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-red-500/20 bg-red-500/10 mb-6">
-                <Video className="w-5 h-5 text-red-400" />
-                <span className="text-red-300 text-sm font-semibold tracking-wide">
+              <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-blue-200 bg-blue-50 mb-6">
+                <Video className="w-5 h-5 text-blue-600" />
+                <span className="text-blue-700 text-sm font-semibold tracking-wide">
                   Quality Control System
                 </span>
               </div>
 
-              <h2 className="text-5xl font-extrabold text-white leading-tight">
+              <h2 className="text-5xl font-extrabold text-slate-900 leading-tight">
                 Parts
                 <br />
-                <span className="text-red-400">
+                <span className="text-blue-600">
                   Discrepancy
                 </span>
                 <br />
                 Management
               </h2>
 
-              <p className="mt-6 text-lg text-slate-300 leading-8 max-w-xl">
+              <p className="mt-6 text-lg text-slate-600 leading-8 max-w-xl">
                 Our advanced inventory verification process ensures every component is
                 tracked with complete transparency, minimizing errors and delivering
                 accurate repair operations.
@@ -345,19 +345,19 @@ export default function ServicesPage() {
               <div className="mt-10 flex gap-8">
 
                 <div>
-                  <h3 className="text-4xl font-bold text-red-400">
+                  <h3 className="text-4xl font-bold text-blue-600">
                     99.9%
                   </h3>
-                  <p className="text-slate-400 mt-2">
+                  <p className="text-slate-500 mt-2 text-sm font-semibold">
                     Inventory Accuracy
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-4xl font-bold text-red-400">
+                  <h3 className="text-4xl font-bold text-blue-600">
                     24×7
                   </h3>
-                  <p className="text-slate-400 mt-2">
+                  <p className="text-slate-500 mt-2 text-sm font-semibold">
                     Tracking System
                   </p>
                 </div>
@@ -376,24 +376,24 @@ export default function ServicesPage() {
                   key={i}
                   data-aos="fade-up"
                   data-aos-delay={i * 100}
-                  className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-7 transition-all duration-500 hover:-translate-y-2 hover:border-red-500/40 hover:bg-white/10 hover:shadow-[0_20px_60px_rgba(239,68,68,0.2)]"
+                  className="group relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-7 transition-all duration-500 hover:-translate-y-2 hover:border-blue-500/30 hover:shadow-[0_20px_50px_rgba(37,99,235,0.06)]"
                 >
 
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-br from-red-500/10 via-transparent to-transparent" />
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent" />
 
                   <div className="relative">
 
-                    <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-5">
+                    <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mb-5">
 
                       {i === 2 ? (
-                        <Tags className="w-7 h-7 text-red-400" />
+                        <Tags className="w-7 h-7 text-blue-600" />
                       ) : (
-                        <SearchCode className="w-7 h-7 text-red-400" />
+                        <SearchCode className="w-7 h-7 text-blue-600" />
                       )}
 
                     </div>
 
-                    <p className="text-slate-200 leading-7">
+                    <p className="text-slate-700 leading-7 text-sm font-medium">
                       {text}
                     </p>
 
@@ -596,38 +596,38 @@ export default function ServicesPage() {
       </section>
 
       {/* USP Section */}
-      <section className="py-20 bg-[#020617] relative overflow-hidden text-white border-y border-slate-800">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary-900/20 via-[#020617] to-[#020617]" />
+      <section className="py-20 bg-[#FAFBFD] relative overflow-hidden text-slate-900 border-y border-slate-200/60">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-100/30 via-[#FAFBFD] to-[#FAFBFD]" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div data-aos="fade-right">
-              <h2 className="text-3xl font-extrabold mb-4">Our <span className="text-primary-400">USP</span></h2>
-              <p className="text-slate-400 text-sm font-medium mb-6 leading-relaxed">
+              <h2 className="text-3xl font-extrabold mb-4 text-slate-900">Our <span className="text-blue-600">USP</span></h2>
+              <p className="text-slate-600 text-sm font-medium mb-6 leading-relaxed">
                 We pride ourselves on offering unmatched service quality, speed, and reliability. Here is why industry leaders choose us.
               </p>
               <div className="flex flex-col gap-3">
                 {usps.map((usp, i) => (
-                  <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                    <div className="mt-0.5 bg-primary-500/20 rounded-md p-1 shrink-0">
-                      <CheckCircle2 className="w-4 h-4 text-primary-400" />
+                  <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-white border border-slate-200/80 hover:border-blue-400 hover:shadow-[0_10px_30px_rgba(37,99,235,0.04)] transition-all">
+                    <div className="mt-0.5 bg-blue-50 border border-blue-100 rounded-md p-1 shrink-0">
+                      <CheckCircle2 className="w-4 h-4 text-blue-600" />
                     </div>
-                    <p className="text-slate-200 text-xs font-medium leading-snug">{usp}</p>
+                    <p className="text-slate-700 text-xs font-semibold leading-snug">{usp}</p>
                   </div>
                 ))}
               </div>
             </div>
             <div className="relative" data-aos="fade-left">
-              <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-xl border border-white/10">
+              <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-xl border border-slate-200/80">
                 <Image src={img6} alt="USP" fill className="object-cover" />
               </div>
-              <div className="absolute -bottom-6 -left-6 bg-white text-slate-900 p-5 rounded-xl shadow-md border border-slate-100">
+              <div className="absolute -bottom-6 -left-6 bg-white text-slate-900 p-5 rounded-xl shadow-md border border-slate-200/80">
                 <div className="flex items-center gap-3 mb-1">
-                  <div className="bg-emerald-100 text-emerald-600 p-1.5 rounded-lg">
+                  <div className="bg-emerald-50 text-emerald-600 p-1.5 rounded-lg border border-emerald-100">
                     <ShieldCheck className="w-5 h-5" />
                   </div>
-                  <h4 className="font-bold text-sm">Guaranteed TAT</h4>
+                  <h4 className="font-bold text-sm text-slate-900">Guaranteed TAT</h4>
                 </div>
-                <p className="text-[10px] text-slate-500 font-medium">Fast turnarounds with quality control.</p>
+                <p className="text-[10px] text-slate-500 font-semibold">Fast turnarounds with quality control.</p>
               </div>
             </div>
           </div>
@@ -997,7 +997,7 @@ export default function ServicesPage() {
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">Recycling of Products</h3>
               <p className="text-slate-500 text-xs font-medium leading-relaxed mb-8">
-                Longwell electronics can assist its partners in recycling the "Beyond Economic Repair" products in an appropriate and environmentally friendly manner.
+                Inchell Corparation can assist its partners in recycling the "Beyond Economic Repair" products in an appropriate and environmentally friendly manner.
               </p>
 
               <div className="relative h-48 rounded-xl overflow-hidden border border-slate-200 shadow-sm">
@@ -1009,14 +1009,40 @@ export default function ServicesPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 relative overflow-hidden mx-4 sm:mx-auto max-w-5xl mb-8 rounded-2xl bg-[#020617] text-white shadow-xl border border-slate-800" data-aos="zoom-in">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary-900/40 via-[#020617] to-[#020617]" />
-        <div className="mx-auto max-w-2xl px-4 relative text-center">
-          <h2 className="text-2xl font-extrabold mb-3">Ready to work with the best?</h2>
-          <p className="text-slate-400 text-sm font-medium mb-8 max-w-lg mx-auto">Get in touch with our experts to discuss how our state-of-the-art facilities can handle your requirements.</p>
-          <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white text-sm font-bold rounded-md shadow-sm hover:bg-primary-700 transition-all border border-transparent">
-            Contact Us Today <ArrowRight className="w-4 h-4" />
-          </Link>
+      <section className="relative py-16 bg-white border-t border-slate-200/60 overflow-hidden" data-aos="zoom-in">
+        {/* Soft Glow */}
+        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-50/50 blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-indigo-50/50 blur-[90px] pointer-events-none" />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
+          <div className="grid lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Left Side: Content */}
+            <div className="lg:col-span-7 text-left space-y-4">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">Ready to work with the best?</h2>
+              <p className="text-slate-655 text-sm font-medium leading-relaxed">
+                Get in touch with our experts to discuss how our state-of-the-art facilities can handle your requirements.
+              </p>
+              <div className="pt-2">
+                <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white text-xs font-bold rounded-xl hover:bg-primary-700 transition-all shadow-md shadow-primary-600/10 hover:-translate-y-0.5">
+                  Contact Us Today <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Side: Image */}
+            <div className="lg:col-span-5">
+              <div className="relative h-[220px] w-full rounded-2xl overflow-hidden shadow-lg border border-slate-200/80 bg-white">
+                <Image 
+                  src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=600&q=80" 
+                  alt="Ready to work" 
+                  fill 
+                  className="object-cover" 
+                />
+              </div>
+            </div>
+
+          </div>
         </div>
       </section>
     </div>

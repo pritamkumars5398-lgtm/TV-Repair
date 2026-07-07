@@ -154,17 +154,21 @@ function TrackContent() {
     <div className="bg-[#f8fafc] min-h-screen font-sans">
       
       {/* Sleek Hero matching Book page */}
-      <section className="relative bg-slate-950 pt-24 pb-32 overflow-hidden border-b border-slate-800">
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary-600 via-slate-950 to-slate-950" />
-        
-        <div className="relative max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="inline-block px-3 py-1 rounded-full bg-white/10 text-white font-bold text-[10px] tracking-widest uppercase mb-4 border border-white/20 backdrop-blur-md">
-            Live Tracking
-          </span>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-3">
+      <section className="relative bg-gradient-to-b from-slate-50 via-white to-slate-50 pt-24 pb-32 border-b border-slate-200/60 overflow-hidden select-none">
+        {/* Technical Grid Pattern & Soft Radial Glow */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-100/40 via-white to-white pointer-events-none" />
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=1600&q=80')] bg-cover bg-center opacity-30 pointer-events-none" />
+
+        <div className="relative max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+          <div className="inline-flex items-center justify-center gap-2 rounded-full border border-primary-150 bg-primary-50/50 px-3.5 py-1.5 text-[11px] font-extrabold text-primary-700 shadow-sm mb-5 backdrop-blur-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-pulse" />
+            <span>Live Status Tracking System</span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-3 leading-none">
             Track Your Repair
           </h1>
-          <p className="text-xs md:text-sm text-slate-400 font-medium max-w-md mx-auto">
+          <p className="text-xs md:text-sm text-slate-655 font-semibold max-w-md mx-auto leading-relaxed">
             Enter your Ticket ID below to see the live status of your repair.
           </p>
         </div>
@@ -174,8 +178,8 @@ function TrackContent() {
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           
           {/* Floating Search Bar */}
-          <div className="bg-white rounded-xl shadow-lg shadow-slate-200/50 border border-slate-200 p-6 sm:p-8">
-            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Ticket ID</label>
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200/80 p-6 sm:p-8">
+            <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">Ticket ID</label>
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
@@ -184,12 +188,12 @@ function TrackContent() {
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="TKT-1234"
                 maxLength={8}
-                className="flex-1 border border-slate-300 rounded-md px-4 py-3 font-mono font-bold text-sm tracking-widest focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 uppercase placeholder:text-slate-300 transition-all text-slate-800"
+                className="flex-1 bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 font-mono font-bold text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 uppercase placeholder:text-slate-300 transition-all text-slate-800 focus:bg-white"
               />
               <button
                 onClick={() => handleSearch()}
                 disabled={loading}
-                className="px-8 py-3 bg-primary-600 hover:bg-primary-700 disabled:opacity-70 text-white font-bold text-sm rounded-md transition-all flex items-center justify-center gap-2 shadow-sm"
+                className="px-8 py-3.5 bg-primary-600 hover:bg-primary-700 disabled:opacity-70 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 shadow-md"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                 {loading ? 'Searching...' : 'Track'}
@@ -257,7 +261,7 @@ function TrackContent() {
               <div className="mt-8 pt-6 border-t border-slate-100 text-center">
                 <p className="text-xs font-semibold text-slate-500 mb-3">Need help with your repair?</p>
                 <a
-                  href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919876543210'}?text=Hi, my ticket ID is ${trackData.ticketId}. I need help.`}
+                  href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '918586887887'}?text=Hi, my ticket ID is ${trackData.ticketId}. I need help.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#25D366] text-white text-xs font-bold rounded-md hover:bg-[#20bd5a] transition-colors shadow-sm"
@@ -267,6 +271,61 @@ function TrackContent() {
               </div>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* How it Works / FAQ section */}
+      <section className="py-16 border-t border-slate-200/60 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="text-center mb-10">
+            <h2 className="text-xl font-extrabold text-slate-900 mb-2">How Tracking Works</h2>
+            <p className="text-slate-500 text-xs font-semibold max-w-md mx-auto">
+              Follow these three simple steps to keep tabs on your electronic repair job.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-slate-50/50 border border-slate-200/60 p-5 rounded-2xl relative">
+              <div className="w-9 h-9 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center font-bold text-sm mb-4">1</div>
+              <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-2">Find Ticket ID</h3>
+              <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                Check your booking invoice, registered email address, or confirmation SMS for the unique 8-character Ticket ID (e.g., TKT-1234).
+              </p>
+            </div>
+
+            <div className="bg-slate-50/50 border border-slate-200/60 p-5 rounded-2xl relative">
+              <div className="w-9 h-9 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center font-bold text-sm mb-4">2</div>
+              <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-2">Live Progress</h3>
+              <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                Our technicians update the system live as they perform diagnostic scans, replace panel screens, order spare parts, and carry out final burn-in testing.
+              </p>
+            </div>
+
+            <div className="bg-slate-50/50 border border-slate-200/60 p-5 rounded-2xl relative">
+              <div className="w-9 h-9 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center font-bold text-sm mb-4">3</div>
+              <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-2">Pickup & Delivery</h3>
+              <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                Once the quality testing is fully complete, you will receive an automatic dispatch notification for safe doorstep packaging and delivery.
+              </p>
+            </div>
+          </div>
+
+          {/* Need help banner */}
+          <div className="mt-12 bg-slate-50 border border-slate-200/80 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary-600 shrink-0">
+                <MessageCircle className="w-5 h-5 text-primary-600" />
+              </div>
+              <div className="text-center sm:text-left">
+                <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Trouble Tracking?</h4>
+                <p className="text-[11px] text-slate-500 font-medium mt-0.5">Contact our support helpline at +91 9999014605 or mail support@repaircart.in</p>
+              </div>
+            </div>
+            <Link href="/contact" className="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all">
+              Contact Support
+            </Link>
+          </div>
         </div>
       </section>
     </div>

@@ -72,30 +72,30 @@ export default function InfrastructurePageClient() {
   return (
     <div className="bg-slate-50 font-sans">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#020617] pt-28 pb-32 border-b border-slate-800">
+      <section className="relative overflow-hidden bg-slate-50 pt-28 pb-32 border-b border-slate-200">
         <div className="absolute inset-0">
           <Image
             src={infra1}
             alt="Infrastructure"
             fill
             priority
-            className="object-cover opacity-20 mix-blend-luminosity"
+            className="object-cover opacity-45"
           />
         </div>
 
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-300/30 via-[#020617]/90 to-[#020617]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50/5 via-slate-50/20 to-slate-50/35" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="zoom-in">
-          <p className="uppercase tracking-[0.2em] text-[10px] text-primary-400 font-bold mb-3">
-            <span className="text-white">World Class Facility</span>
-          </p>
+          <span className="inline-block px-3 py-1 rounded-full bg-primary-50 text-primary-700 font-bold text-[10px] uppercase tracking-widest mb-4 border border-primary-200">
+            World Class Facility
+          </span>
 
-          <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight mb-4">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight mb-4">
             State-of-the-art<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-cyan-300">Infrastructure</span>
+            <span className="text-primary-600 bg-clip-text bg-gradient-to-r from-primary-600 to-cyan-600">Infrastructure</span>
           </h1>
 
-          <p className="mx-auto max-w-2xl text-slate-400 text-sm font-medium">
+          <p className="mx-auto max-w-2xl text-slate-600 text-sm font-medium">
             Explore our 20,000 sq. ft. repair and manufacturing facility
             equipped with advanced clean rooms, bonding machines, testing labs,
             PCB repair stations and quality inspection systems.
@@ -171,27 +171,39 @@ export default function InfrastructurePageClient() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-[#020617] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary-900/40 via-[#020617] to-[#020617]" />
+      <section className="relative py-16 bg-white border-t border-slate-200/60 overflow-hidden" data-aos="zoom-in">
+        {/* Soft Glow */}
+        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-50/50 blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-indigo-50/50 blur-[90px] pointer-events-none" />
 
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl" data-aos="fade-up">
-            <div className="text-center md:text-left">
-              <h2 className="text-2xl font-extrabold text-white">
-                Visit Our Infrastructure
-              </h2>
-              <p className="text-slate-400 mt-2 text-sm font-medium max-w-md">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
+          <div className="grid lg:grid-cols-12 gap-8 items-center">
+
+            {/* Left Side: Content */}
+            <div className="lg:col-span-7 text-left space-y-4">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">Visit Our Infrastructure</h2>
+              <p className="text-slate-655 text-sm font-medium leading-relaxed">
                 Schedule a visit to our Noida manufacturing and repair facility.
               </p>
+              <div className="pt-2">
+                <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white text-xs font-bold rounded-xl hover:bg-primary-700 transition-all shadow-md shadow-primary-600/10 hover:-translate-y-0.5">
+                  Contact Us <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
 
-            <Link
-              href="/contact"
-              className="px-6 py-3 rounded-md bg-primary-600 text-white text-sm font-bold shadow-sm hover:bg-primary-700 transition flex items-center justify-center shrink-0 border border-transparent"
-            >
-              Contact Us
-              <ArrowRight className="inline ml-2 w-4 h-4" />
-            </Link>
+            {/* Right Side: Image */}
+            <div className="lg:col-span-5">
+              <div className="relative h-[220px] w-full rounded-2xl overflow-hidden shadow-lg border border-slate-200/80 bg-white">
+                <Image
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqZDFyBAJVQKmi_Gi4naD3fcyslGqVY1_IWqMTWFIQKQ&s=10"
+                  alt="Visit Our Infrastructure"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
