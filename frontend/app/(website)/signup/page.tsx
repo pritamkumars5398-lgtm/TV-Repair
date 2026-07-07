@@ -112,13 +112,10 @@ export default function WebsiteRegisterPage() {
               </div>
 
               <div>
-<<<<<<< HEAD
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Password</label>
-=======
-                <label className="block text-[10px] font-bold text-slate-505 uppercase tracking-wider mb-1">Mobile Number</label>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Mobile Number</label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                    <Phone className="w-4 h-4" />
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                    <Phone className="w-5 h-5" />
                   </span>
                   <input
                     type="tel"
@@ -126,15 +123,14 @@ export default function WebsiteRegisterPage() {
                     onChange={(e) => update('phone', e.target.value.replace(/\D/g, ''))}
                     placeholder="9876543210"
                     maxLength={10}
-                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary-500/20 text-slate-850 placeholder:text-slate-350"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800 placeholder:text-slate-400"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-505 uppercase tracking-wider mb-1">Password</label>
->>>>>>> 7703f731225e90d57fe7f90d2c846a7f91ffefb5
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Password</label>
                 <div className="relative">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
                     <Lock className="w-5 h-5" />

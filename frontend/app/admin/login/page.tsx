@@ -21,19 +21,19 @@ export default function AdminLoginPage() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.includes('@')) { 
-      toast.error('Enter a valid email address'); 
-      return; 
+    if (!email.includes('@')) {
+      toast.error('Enter a valid email address');
+      return;
     }
     if (!password) {
       toast.error('Enter your password');
       return;
     }
     setLoading(true);
-    
+
     try {
       const res: any = await authApi.adminLogin({ email, password });
-      
+
       if (res && res.token) {
         setAuth({
           id: res._id || 'admin-dev',
@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
           phone: res.phone || '',
           role: res.role || role
         }, res.token);
-        
+
         setSuccessPopup(true);
         setTimeout(() => {
           router.push('/admin/dashboard');
@@ -53,13 +53,8 @@ export default function AdminLoginPage() {
         setAuth({
           id: 'admin-dev',
           name: 'System Admin',
-<<<<<<< HEAD
           email: 'admin@inchell.com',
-          phone: phone,
-=======
-          email: email,
           phone: '9876543210',
->>>>>>> 7703f731225e90d57fe7f90d2c846a7f91ffefb5
           role: role
         }, 'mock-admin-token');
         setSuccessPopup(true);
@@ -76,7 +71,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 relative overflow-hidden font-sans">
-      
+
       {/* Subtle Dot Grid */}
       <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
 
@@ -94,7 +89,7 @@ export default function AdminLoginPage() {
 
         <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 space-y-4">
           <form onSubmit={handleLogin} className="space-y-4">
-            
+
             <div>
               <label className="block text-[10px] font-bold text-slate-555 uppercase tracking-wider mb-1">Role</label>
               <select
@@ -152,7 +147,7 @@ export default function AdminLoginPage() {
           <Link href="/" className="hover:text-primary-600 transition-colors">← Return to Public Site</Link>
         </p>
       </div>
-      
+
       {/* Success Popup Overlay */}
       {successPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
