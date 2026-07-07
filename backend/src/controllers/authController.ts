@@ -7,18 +7,34 @@ import generateToken from '../utils/generateToken';
 // @access  Public
 export const authAdmin = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { phone, password } = req.body;
+    const { email, phone, password } = req.body;
 
-    let admin = await Admin.findOne({ phone });
+    const loginField = email || phone;
+    let admin = await Admin.findOne({
+      $or: [{ email: loginField }, { phone: loginField }]
+    });
 
-    // Seed default admin if it doesn't exist (Fixed credentials as requested)
-    if (!admin && phone === '9876543210' && password === 'admin123') {
+    // Check if default admin exists by EITHER email OR phone to prevent duplicate key errors
+    let defaultAdmin = await Admin.findOne({
+      $or: [{ email: 'admin@gmail.com' }, { phone: '9876543210' }]
+    });
+
+    if (!defaultAdmin && (email === 'admin@gmail.com' || phone === '9876543210') && password === 'admin123') {
       admin = await Admin.create({
         name: 'System Admin',
+        email: 'admin@gmail.com',
         phone: '9876543210',
         password: 'admin123',
         role: 'admin',
       });
+    } else if (defaultAdmin && (email === 'admin@gmail.com' || phone === '9876543210')) {
+      admin = defaultAdmin;
+      
+      // Update email if it's missing
+      if (!admin.email) {
+        admin.email = 'admin@gmail.com';
+        await admin.save();
+      }
     }
 
     // Assuming we have added `.matchPassword` to the Admin schema methods
@@ -26,12 +42,13 @@ export const authAdmin = async (req: Request, res: Response): Promise<void> => {
       res.json({
         _id: admin._id,
         name: admin.name,
+        email: admin.email,
         phone: admin.phone,
         role: admin.role,
         token: generateToken(admin._id.toString(), admin.role),
       });
     } else {
-      res.status(401).json({ message: 'Invalid phone number or password' });
+      res.status(401).json({ message: 'Invalid email/phone or password' });
     }
   } catch (error: any) {
     res.status(500).json({ message: error.message || 'Server Error' });

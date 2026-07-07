@@ -56,6 +56,8 @@ export interface Ticket {
   customerPhone: string;
   address: string;
   scheduledAt: string;
+  preferredDate?: string;
+  preferredTime?: string;
   createdAt: string;
   technicianName?: string;
   technicianPhone?: string;
