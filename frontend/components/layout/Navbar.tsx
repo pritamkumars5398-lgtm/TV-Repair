@@ -125,7 +125,7 @@ export function Navbar() {
                           logout();
                           window.location.href = '/';
                         }}
-                        className="w-full flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors text-left"
+                        className="w-full flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-50 transition-colors text-left"
                       >
                         <LogOut className="w-3.5 h-3.5" /> Logout
                       </button>
