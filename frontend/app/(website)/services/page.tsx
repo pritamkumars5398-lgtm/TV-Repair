@@ -26,7 +26,6 @@ import img15 from "../../../assets/img/Picture15.png";
 import img16 from "../../../assets/img/Picture16.png";
 import img17 from "../../../assets/img/Picture17.png";
 
-
 const solutions = [
   { icon: Target, title: 'One Stop Solution', desc: 'For Services & Products' },
   { icon: Briefcase, title: 'Project Management', desc: 'Expert handling of projects' },
