@@ -19,7 +19,6 @@ import infra10 from "../../../assets/img/Picture8.png"
 import infra11 from "../../../assets/img/Picture9.png"
 import infra12 from "../../../assets/img/Picture24.png"
 
-
 import {
   Building2,
   Wind,

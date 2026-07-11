@@ -9,6 +9,13 @@ import product3 from '../../assets/img/repair1.png';
 import product4 from '../../assets/img/repair2.png';
 import product5 from '../../assets/img/repair10.png';
 
+// New Real Product Slides
+import realProduct1 from '../../assets/images/WhatsApp Image 2026-07-10 at 19.37.19.jpeg';
+import realProduct2 from '../../assets/images/WhatsApp Image 2026-07-10 at 19.37.18.jpeg';
+import realProduct3 from '../../assets/images/WhatsApp Image 2026-07-10 at 19.37.19 (1).jpeg';
+import realProduct4 from '../../assets/images/WhatsApp Image 2026-07-10 at 19.29.00.jpeg';
+import realProduct5 from '../../assets/images/WhatsApp Image 2026-07-10 at 19.28.52 (2).jpeg';
+
 const images: {
   src: StaticImageData;
   alt: string;
@@ -32,6 +39,26 @@ const images: {
     {
       src: product5,
       alt: 'Professional Repair Center',
+    },
+    {
+      src: realProduct1,
+      alt: 'GOONZ Premium Tower Speaker Manufacturing',
+    },
+    {
+      src: realProduct2,
+      alt: 'Mega Bass XT Audio Systems',
+    },
+    {
+      src: realProduct3,
+      alt: 'Professional Single Tower Speaker Systems',
+    },
+    {
+      src: realProduct4,
+      alt: 'Premium Soundbar and Subwoofer Assembly',
+    },
+    {
+      src: realProduct5,
+      alt: 'INCHELL Cobra Intercom Systems Production',
     },
   ];
 

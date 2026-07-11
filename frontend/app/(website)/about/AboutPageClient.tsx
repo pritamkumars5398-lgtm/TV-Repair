@@ -15,6 +15,11 @@ import img1 from "../../../assets/img/Picture15.png";
 import img2 from "../../../assets/img/Picture16.png";
 import img3 from "../../../assets/img/Picture17.png";
 
+// New Real Intercom Manufacturing Showcase Imports
+import aboutReal1 from "../../../assets/images/WhatsApp Image 2026-07-10 at 19.28.52 (2).jpeg";
+import aboutReal2 from "../../../assets/images/WhatsApp Image 2026-07-10 at 19.28.50 (2).jpeg";
+import aboutReal3 from "../../../assets/images/WhatsApp Image 2026-07-10 at 19.28.51 (1).jpeg";
+
 import icon1 from "../../../assets/img/icon1.png";
 import icon2 from "../../../assets/img/icon2.png";
 import icon3 from "../../../assets/img/icon3.png";
@@ -655,6 +660,62 @@ export default function AboutPageClient() {
         </div>
       </section>
 
+      {/* Manufacturing & Intercom Gallery */}
+      <section className="py-24 bg-white border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16" data-aos="fade-up">
+            <span className="inline-block px-4 py-1 rounded-full bg-primary-50 text-primary-600 text-xs font-semibold tracking-widest uppercase mb-4">
+              Our Products
+            </span>
+            <h2 className="text-4xl font-bold text-slate-900">
+              Intercom Manufacturing
+            </h2>
+            <p className="mt-3 text-slate-655 max-w-2xl mx-auto text-base">
+              A glimpse into Inchell Corporation's legendary intercom production roots, showing original packaging, wiring diagrams, and handsets.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                src: aboutReal1,
+                title: "INCHELL Cobra IC-9066 Packaging",
+                desc: "Original retail packaging for the Cobra model intercom systems, manufactured in-house.",
+              },
+              {
+                src: aboutReal2,
+                title: "Intercom Handset & Junction Terminal",
+                desc: "Original wall intercom telephone hardware with power adapter and junction box configurations.",
+              },
+              {
+                src: aboutReal3,
+                title: "System Wiring Schematic",
+                desc: "Our technical multi-line wiring connections design supporting seamless device intercom links.",
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                data-aos="fade-up"
+                data-aos-delay={index * 100}
+                className="group bg-slate-50 border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col"
+              >
+                <div className="relative h-64 bg-slate-50 p-4 overflow-hidden flex items-center justify-center">
+                  <Image
+                    src={item.src}
+                    alt={item.title}
+                    fill
+                    className="object-contain p-2 group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-grow bg-white border-t border-slate-100">
+                  <h3 className="text-base font-extrabold text-slate-950 mb-2">{item.title}</h3>
+                  <p className="text-slate-600 text-xs font-medium leading-relaxed">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
     </div>
   );
