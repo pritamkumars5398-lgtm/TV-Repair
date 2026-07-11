@@ -1,17 +1,23 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus, Loader2, Trash2, Edit3, Package, Image as ImageIcon } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Plus, Loader2, Trash2, Edit3, Package, Image as ImageIcon, Upload, X } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { adminApi } from '@/lib/api/admin';
 import { publicApi } from '@/lib/api/public';
 import Image from 'next/image';
 
+const predefinedCategories = ["Home Theater", "Home Audio", "Commercial", "Subwoofer", "Outdoor", "Studio", "Accessories"];
+
 export default function AdminProductsPage() {
   const qc = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -60,11 +66,36 @@ export default function AdminProductsPage() {
 
   function resetForm() {
     setEditingId(null);
+    setIsCustomCategory(false);
     setFormData({ name: '', category: '', desc: '', specs: '', price: '', img: '' });
   }
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0]) return;
+    const file = e.target.files[0];
+    const uploadData = new FormData();
+    uploadData.append('image', file);
+    
+    setUploadingImage(true);
+    try {
+      const res = await adminApi.uploadBlogImage(uploadData);
+      setFormData(prev => ({ ...prev, img: res.imageUrl }));
+      toast.success('Image uploaded successfully');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to upload image');
+    } finally {
+      setUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   function handleEdit(product: any) {
     setEditingId(product._id);
+    if (!predefinedCategories.includes(product.category)) {
+      setIsCustomCategory(true);
+    } else {
+      setIsCustomCategory(false);
+    }
     setFormData({
       name: product.name,
       category: product.category,
@@ -198,16 +229,29 @@ export default function AdminProductsPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">Category</label>
-                  <select required value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary-500/20 bg-white">
-                    <option value="" disabled>Select a category</option>
-                    <option value="Home Theater">Home Theater</option>
-                    <option value="Home Audio">Home Audio</option>
-                    <option value="Commercial">Commercial</option>
-                    <option value="Subwoofer">Subwoofer</option>
-                    <option value="Outdoor">Outdoor</option>
-                    <option value="Studio">Studio</option>
-                    <option value="Accessories">Accessories</option>
-                  </select>
+                  {isCustomCategory ? (
+                    <div className="flex gap-2">
+                      <input required autoFocus value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} placeholder="Enter new category" className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary-500/20" />
+                      <button type="button" onClick={() => { setIsCustomCategory(false); setFormData({...formData, category: ''}) }} className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition-colors flex items-center justify-center">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <select required value={predefinedCategories.includes(formData.category) ? formData.category : (formData.category ? 'other' : '')} onChange={(e) => {
+                      if (e.target.value === 'other') {
+                        setIsCustomCategory(true);
+                        setFormData({...formData, category: ''});
+                      } else {
+                        setFormData({...formData, category: e.target.value});
+                      }
+                    }} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary-500/20 bg-white">
+                      <option value="" disabled>Select a category</option>
+                      {predefinedCategories.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                      <option value="other">+ Add New Category</option>
+                    </select>
+                  )}
                 </div>
               </div>
 
@@ -230,6 +274,13 @@ export default function AdminProductsPage() {
                 <label className="block text-xs font-bold text-slate-500 mb-1">Image URL</label>
                 <div className="flex gap-2">
                   <input required value={formData.img} onChange={(e) => setFormData({...formData, img: e.target.value})} placeholder="https://..." className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary-500/20" />
+                  
+                  <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" className="hidden" />
+                  <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploadingImage} className="px-3 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 text-xs font-bold rounded-lg transition-colors flex items-center gap-1 shrink-0">
+                    {uploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                    Upload
+                  </button>
+
                   {formData.img && (
                     <div className="h-8 w-8 shrink-0 rounded-lg overflow-hidden relative border border-slate-200">
                        <Image src={formData.img} alt="Preview" fill className="object-cover" unoptimized />

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Customer from '../models/Customer';
 import Ticket from '../models/Ticket';
+import Lead from '../models/Lead';
 
 // @desc    Get all customers
 // @route   GET /api/v1/customers
@@ -178,6 +179,38 @@ export const updateCustomerProfile = async (req: Request, res: Response): Promis
         state: updated.state,
         pincode: updated.pincode
       }
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Create customer support query
+// @route   POST /api/v1/customer/queries
+// @access  Private (Customer)
+export const createCustomerQuery = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const customer = await Customer.findById((req as any).user._id);
+    if (!customer) {
+      res.status(404).json({ message: 'Customer not found' });
+      return;
+    }
+
+    const { subject, message } = req.body;
+
+    const queryLead = await Lead.create({
+      name: customer.name || 'Unknown',
+      phone: customer.phone || 'Unknown',
+      email: customer.email || '',
+      source: 'CUSTOMER_PORTAL',
+      serviceType: 'Support Enquiry',
+      message: `Subject: ${subject}\n\n${message}`,
+      status: 'NEW'
+    });
+
+    res.status(201).json({
+      success: true,
+      data: queryLead
     });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message || 'Server Error' });
