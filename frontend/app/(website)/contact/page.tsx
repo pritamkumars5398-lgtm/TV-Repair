@@ -255,7 +255,7 @@ export default function ContactPage() {
                       { text: 'info@repaircart.in', href: 'mailto:info@repaircart.in' }
                     ] },
                     { icon: Clock, label: 'Business Hours', value: 'Mon–Sat: 9:00 AM – 7:00 PM' },
-                  ].map((item) => (
+                  ].map((item: { icon: any; label: string; value?: string; href?: string; values?: { text: string; href: string }[] }) => (
                     <div key={item.label} className="flex items-start gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100 hover:bg-slate-100/50 transition-colors">
                       <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white border border-slate-100 shrink-0">
                         <item.icon className="h-4.5 w-4.5 text-primary-600" strokeWidth={2} />
@@ -269,7 +269,7 @@ export default function ContactPage() {
                                 <a href={v.href} className="font-semibold text-slate-800 hover:text-primary-600 transition-colors">
                                   {v.text}
                                 </a>
-                                {i < item.values.length - 1 && <span className="mx-1 text-slate-400">,</span>}
+                                {i < item.values!.length - 1 && <span className="mx-1 text-slate-400">,</span>}
                               </span>
                             ))}
                           </div>
