@@ -244,8 +244,8 @@ export default function ContactPage() {
                 <h3 className="text-sm font-bold border-b border-slate-100 pb-2 text-slate-900">Office Locations & Details</h3>
                 <div className="grid gap-3.5 text-xs">
                   {[
-                    { icon: MapPin, label: 'Head Office', value: 'C-295 Sector 10 Noida, UP-201301' },
-                    { icon: MapPin, label: 'Branch Office', value: 'B-115 Sector 5 Noida, UP-201301' },
+                    { icon: MapPin, label: 'Head Office', value: 'C-295, Sector-10, Noida, UP-201301' },
+                    { icon: MapPin, label: 'Branch Office', value: 'B-115, Sector-5, Noida, UP-201301' },
                     { icon: Phone, label: 'Phone Support', value: '+91 8586887887, 8586807887', href: 'tel:8586887887' },
                     { icon: Mail, label: 'Email Support', value: 'support@repaircart.co.in , info@repaircart.in', href: 'mailto:support@repaircart.co.in' },
                     { icon: Clock, label: 'Business Hours', value: 'Mon–Sat: 9:00 AM – 7:00 PM' },
