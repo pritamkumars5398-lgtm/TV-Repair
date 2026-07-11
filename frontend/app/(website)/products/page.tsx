@@ -1,5 +1,5 @@
 'use client';
-
+// Trigger Vercel rebuild for images
 import { useState } from 'react';
 import Image from 'next/image';
 import { X, ArrowRight } from 'lucide-react';
