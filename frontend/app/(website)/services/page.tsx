@@ -16,13 +16,8 @@ import {
 import img1 from "../../../assets/img/Picture1.png";
 import img2 from "../../../assets/img/Picture2.png";
 import img3 from "../../../assets/img/Picture3.png";
-import img4 from "../../../assets/img/Picture4.png";
 import img5 from "../../../assets/img/Picture5.png";
 import img6 from "../../../assets/img/Picture6.png";
-import img7 from "../../../assets/img/Picture7.png";
-import img8 from "../../../assets/img/Picture8.png";
-import img9 from "../../../assets/img/Picture9.png";
-import img10 from "../../../assets/img/Picture10.png";
 import img11 from "../../../assets/img/Picture11.png";
 import img12 from "../../../assets/img/Picture12.png";
 import img13 from "../../../assets/img/Picture13.png";
@@ -30,6 +25,7 @@ import img14 from "../../../assets/img/Picture14.png";
 import img15 from "../../../assets/img/Picture15.png";
 import img16 from "../../../assets/img/Picture16.png";
 import img17 from "../../../assets/img/Picture17.png";
+
 
 const solutions = [
   { icon: Target, title: 'One Stop Solution', desc: 'For Services & Products' },
@@ -82,21 +78,6 @@ const panelFeatures = [
   'Calibrated instruments'
 ];
 
-const mobileFeatures = [
-  'Clean Room Class 1000 & 10000',
-  'ESD safe work environment',
-  'CCTV for monitoring product IN & OUT',
-  'Biometric Access control',
-  'Fire alarm system for safety',
-  '24x7 Backup power facility',
-  'Quality Process oriented work flow',
-  'Web enabled software for RMA',
-  'Sequel trained Key engineers',
-  "Key repair equipment For MOBILE & Display",
-  'Imported consumables',
-  'Calibrated instruments'
-];
-
 const speakerFeatures = [
   'Production area 13000 sq ft',
   'CCTV for monitoring product IN & OUT',
@@ -109,15 +90,6 @@ const speakerFeatures = [
   "Key repair equipment",
   'Imported consumables',
   'Calibrated instruments'
-];
-
-const mobileDisplayRefurbishment = [
-  "Capability to repair Mobile Phone Displays OGS",
-  "Dedicated unit to replace Glasses, Touch Panels",
-  "Rectifies Broken Glass, Non working Touch Panel",
-  "> 3000 repairs successfully completed for major brands",
-  "Aims to support OEMs with quality spares from abroad",
-  "Helps OEMs save major costs on Display replacements"
 ];
 
 const rmaActivities = [
@@ -550,27 +522,6 @@ export default function ServicesPage() {
               </div>
             </div>
 
-            {/* Mobile Repair */}
-            <div className="grid lg:grid-cols-2 gap-8 items-center bg-white p-8 rounded-2xl border border-slate-200 shadow-sm" data-aos="fade-up">
-              <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 font-bold text-xs mb-4 border border-blue-100">
-                  <Smartphone className="w-3.5 h-3.5" /> MOBILE Repair Center
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-4">Mobile & Display Repair Features</h3>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {mobileFeatures.map((feat, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                      <span className="text-slate-600 text-[11px] font-medium leading-relaxed">{feat}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="relative h-[300px] rounded-xl overflow-hidden shadow-sm border border-slate-100">
-                <Image src={img4} alt="Mobile Repair Center" fill className="object-cover" />
-              </div>
-            </div>
-
             {/* Speaker Mfg */}
             <div className="grid lg:grid-cols-2 gap-8 items-center bg-white p-8 rounded-2xl border border-slate-200 shadow-sm" data-aos="fade-up">
               <div className="order-2 lg:order-1 relative h-[300px] rounded-xl overflow-hidden shadow-sm border border-slate-100">
@@ -663,194 +614,6 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* Mobile Display Refurbishment */}
-      {/* Mobile Display Refurbishment */}
-      <section className="relative py-24 bg-white overflow-hidden">
-
-        {/* Soft Glow */}
-        <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-blue-50 blur-[150px]" />
-        <div className="absolute bottom-0 right-0 w-[350px] h-[350px] bg-cyan-50 blur-[150px]" />
-
-        <div className="relative z-10 mx-auto max-w-7xl px-6">
-
-          {/* Heading */}
-          <div
-            className="text-center mb-16"
-            data-aos="fade-up"
-          >
-
-            <span className="
-      inline-flex
-      px-5
-      py-2
-      rounded-full
-      bg-blue-50
-      border
-      border-blue-100
-      text-blue-700
-      font-semibold
-      text-sm
-      mb-5
-      ">
-              Specialized Services
-            </span>
-
-            <h2 className="text-5xl font-black text-slate-900">
-
-              Repair & Refurbishment of
-
-              <span className="block text-blue-600">
-                Mobile Displays
-              </span>
-
-            </h2>
-
-            <p className="mt-5 text-slate-500 max-w-2xl mx-auto">
-              Advanced display restoration, repair and refurbishment powered by
-              modern equipment and strict quality control.
-            </p>
-
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-14 items-center">
-
-            {/* LEFT IMAGES */}
-            <div
-              data-aos="fade-right"
-              className="grid grid-cols-2 gap-5"
-            >
-
-              <div className="space-y-5">
-
-                <div className="relative h-[220px] rounded-[28px] overflow-hidden group border border-slate-200">
-
-                  <Image
-                    src={img7}
-                    alt=""
-                    fill
-                    className="
-              object-cover
-              transition
-              duration-700
-              group-hover:scale-105
-              "
-                  />
-
-                </div>
-
-                <div className="relative h-[320px] rounded-[28px] overflow-hidden group border border-slate-200">
-
-                  <Image
-                    src={img8}
-                    alt=""
-                    fill
-                    className="
-              object-cover
-              transition
-              duration-700
-              group-hover:scale-105
-              "
-                  />
-
-                </div>
-
-              </div>
-
-              <div className="space-y-5 pt-12">
-
-                <div className="relative h-[320px] rounded-[28px] overflow-hidden group border border-slate-200">
-
-                  <Image
-                    src={img9}
-                    alt=""
-                    fill
-                    className="
-              object-cover
-              transition
-              duration-700
-              group-hover:scale-105
-              "
-                  />
-
-                </div>
-
-                <div className="relative h-[220px] rounded-[28px] overflow-hidden group border border-slate-200">
-
-                  <Image
-                    src={img10}
-                    alt=""
-                    fill
-                    className="
-              object-cover
-              transition
-              duration-700
-              group-hover:scale-105
-              "
-                  />
-
-                </div>
-
-              </div>
-
-            </div>
-
-            {/* RIGHT FEATURES */}
-            <div
-              data-aos="fade-left"
-              className="space-y-5"
-            >
-
-              {mobileDisplayRefurbishment.map((item, index) => (
-
-                <div
-                  key={index}
-                  className="
-            flex
-            items-start
-            gap-4
-            rounded-2xl
-            border
-            border-slate-200
-            bg-white
-            p-6
-            hover:border-blue-300
-            hover:-translate-y-1
-            transition
-            duration-300
-            "
-                >
-
-                  <div
-                    className="
-              w-12
-              h-12
-              rounded-xl
-              bg-blue-50
-              flex
-              items-center
-              justify-center
-              shrink-0
-              "
-                  >
-
-                    <ShieldCheck className="w-5 h-5 text-blue-600" />
-
-                  </div>
-
-                  <p className="text-slate-600 leading-7 text-sm font-medium">
-                    {item}
-                  </p>
-
-                </div>
-
-              ))}
-
-            </div>
-
-          </div>
-
-        </div>
-      </section>
 
       {/* Logistics and Pickup */}
       {/* Logistics & Support */}

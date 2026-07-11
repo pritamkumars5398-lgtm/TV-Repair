@@ -35,7 +35,9 @@ export default function ProductsPage() {
   const defaultCategories = [
     'All',
     'Home Theater',
-    'Home Audio',
+    'sound',
+    'Party box',
+    
 
 
   ];
