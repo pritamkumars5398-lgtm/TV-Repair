@@ -145,13 +145,13 @@ export default function HomePage() {
             </div>
 
             {/* Hero image card */}
-            <div className="hidden lg:block relative" data-aos="fade-left" data-aos-delay="300">
+            <div className="block relative mt-10 lg:mt-0" data-aos="fade-left" data-aos-delay="300">
               {/* Glowing spots */}
               <div className="absolute -top-12 -right-12 w-36 h-36 bg-blue-400/20 rounded-full blur-2xl pointer-events-none animate-pulse-slow" />
               <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-indigo-400/20 rounded-full blur-2xl pointer-events-none animate-pulse-slow" />
 
               {/* Floating Slide Card */}
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200/80 h-[380px] animate-float z-10 bg-white">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200/80 h-[260px] sm:h-[380px] animate-float z-10 bg-white">
                 <HeroSlideshow />
               </div>
               <div className="absolute -bottom-5 -left-5 bg-white border border-slate-200/80 rounded-2xl p-4 shadow-xl flex items-center gap-3.5 backdrop-blur-sm z-20 animate-float" style={{ animationDelay: '1.5s' }}>
