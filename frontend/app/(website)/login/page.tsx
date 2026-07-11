@@ -5,13 +5,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Loader2, Mail, Lock, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { publicApi } from '@/lib/api/public';
 import { useCustomerStore } from '@/lib/stores/customer-store';
 import User from '../../../assets/img/User1 (1).png';
 
 export default function WebsiteLoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get('redirect') || '/';
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [userData, setUserData] = useState<{ name: string } | null>(null);
@@ -39,7 +41,7 @@ export default function WebsiteLoginPage() {
       setShowSuccess(true);
 
       setTimeout(() => {
-        router.push('/');
+        router.push(redirect);
       }, 1500);
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Invalid email or password');

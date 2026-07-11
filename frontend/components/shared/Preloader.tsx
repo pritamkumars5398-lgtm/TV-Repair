@@ -17,29 +17,30 @@ export function Preloader() {
       return;
     }
 
-    // Progress counter animation
+    // Slightly slower progress rate for a premium feel
     const interval = setInterval(() => {
       setPercent((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           return 100;
         }
-        return prev + Math.floor(Math.random() * 15) + 5;
+        // Increment by a small random step so it takes around 3-4 seconds to load
+        return prev + Math.floor(Math.random() * 3) + 1;
       });
-    }, 150);
+    }, 85);
 
-    // Total display time: 2.5 seconds
+    // Total display duration before fade out
     const fadeTimer = setTimeout(() => {
-      setPercent(200);
+      setPercent(100);
       setFading(true);
 
       const removeTimer = setTimeout(() => {
         setLoading(false);
         sessionStorage.setItem('hasSeenPreloader', 'true');
-      }, 2000); // 600ms fade duration
+      }, 700);
 
       return () => clearTimeout(removeTimer);
-    }, 3500);
+    }, 4500);
 
     return () => {
       clearTimeout(fadeTimer);
@@ -49,49 +50,83 @@ export function Preloader() {
 
   if (!loading) return null;
 
+  // Circle stroke offset math: circumference of radius 48 is ~301.59
+  const radius = 48;
+  const strokeDash = 2 * Math.PI * radius;
+  const strokeOffset = strokeDash - (strokeDash * Math.min(percent, 100)) / 100;
+
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#020617] text-white transition-opacity duration-700 ease-in-out ${fading ? 'opacity-0 scale-105' : 'opacity-100 scale-100'}`}
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white transition-all duration-700 ease-in-out ${fading ? 'opacity-0 scale-98 pointer-events-none' : 'opacity-100 scale-100'
+        }`}
     >
-      {/* Background gradients */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary-900/20 via-[#020617] to-[#020617]" />
-
       <div className="relative flex flex-col items-center z-10 w-full max-w-sm px-8">
 
-        {/* Animated Rings & Logo */}
-        <div className="relative flex items-center justify-center w-24 h-24 mb-6">
-          <div className="absolute inset-0 rounded-full border-t-2 border-r-2 border-primary-500/80 animate-[spin_1.5s_linear_infinite]" />
-          <div className="absolute inset-2 rounded-full border-b-2 border-l-2 border-cyan-400/80 animate-[spin_2s_linear_infinite_reverse]" />
-          <div className="absolute inset-4 bg-primary-600/20 rounded-full blur-md animate-pulse" />
-          <div className="relative z-10 w-12 h-12 flex items-center justify-center">
+        {/* Dynamic circular neon SVG progress loader */}
+        <div className="relative flex items-center justify-center w-36 h-36 mb-8 select-none">
+
+          {/* Tech decorative rotating dashes in website blue/slate */}
+          <div className="absolute inset-0 rounded-full border border-dashed border-blue-200/50 animate-[spin_12s_linear_infinite]" />
+          <div className="absolute inset-2.5 rounded-full border border-dashed border-primary-200/30 animate-[spin_18s_linear_infinite_reverse]" />
+
+          {/* SVG Progress Ring */}
+          <svg className="w-full h-full -rotate-90 absolute z-10" viewBox="0 0 110 110">
+            {/* Base track */}
+            <circle
+              cx="55"
+              cy="55"
+              r={radius}
+              className="stroke-slate-100 fill-none"
+              strokeWidth="2.5"
+            />
+            {/* Glowing sweep progress in website blue */}
+            <circle
+              cx="55"
+              cy="55"
+              r={radius}
+              className="stroke-primary-600 fill-none transition-all duration-150 ease-out"
+              strokeWidth="3.5"
+              strokeDasharray={strokeDash}
+              strokeDashoffset={strokeOffset}
+              strokeLinecap="round"
+              style={{
+                filter: 'drop-shadow(0 0 6px rgba(37, 99, 235, 0.25))',
+              }}
+            />
+          </svg>
+
+          {/* Logo center container */}
+          <div className="w-20 h-20 rounded-full bg-white border border-slate-150 flex items-center justify-center z-20 shadow-md">
             <Image
               src="/logo.png"
-              alt="Inchell Corparation"
-              width={80}
-              height={80}
-              className="object-contain brightness-0 invert"
+              alt="RC RepairCart Logo"
+              width={54}
+              height={54}
+              className="object-contain animate-[pulse_2s_infinite]"
               priority
             />
           </div>
         </div>
 
         {/* Brand Text */}
-        <div className="text-center mb-10">
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-wide font-display">
-            <span className="text-white">RC Repair</span>
-            <span className="text-orange-500">Cart</span>
+        <div className="text-center mb-8">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-widest text-slate-800 leading-tight uppercase font-display">
+            <span>RC Repair</span>
+            <span className="text-blue-800">Cart</span>
           </h1>
+          <p className="text-[9px] text-slate-400 font-extrabold tracking-[0.3em] uppercase mt-2">
+            Electronics & Manufacturing
+          </p>
         </div>
 
-        {/* Percentage & Bar */}
-        <div className="w-full relative flex flex-col items-center">
-          <span className="text-xs font-mono text-slate-400 mb-3 tracking-widest">{Math.min(percent, 100)}%</span>
-          <div className="w-48 h-0.5 bg-slate-800 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-primary-600 to-cyan-400 rounded-full transition-all duration-200 ease-out"
-              style={{ width: `${Math.min(percent, 100)}%` }}
-            />
-          </div>
+        {/* Counter Display */}
+        <div className="flex flex-col items-center">
+          <span className="text-[11px] font-mono font-bold text-primary-600 bg-primary-50 border border-primary-100/50 px-3.5 py-1 rounded-full shadow-sm tracking-wider">
+            {Math.min(percent, 100)}%
+          </span>
+          <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-2.5 animate-pulse">
+            System Initializing
+          </span>
         </div>
 
       </div>

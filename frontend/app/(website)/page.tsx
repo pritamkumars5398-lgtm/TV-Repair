@@ -130,16 +130,16 @@ export default function HomePage() {
               <p className="text-slate-655 text-sm md:text-base leading-relaxed mb-8 max-w-lg font-medium" data-aos="fade-up" data-aos-delay="150">
                 World class manufacturing and repair environment. We specialize in LED TV panels, mobile phone displays, speaker manufacturing, and DOA management.
               </p>
-              <div className="flex flex-wrap gap-3.5" data-aos="fade-up" data-aos-delay="200">
+              <div className="flex flex-col sm:flex-row gap-3.5" data-aos="fade-up" data-aos-delay="200">
                 <Link
                   href="/services"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-extrabold rounded-xl hover:-translate-y-0.5 transition-all text-xs"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-extrabold rounded-xl hover:-translate-y-0.5 transition-all text-xs w-full sm:w-auto"
                 >
                   Explore Services <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href="/contact"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-700 font-extrabold rounded-xl border border-slate-200 hover:border-slate-300 transition-all text-xs shadow-sm hover:-translate-y-0.5"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-700 font-extrabold rounded-xl border border-slate-200 hover:border-slate-300 transition-all text-xs shadow-sm hover:-translate-y-0.5 w-full sm:w-auto"
                 >
                   Contact Us
                 </Link>
@@ -172,9 +172,17 @@ export default function HomePage() {
 
       {/* ── Stats ── */}
       <section className="bg-white py-8 relative z-10 -mt-10 mx-4 sm:mx-auto max-w-5xl rounded-xl shadow-md border border-slate-100" data-aos="fade-up">
-        <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-100">
-          {stats.map((s) => (
-            <div key={s.label} className="py-4 px-6 text-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-4 md:gap-y-0">
+          {stats.map((s, idx) => (
+            <div
+              key={s.label}
+              className={`py-4 px-6 text-center border-slate-100
+                ${idx === 0 ? 'border-r border-b md:border-b-0' : ''}
+                ${idx === 1 ? 'border-b md:border-b-0' : ''}
+                ${idx === 2 ? 'border-r' : ''}
+                ${idx < 3 ? 'md:border-r' : ''}
+              `}
+            >
               <p className="text-2xl font-black text-slate-800 mb-1">{s.value}</p>
               <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{s.label}</p>
             </div>
@@ -230,7 +238,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Image */}
-            <div className="relative rounded-2xl overflow-hidden h-[400px] border border-slate-200 shadow-md" data-aos="fade-right">
+            <div className="relative rounded-2xl overflow-hidden h-[280px] sm:h-[400px] border border-slate-200 shadow-md" data-aos="fade-right">
               <Image
                 src={Repair}
                 alt="TV repair workshop"
@@ -517,6 +525,7 @@ export default function HomePage() {
           </div>
         </div>
       </section> */}
+
 
 
 

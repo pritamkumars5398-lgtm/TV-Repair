@@ -6,6 +6,10 @@ export interface User {
   email: string;
   phone: string;
   role: UserRole;
+  address?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
 }
 
 export type ServiceType =

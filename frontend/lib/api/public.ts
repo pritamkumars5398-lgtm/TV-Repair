@@ -68,4 +68,7 @@ export const publicApi = {
 
   resetPasswordWithOTP: (data: { email: string; otp: string; newPassword?: string }) =>
     apiClient.post<any>('/customer-auth/reset-password-otp', data).then((r) => r.data),
+
+  getCustomerProfile: () =>
+    apiClient.get<any>('/customer-auth/profile').then((r) => r.data),
 };

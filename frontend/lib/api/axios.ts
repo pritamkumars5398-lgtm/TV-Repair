@@ -24,6 +24,10 @@ apiClient.interceptors.request.use((config) => {
     const token = document.cookie
       .split('; ')
       .find((row) => row.startsWith('session='))
+      ?.split('=')[1] ||
+      document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('customerToken='))
       ?.split('=')[1];
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -61,7 +65,14 @@ apiClient.interceptors.response.use(
 
     if (error.response?.status === 401 && typeof window !== 'undefined') {
       document.cookie = 'session=; path=/; max-age=0';
-      window.location.href = '/admin/login';
+      const currentPath = window.location.pathname;
+      if (currentPath.startsWith('/admin') || currentPath.startsWith('/manager')) {
+        window.location.href = '/admin/login';
+      } else if (currentPath.startsWith('/portal')) {
+        window.location.href = '/portal/login';
+      } else {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
