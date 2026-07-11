@@ -187,7 +187,7 @@ export function Navbar() {
                     <div className="grid grid-cols-2 gap-3 mb-3">
                       <Link
                         href="/profile"
-                        className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl  shadow-xl transition-all shadow-sm"
+                        className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-all shadow-sm"
                         onClick={() => setIsOpen(false)}
                       >
                         <User className="w-4 h-4 text-slate-400" /> Profile
