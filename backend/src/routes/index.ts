@@ -9,6 +9,7 @@ import blogRoutes from './blogRoutes';
 import feedbackRoutes from './feedbackRoutes';
 import customerAuthRoutes from './customerAuthRoutes';
 import customerRoutes from './customerRoutes';
+import customerPortalRoutes from './customerPortalRoutes';
 import adminRoutes from './adminRoutes';
 import { protectAdmin } from '../middlewares/authMiddleware';
 
@@ -17,6 +18,7 @@ const router = express.Router();
 router.use('/auth', authRoutes);
 router.use('/customer-auth', customerAuthRoutes);
 router.use('/customers', customerRoutes);
+router.use('/customer', customerPortalRoutes);
 router.use('/products', productRoutes);
 router.use('/leads', leadRoutes);
 router.use('/public', publicRoutes);
