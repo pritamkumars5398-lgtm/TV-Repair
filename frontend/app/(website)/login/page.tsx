@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Loader2, Mail, Lock, ArrowRight, CheckCircle2 } from 'lucide-react';
@@ -10,7 +10,7 @@ import { publicApi } from '@/lib/api/public';
 import { useCustomerStore } from '@/lib/stores/customer-store';
 import User from '../../../assets/img/User1 (1).png';
 
-export default function WebsiteLoginPage() {
+function LoginFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/';
@@ -110,7 +110,7 @@ export default function WebsiteLoginPage() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider">Password</label>
-                  <Link href="/forgot-password" className="text-xs font-bold text-primary-650 hover:text-cyan-600 transition-colors">
+                  <Link href="/forgot-password" className="text-xs font-bold text-primary-650 hover:text-cyan-650 transition-colors">
                     Forgot?
                   </Link>
                 </div>
@@ -170,5 +170,17 @@ export default function WebsiteLoginPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function WebsiteLoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[70vh] flex items-center justify-center bg-slate-50">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+      </div>
+    }>
+      <LoginFormContent />
+    </Suspense>
   );
 }

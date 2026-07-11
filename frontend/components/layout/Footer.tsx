@@ -90,9 +90,16 @@ export function Footer() {
                   </a>
                 </div>
               </li>
-              <li className="flex items-center gap-3">
-                <Mail className="h-4 w-4 text-primary-500 shrink-0" />
-                <a href="mailto:support@repaircart.co.in" className="hover:text-primary-600 transition-colors text-slate-500">support@repaircart.co.in info@repaircart.co.in</a>
+              <li className="flex items-start gap-3">
+                <Mail className="h-4 w-4 text-primary-500 shrink-0 mt-1" />
+                <div className="flex flex-col">
+                  <a href="mailto:support@repaircart.co.in" className="hover:text-primary-600 transition-colors text-slate-500">
+                    support@repaircart.co.in
+                  </a>
+                  <a href="mailto:info@repaircart.co.in" className="hover:text-primary-600 transition-colors text-slate-500">
+                    info@repaircart.co.in
+                  </a>
+                </div>
               </li>
               <li className="text-xs text-slate-400 mt-2">Mon–Sat: 9:00 AM – 7:00 PM</li>
             </ul>

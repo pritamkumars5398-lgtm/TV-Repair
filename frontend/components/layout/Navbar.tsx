@@ -105,14 +105,14 @@ export function Navbar() {
                       className="fixed inset-0 z-40"
                       onClick={() => setDropdownOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2.5 w-48 bg-white border border-slate-200 rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="absolute right-0 mt-2.5 w-48 bg-white border border-slate-200 rounded-xl  py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                       <div className="px-4 py-2 border-b border-slate-100 mb-1">
                         <p className="text-xs font-black text-slate-900 truncate">{customer?.name}</p>
                         <p className="text-[10px] text-slate-400 font-semibold truncate mt-0.5">{customer?.email}</p>
                       </div>
                       <Link
                         href="/profile"
-                        className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-slate-705 hover:bg-slate-50 transition-colors"
                         onClick={() => setDropdownOpen(false)}
                       >
                         <User className="w-3.5 h-3.5 text-slate-400" /> My Profile
