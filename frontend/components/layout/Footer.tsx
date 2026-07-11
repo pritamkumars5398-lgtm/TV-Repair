@@ -22,7 +22,7 @@ export function Footer() {
               />
             </Link>
             <p className="text-sm leading-relaxed text-slate-500">
-              Your trusted partner for LED repair and premium speaker manufacturing. Certified technicians, genuine parts, 30-day warranty.
+              Your trusted partner for LED repair and premium speaker manufacturing. Certified technicians, genuine parts, 45-day warranty.
             </p>
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">We Fix It Right</p>
             <div className="flex items-center gap-3 text-slate-400">
@@ -36,7 +36,7 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Services</h3>
             <ul className="space-y-2.5 text-sm">
-              {['LED TV Repair', 'Mobile Touch Repair', 'Speaker Manufacturing', 'Home Theater Install'].map((s) => (
+              {['LED TV Panel Repair', 'Power Board / SMPS Repair', 'Backlight Replacement', 'Motherboard Service'].map((s) => (
                 <li key={s}>
                   <Link href="/services" className="hover:text-primary-600 transition-colors">{s}</Link>
                 </li>
@@ -52,6 +52,7 @@ export function Footer() {
                 { href: '/book', label: 'Book a Service' },
                 { href: '/track', label: 'Track Repair' },
                 { href: '/about', label: 'About Us' },
+                { href: '/story', label: 'Our Story (Tribute)' },
                 { href: '/contact', label: 'Contact Us' },
                 { href: '/portal', label: 'Customer Login' },
               ].map((link) => (
@@ -70,28 +71,28 @@ export function Footer() {
                 <MapPin className="h-4 w-4 mt-0.5 text-primary-500 shrink-0" />
                 <span className="text-slate-500">123 Service Street, Electronics Hub, Mumbai – 400001</span>
               </li>
-            <li className="flex items-start gap-3">
-  <Phone className="h-4 w-4 text-primary-500 shrink-0 mt-1" />
+              <li className="flex items-start gap-3">
+                <Phone className="h-4 w-4 text-primary-500 shrink-0 mt-1" />
 
-  <div className="flex flex-col">
-    <a
-      href="tel:8586887887"
-      className="hover:text-primary-600 transition-colors text-slate-500"
-    >
-      +91 8586-887-887
-    </a>
+                <div className="flex flex-col">
+                  <a
+                    href="tel:8586887887"
+                    className="hover:text-primary-600 transition-colors text-slate-500"
+                  >
+                    +91 8586-887-887
+                  </a>
 
-    <a
-      href="tel:8586807887"
-      className="hover:text-primary-600 transition-colors text-slate-500"
-    >
-      +91 8586-807-887
-    </a>
-  </div>
-</li>
+                  <a
+                    href="tel:8586807887"
+                    className="hover:text-primary-600 transition-colors text-slate-500"
+                  >
+                    +91 8586-807-887
+                  </a>
+                </div>
+              </li>
               <li className="flex items-center gap-3">
                 <Mail className="h-4 w-4 text-primary-500 shrink-0" />
-                <a href="mailto:support@repaircart.co.in" className="hover:text-primary-600 transition-colors text-slate-500">support@repaircart.co.in info@repaircart.in</a>
+                <a href="mailto:support@repaircart.co.in" className="hover:text-primary-600 transition-colors text-slate-500">support@repaircart.co.in info@repaircart.co.in</a>
               </li>
               <li className="text-xs text-slate-400 mt-2">Mon–Sat: 9:00 AM – 7:00 PM</li>
             </ul>

@@ -12,12 +12,11 @@ import Repair from '../../assets/img/repai12.jpg'
 
 export const metadata: Metadata = {
   title: 'RC RepairCart — Electronics Repair & Manufacturing',
-  description: 'RC RepairCart — World class manufacturing and repair environment. LED TV Panel Repair, Mobile Glass Repair, Speaker Manufacturing, DOA Management.',
+  description: 'RC RepairCart — World class manufacturing and repair environment. LED TV Panel Repair, Speaker Manufacturing, DOA Management.',
 };
 
 const services = [
   { icon: Tv, title: 'LED TV Panel Repair', desc: 'Repairing up to 110 inch panels with Class 100K clean room.' },
-  { icon: Zap, title: 'Mobile Touch Repair', desc: 'Glass, Touch Panels, Reflectors, and replacement.' },
   { icon: Speaker, title: 'Speaker Manufacturing', desc: 'Portable speakers, Home theater, Tower speakers.' },
   { icon: Wrench, title: 'Component Level Repair', desc: 'PCB, AC, Washing machine boards, and other electronics.' },
   { icon: Shield, title: 'DOA Management', desc: 'Check, repair, and refurbish DOA stocks for redeployment.' },
@@ -45,7 +44,6 @@ const features = [
 ];
 
 const testimonials = [
-  { name: 'OEM Partner', rating: 5, text: 'Inchell Corparation has helped us save major costs incurred towards mobile phone display replacements with their OGS repair capability.', service: 'Mobile Repair' },
   { name: 'Retail Brand', rating: 5, text: 'Their DOA management and ETN refurbishment has significantly reduced our cost and improved field redeployment.', service: 'DOA Management' },
   { name: 'Electronics Brand', rating: 5, text: 'The 20,000 sq ft facility and Class 1000/10000 clean rooms ensure perfect panel bonding and polarizer replacement.', service: 'Panel Repair' },
   { name: 'Smart TV Brand Partner', rating: 5, text: 'Their laser panel bonding capability fixed vertical display lines on 500+ units in record time, with high yield success.', service: 'COF Bonding' },
@@ -84,7 +82,7 @@ const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   name: 'RC RepairCart',
-  description: 'World class manufacturing and repair environment for LED TVs, Mobile phones, and Speakers.',
+  description: 'World class manufacturing and repair environment for LED TVs and Speakers.',
   url: 'https://www.inchellcorparation.com',
   telephone: '+918586887887',
   email: 'support@repaircart.co.in',
@@ -125,10 +123,10 @@ export default function HomePage() {
                 <span>RC RepairCart — ISO Certified Partner</span>
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-slate-900 mb-6" data-aos="fade-up" data-aos-delay="100">
-                Total Solutions for <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700">Electronics.</span>
+                Total Solutions for <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700">LED TVs.</span>
               </h1>
               <p className="text-slate-655 text-sm md:text-base leading-relaxed mb-8 max-w-lg font-medium" data-aos="fade-up" data-aos-delay="150">
-                World class manufacturing and repair environment. We specialize in LED TV panels, mobile phone displays, speaker manufacturing, and DOA management.
+                World class repair and servicing environment. We specialize in LED TV panels, power board bonding, backlight repair, and DOA management.
               </p>
               <div className="flex flex-wrap gap-3.5" data-aos="fade-up" data-aos-delay="200">
                 <Link

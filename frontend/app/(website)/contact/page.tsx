@@ -190,7 +190,6 @@ export default function ContactPage() {
                   >
                     <option value="">Select a service</option>
                     <option value="PANEL_REPAIR">LED TV Panel Repair</option>
-                    <option value="MOBILE_REPAIR">Mobile Glass/Touch Repair</option>
                     <option value="SPEAKER_MFG">Speaker Manufacturing</option>
                     <option value="DOA_MANAGEMENT">DOA Management</option>
                     <option value="RECYCLING">Recycling Services</option>
