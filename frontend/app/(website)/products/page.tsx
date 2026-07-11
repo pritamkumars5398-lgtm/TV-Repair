@@ -37,7 +37,7 @@ export default function ProductsPage() {
     'Home Theater',
     'sound',
     'Party box',
-    
+
 
 
   ];
@@ -82,7 +82,7 @@ export default function ProductsPage() {
             Speaker <span className="text-black">Catalog</span>
           </h1>
           <p data-aos="fade-up" data-aos-delay="200" className="text-slate-655 text-sm md:text-base max-w-2xl mx-auto font-medium leading-relaxed">
-            Custom-manufactured speakers for home, studio, and commercial use. Contact us for a personalized quote tailored to your acoustic needs.
+            Custom-manufactured speakers for home, studio  and commercial use. Contact us for a personalized quote tailored to your acoustic needs.
           </p>
         </div>
       </section>
