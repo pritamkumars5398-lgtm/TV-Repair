@@ -198,7 +198,7 @@ export function Navbar() {
                           setIsOpen(false);
                           window.location.href = '/';
                         }}
-                        className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-red-705 bg-red-50 hover:bg-red-100 rounded-xl transition-all border border-red-100"
+                        className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-red-700 bg-red-50 hover:bg-red-100 rounded-xl transition-all border border-red-100"
                       >
                         <LogOut className="w-4 h-4" /> Logout
                       </button>
