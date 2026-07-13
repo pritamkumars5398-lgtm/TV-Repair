@@ -25,11 +25,13 @@ export function Navbar() {
   const pathname = usePathname();
 
   const [mounted, setMounted] = useState(false);
+  const [hasSignedUp, setHasSignedUp] = useState(false);
   const customer = useCustomerStore((state) => state.customer);
   const logout = useCustomerStore((state) => state.logout);
 
   useEffect(() => {
     setMounted(true);
+    setHasSignedUp(localStorage.getItem('customer_has_signed_up') === 'true');
   }, []);
 
   const isLoggedIn = mounted && !!customer;
@@ -133,6 +135,13 @@ export function Navbar() {
                   </>
                 )}
               </div>
+            ) : hasSignedUp ? (
+              <Link
+                href="/login"
+                className="flex items-center gap-1.5 px-5 py-2.5 text-[13px] font-bold text-slate-700 bg-white border border-slate-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 rounded-full transition-all shadow-sm group"
+              >
+                Log In
+              </Link>
             ) : (
               <Link
                 href="/signup"
@@ -205,6 +214,14 @@ export function Navbar() {
                     </div>
 
                   </div>
+                ) : hasSignedUp ? (
+                  <Link
+                    href="/login"
+                    className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary-600 rounded-xl transition-all shadow-sm w-full"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Log In
+                  </Link>
                 ) : (
                   <Link
                     href="/signup"
