@@ -1,7 +1,9 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Heart, Quote, ArrowLeft, Tv, ShieldCheck, Sparkles } from 'lucide-react';
+import sahilImg from '../../../assets/images/sahil.jpeg';
 
 export default function StoryPage() {
   return (
@@ -36,37 +38,53 @@ export default function StoryPage() {
         </div>
 
         {/* Narrative Card */}
-        <div className="bg-white/80 border border-slate-100 rounded-3xl p-8 sm:p-12 shadow-xl shadow-slate-100/50 backdrop-blur-md space-y-8 relative">
+        <div className="bg-white/80 border border-slate-100 rounded-3xl p-8 sm:p-12 shadow-xl shadow-slate-100/50 backdrop-blur-md relative">
           
           {/* Top Corner Quote Deco */}
           <div className="absolute -top-5 -left-5 w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-200">
             <Quote className="h-5 w-5 fill-white" />
           </div>
 
-          <div className="space-y-6 text-slate-750 text-base sm:text-lg leading-relaxed font-medium">
-            
-            <p>
-              RepairCart was built with a simple vision—to provide honest, reliable, and professional TV repair services across India.
-            </p>
+          <div className="grid md:grid-cols-[1.25fr_0.75fr] gap-8 md:gap-12 items-start">
+            <div className="space-y-6 text-slate-755 text-base sm:text-lg leading-relaxed font-medium">
+              <p>
+                RepairCart was built with a simple vision—to provide honest, reliable, and professional TV repair services across India.
+              </p>
 
-            <div className="border-l-4 border-rose-450 pl-6 my-8 py-2 bg-rose-50/20 rounded-r-2xl">
-              <p className="font-semibold text-slate-800 italic">
-                "The name <span className="text-primary-700 font-bold">RepairCart</span> was suggested by my closest friend, Late Mr. Sahil Sachdeva, shortly before his passing."
+              <div className="border-l-4 border-rose-450 pl-6 my-6 py-2 bg-rose-50/20 rounded-r-2xl">
+                <p className="font-semibold text-slate-800 italic">
+                  "The name <span className="text-primary-700 font-bold">RepairCart</span> was suggested by my closest friend, Late Mr. Sahil Sachdeva, shortly before his passing."
+                </p>
+              </div>
+
+              <p>
+                Sahil was more than a friend. He believed in people, encouraged ideas, and was always ready to help others. His belief in this dream gave us the confidence to build RepairCart.
+              </p>
+
+              <p>
+                Today, every milestone we achieve carries a small part of his encouragement.
+              </p>
+
+              <p className="text-slate-700">
+                This name stands as a tribute to his friendship, kindness, and the positive impact he had on our lives.
               </p>
             </div>
 
-            <p>
-              Sahil was more than a friend. He believed in people, encouraged ideas, and was always ready to help others. His belief in this dream gave us the confidence to build RepairCart.
-            </p>
-
-            <p>
-              Today, every milestone we achieve carries a small part of his encouragement.
-            </p>
-
-            <p className="text-slate-700">
-              This name stands as a tribute to his friendship, kindness, and the positive impact he had on our lives.
-            </p>
-
+            {/* Profile Image Column */}
+            <div className="flex flex-col items-center space-y-4 md:mt-2 shrink-0">
+              <div className="overflow-hidden rounded-2xl border-4 border-white bg-slate-50 shadow-md max-w-[220px] group">
+                <Image
+                  src={sahilImg}
+                  alt="Late Mr. Sahil Sachdeva"
+                  className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-500 ease-out"
+                  placeholder="blur"
+                />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-extrabold text-slate-850">Late Mr. Sahil Sachdeva</p>
+                <p className="text-[10px] text-slate-455 font-bold tracking-wide mt-0.5">1996 – 2024</p>
+              </div>
+            </div>
           </div>
 
           {/* Divider */}

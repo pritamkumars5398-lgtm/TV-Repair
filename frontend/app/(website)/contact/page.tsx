@@ -66,6 +66,26 @@ export default function ContactPage() {
     }
   };
 
+  const contactItems: Array<{
+    icon: React.ComponentType<any>;
+    label: string;
+    value?: string;
+    href?: string;
+    values?: Array<{ text: string; href: string }>;
+  }> = [
+    { icon: MapPin, label: 'Head Office', value: 'C-295, Sector-10, Noida, UP-201301' },
+    { icon: MapPin, label: 'Branch Office', value: 'B-115, Sector-5, Noida, UP-201301' },
+    { icon: Phone, label: 'Phone Support', values: [
+      { text: '+91 8586887887', href: 'tel:8586887887' },
+      { text: '8586807887', href: 'tel:8586807887' }
+    ] },
+    { icon: Mail, label: 'Email Support', values: [
+      { text: 'support@repaircart.co.in', href: 'mailto:support@repaircart.co.in' },
+      { text: 'info@repaircart.in', href: 'mailto:info@repaircart.in' }
+    ] },
+    { icon: Clock, label: 'Business Hours', value: 'Mon–Sat: 9:00 AM – 7:00 PM' },
+  ];
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSchema) }} />
@@ -243,19 +263,7 @@ export default function ContactPage() {
               <div className="rounded-xl border border-slate-200 bg-white p-5 text-slate-800 shadow-md space-y-4">
                 <h3 className="text-sm font-bold border-b border-slate-100 pb-2 text-slate-900">Office Locations & Details</h3>
                 <div className="grid gap-3.5 text-xs">
-                  {[
-                    { icon: MapPin, label: 'Head Office', value: 'C-295, Sector-10, Noida, UP-201301' },
-                    { icon: MapPin, label: 'Branch Office', value: 'B-115, Sector-5, Noida, UP-201301' },
-                    { icon: Phone, label: 'Phone Support', values: [
-                      { text: '+91 8586887887', href: 'tel:8586887887' },
-                      { text: '8586807887', href: 'tel:8586807887' }
-                    ] },
-                    { icon: Mail, label: 'Email Support', values: [
-                      { text: 'support@repaircart.co.in', href: 'mailto:support@repaircart.co.in' },
-                      { text: 'info@repaircart.in', href: 'mailto:info@repaircart.in' }
-                    ] },
-                    { icon: Clock, label: 'Business Hours', value: 'Mon–Sat: 9:00 AM – 7:00 PM' },
-                  ].map((item) => (
+                  {contactItems.map((item) => (
                     <div key={item.label} className="flex items-start gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100 hover:bg-slate-100/50 transition-colors">
                       <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white border border-slate-100 shrink-0">
                         <item.icon className="h-4.5 w-4.5 text-primary-600" strokeWidth={2} />
@@ -269,7 +277,7 @@ export default function ContactPage() {
                                 <a href={v.href} className="font-semibold text-slate-800 hover:text-primary-600 transition-colors">
                                   {v.text}
                                 </a>
-                                {i < item.values.length - 1 && <span className="mx-1 text-slate-400">,</span>}
+                                {i < item.values!.length - 1 && <span className="mx-1 text-slate-400">,</span>}
                               </span>
                             ))}
                           </div>
