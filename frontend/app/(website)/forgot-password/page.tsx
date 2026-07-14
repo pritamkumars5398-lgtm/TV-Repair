@@ -120,7 +120,7 @@ export default function ForgotPasswordPage() {
         <div className="w-full max-w-md relative z-10 animate-in fade-in slide-in-from-right-4 duration-500">
           <div className="mb-8 text-center lg:text-left">
             {step === 1 ? (
-              <Link href="/login" className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 hover:text-cyan-600 transition-colors mb-4 uppercase tracking-wider">
+              <Link href="/login?override=true" className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 hover:text-cyan-600 transition-colors mb-4 uppercase tracking-wider">
                 <ArrowLeft className="w-4 h-4" /> Back to Login
               </Link>
             ) : (
@@ -251,7 +251,7 @@ export default function ForgotPasswordPage() {
           <div className="mt-8 text-center">
             <p className="text-sm font-semibold text-slate-500">
               Remembered your password?{' '}
-              <Link href="/login" className="text-blue-600 font-bold hover:text-cyan-650 transition-colors">
+              <Link href="/login?override=true" className="text-blue-600 font-bold hover:text-cyan-650 transition-colors">
                 Login here
               </Link>
             </p>

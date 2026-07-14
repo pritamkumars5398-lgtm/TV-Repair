@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Loader2, Mail, Lock, ArrowRight, CheckCircle2 } from 'lucide-react';
@@ -15,10 +15,24 @@ function LoginFormContent() {
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/';
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
   const [userData, setUserData] = useState<{ name: string } | null>(null);
   const [form, setForm] = useState({ email: '', password: '' });
   const setAuth = useCustomerStore((state) => state.setAuth);
+
+  useEffect(() => {
+    const hasSignedUp = localStorage.getItem('customer_has_signed_up');
+    const override = searchParams.get('override') === 'true';
+    if (hasSignedUp !== 'true' && !override) {
+      router.push('/signup');
+    } else {
+      if (override) {
+        localStorage.setItem('customer_has_signed_up', 'true');
+      }
+      setCheckingAuth(false);
+    }
+  }, [router, searchParams]);
 
   function update(field: keyof typeof form, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -48,6 +62,14 @@ function LoginFormContent() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center bg-slate-50">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+      </div>
+    );
   }
 
   return (
@@ -143,7 +165,7 @@ function LoginFormContent() {
           <div className="mt-8 text-center">
             <p className="text-sm font-semibold text-slate-500">
               Don't have an account?{' '}
-              <Link href="/signup" className="text-blue-600 font-bold hover:text-cyan-650 transition-colors">
+              <Link href="/signup?override=true" className="text-blue-600 font-bold hover:text-cyan-650 transition-colors">
                 Sign up
               </Link>
             </p>

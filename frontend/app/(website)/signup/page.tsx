@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Loader2, UserPlus, Mail, Lock, User } from 'lucide-react';
@@ -9,10 +9,22 @@ import { toast } from 'sonner';
 import { publicApi } from '@/lib/api/public';
 import User2 from '../../../assets/img/User1 (2).png';
 
-export default function WebsiteRegisterPage() {
+function RegisterFormContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [form, setForm] = useState({ name: '', email: '', password: '' });
+
+  useEffect(() => {
+    const hasSignedUp = localStorage.getItem('customer_has_signed_up');
+    const override = searchParams.get('override') === 'true';
+    if (hasSignedUp === 'true' && !override) {
+      router.push('/login');
+    } else {
+      setCheckingAuth(false);
+    }
+  }, [router, searchParams]);
 
   function update(field: keyof typeof form, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -27,6 +39,7 @@ export default function WebsiteRegisterPage() {
 
     try {
       await publicApi.registerCustomer(form);
+      localStorage.setItem('customer_has_signed_up', 'true');
       toast.success('Account created successfully! Please log in.');
       router.push('/login');
     } catch (error: any) {
@@ -34,6 +47,14 @@ export default function WebsiteRegisterPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center bg-slate-50">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+      </div>
+    );
   }
 
   return (
@@ -141,7 +162,7 @@ export default function WebsiteRegisterPage() {
           <div className="mt-8 text-center">
             <p className="text-sm font-semibold text-slate-500">
               Already have an account?{' '}
-              <Link href="/login" className="text-blue-600 font-bold hover:text-cyan-650 transition-colors">
+              <Link href="/login?override=true" className="text-blue-600 font-bold hover:text-cyan-650 transition-colors">
                 Login here
               </Link>
             </p>
@@ -149,5 +170,17 @@ export default function WebsiteRegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function WebsiteRegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[70vh] flex items-center justify-center bg-slate-50">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+      </div>
+    }>
+      <RegisterFormContent />
+    </Suspense>
   );
 }
