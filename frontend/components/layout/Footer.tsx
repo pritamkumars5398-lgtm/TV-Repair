@@ -55,6 +55,7 @@ export function Footer() {
                 { href: '/story', label: 'Our Story (Tribute)' },
                 { href: '/contact', label: 'Contact Us' },
                 { href: '/portal', label: 'Customer Login' },
+                { href: '/technician/login', label: 'Technician Login' },
               ].map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="hover:text-primary-600 transition-colors">{link.label}</Link>

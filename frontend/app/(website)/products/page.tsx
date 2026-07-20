@@ -14,7 +14,7 @@ import { Loader2 } from 'lucide-react';
 const inquirySchema = z.object({
   name: z.string().min(2, 'Name is required'),
   phone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit number'),
-  email: z.string().email().optional().or(z.literal('')),
+  email: z.string().email('Valid email is required for product inquiry'),
   productInterest: z.string().min(1),
   message: z.string().min(10, 'Describe your requirement (min 10 chars)'),
 });
@@ -202,6 +202,11 @@ export default function ProductsPage() {
                     <input {...register('phone')} placeholder="10-digit number" className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-slate-50 hover:bg-white focus:bg-white" />
                     {errors.phone && <p className="text-xs text-rose-500 mt-1.5 font-medium">{errors.phone.message}</p>}
                   </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-2">Email *</label>
+                  <input {...register('email')} type="email" placeholder="Your email address" className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-slate-50 hover:bg-white focus:bg-white" />
+                  {errors.email && <p className="text-xs text-rose-500 mt-1.5 font-medium">{errors.email.message}</p>}
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-2">Product *</label>

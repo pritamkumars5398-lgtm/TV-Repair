@@ -16,7 +16,7 @@ const loginFor: Record<string, string> = {
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get('session')?.value;
+  const token = request.cookies.get('auth_token')?.value;
 
   // Logged-in users hitting a login/register page → send to their dashboard
   if (token && authPages.includes(pathname)) {

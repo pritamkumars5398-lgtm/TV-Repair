@@ -33,12 +33,16 @@ const FILTERS = [
   { label: 'Completed', value: 'delivered' },
 ];
 
+import { useAuthStore } from '@/lib/stores/auth-store';
+
 export default function TechnicianJobsPage() {
   const [filter, setFilter] = useState('active');
+  const user = useAuthStore((s) => s.user);
 
   const { data: jobs, isLoading } = useQuery({
-    queryKey: ['tech-jobs', filter],
-    queryFn: () => technicianApi.getJobs({ status: filter || undefined }).then((r) => r.data),
+    queryKey: ['tech-jobs', filter, user?._id],
+    queryFn: () => technicianApi.getJobs({ status: filter || undefined, technicianId: user?.id || user?._id }).then((r) => r.data),
+    enabled: !!(user?.id || user?._id),
   });
 
   return (

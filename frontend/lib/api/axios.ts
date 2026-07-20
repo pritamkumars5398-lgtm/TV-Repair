@@ -23,7 +23,7 @@ apiClient.interceptors.request.use((config) => {
   if (typeof document !== 'undefined') {
     const token = document.cookie
       .split('; ')
-      .find((row) => row.startsWith('session='))
+      .find((row) => row.startsWith('auth_token='))
       ?.split('=')[1] ||
       document.cookie
       .split('; ')
@@ -64,7 +64,7 @@ apiClient.interceptors.response.use(
     });
 
     if (error.response?.status === 401 && typeof window !== 'undefined') {
-      document.cookie = 'session=; path=/; max-age=0';
+      document.cookie = 'auth_token=; path=/; max-age=0';
       const currentPath = window.location.pathname;
       if (currentPath.startsWith('/admin') || currentPath.startsWith('/manager')) {
         window.location.href = '/admin/login';

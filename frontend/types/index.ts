@@ -2,6 +2,7 @@ export type UserRole = 'customer' | 'technician' | 'manager' | 'admin';
 
 export interface User {
   id: string;
+  _id?: string;
   name: string;
   email: string;
   phone: string;
@@ -68,6 +69,12 @@ export interface Ticket {
   issueDescription?: string;
   repairNotes?: string;
   estimateAmount?: number;
+  estimateBreakdown?: string;
+  techAssessmentAmount?: number;
+  techAssessmentBreakdown?: string;
+  adminEstimateAmount?: number;
+  adminEstimateBreakdown?: string;
+  estimateStatus?: string;
   invoiceAmount?: number;
 }
 
@@ -82,6 +89,9 @@ export interface TrackTicketResponse {
   serviceType: string;
   status: TicketStatus;
   statusHistory: StatusHistoryEntry[];
+  adminEstimateAmount?: number;
+  adminEstimateBreakdown?: string;
+  estimateStatus?: string;
 }
 
 export interface Lead {
@@ -107,6 +117,10 @@ export interface BookingFormData {
   preferredDate: string;
   preferredTime: string;
   issueDescription: string;
+  tvBrand?: string;
+  tvSize?: string;
+  tvType?: string;
+  modelNumber?: string;
   photos: File[];
   address: string;
   area: string;
@@ -256,6 +270,7 @@ export interface Technician {
   phone: string;
   email?: string;
   specialization: string;
+  photo?: string;
   isActive: boolean;
   jobsCompleted: number;
   rating?: number;
@@ -305,4 +320,5 @@ export interface Job {
   issueDescription?: string;
   repairNotes?: string;
   estimateAmount?: number;
+  photos?: string[];
 }

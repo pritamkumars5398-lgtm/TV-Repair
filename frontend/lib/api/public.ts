@@ -35,6 +35,11 @@ export const publicApi = {
     apiClient
       .get<ApiResponse<TrackTicketResponse>>(`/public/track/${ticketId}`)
       .then((r) => r.data),
+      
+  respondToEstimate: (ticketId: string, status: 'approved' | 'rejected') =>
+    apiClient
+      .post<ApiResponse<any>>(`/public/track/${ticketId}/estimate-response`, { status })
+      .then((r) => r.data),
 
   submitRating: (data: { ticketId: string; rating: number; comment?: string }) =>
     apiClient.post<ApiResponse<{ ratingId: string }>>('/public/ratings', data).then((r) => r.data),

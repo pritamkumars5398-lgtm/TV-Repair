@@ -66,7 +66,7 @@ function Step1({ onNext }: { onNext: (data: Step1Input) => void }) {
   const [photos, setPhotos] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<Step1Input>({
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<Step1Input>({
     resolver: zodResolver(step1Schema),
     defaultValues: {
       name: formData.name || '',
@@ -76,8 +76,14 @@ function Step1({ onNext }: { onNext: (data: Step1Input) => void }) {
       preferredDate: formData.preferredDate || '',
       preferredTime: formData.preferredTime || '',
       issueDescription: formData.issueDescription || '',
+      tvBrand: formData.tvBrand || '',
+      tvSize: formData.tvSize || '',
+      tvType: formData.tvType || '',
+      modelNumber: formData.modelNumber || '',
     },
   });
+
+  const watchServiceType = watch('serviceType');
 
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
@@ -119,8 +125,9 @@ function Step1({ onNext }: { onNext: (data: Step1Input) => void }) {
       </div>
 
       <div>
-        <label className={labelClass}>Email Address</label>
-        <input {...register('email')} type="email" placeholder="Optional" className={inputClass} />
+        <label className={labelClass}>Email Address *</label>
+        <input {...register('email')} type="email" placeholder="Your email address" className={inputClass} />
+        {errors.email && <p className="text-[10px] text-red-500 mt-1">{errors.email.message}</p>}
       </div>
 
       <div>
@@ -164,6 +171,40 @@ function Step1({ onNext }: { onNext: (data: Step1Input) => void }) {
         <textarea {...register('issueDescription')} rows={2} placeholder="E.g., Screen is dark, no sound..." className={`${inputClass} resize-none`} />
         {errors.issueDescription && <p className="text-[10px] text-red-500 mt-1">{errors.issueDescription.message}</p>}
       </div>
+
+      {watchServiceType === 'TV_REPAIR' && (
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>TV Brand</label>
+            <input {...register('tvBrand')} placeholder="E.g., Samsung, Sony" className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>TV Size</label>
+            <input {...register('tvSize')} placeholder="E.g., 55 inch" className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>TV Type</label>
+            <div className="relative">
+              <select {...register('tvType')} className={`${inputClass} appearance-none cursor-pointer pr-8`}>
+                <option value="">Select type...</option>
+                <option value="LED">LED</option>
+                <option value="LCD">LCD</option>
+                <option value="OLED">OLED</option>
+                <option value="QLED">QLED</option>
+                <option value="Smart TV">Smart TV</option>
+                <option value="Other">Other</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label className={labelClass}>Model Number</label>
+            <input {...register('modelNumber')} placeholder="If known" className={inputClass} />
+          </div>
+        </div>
+      )}
 
       {/* Photo Upload */}
       <div>

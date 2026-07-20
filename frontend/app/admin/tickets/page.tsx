@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Search, Loader2, ChevronLeft, ChevronRight, ChevronDown, Ticket as TicketIcon } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Search, Loader2, ChevronLeft, ChevronRight, ChevronDown, Ticket as TicketIcon, MessageSquare } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { adminApi } from '@/lib/api/admin';
@@ -39,10 +40,28 @@ export default function AdminTicketsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
+  
+  // Estimate Modal State
+  const [selectedTicketForEstimate, setSelectedTicketForEstimate] = useState<Ticket | null>(null);
+  const [adminEstimateAmount, setAdminEstimateAmount] = useState('');
+  const [adminEstimateBreakdown, setAdminEstimateBreakdown] = useState('');
+
+  // Message Modal State
+  const [selectedTicketForMessage, setSelectedTicketForMessage] = useState<Ticket | null>(null);
+  const [customMessage, setCustomMessage] = useState('');
+  const [expectedDate, setExpectedDate] = useState('');
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-tickets', search, statusFilter, page],
     queryFn: () => adminApi.getTickets({ search: search || undefined, status: statusFilter || undefined, page, limit: 20 }),
+  });
+
+  const { data: techData } = useQuery({
+    queryKey: ['admin-technicians'],
+    queryFn: () => adminApi.getTechnicians({ limit: 100 }),
   });
 
   const updateMutation = useMutation({
@@ -51,9 +70,56 @@ export default function AdminTicketsPage() {
     onError: () => toast.error('Update failed'),
   });
 
+  const assignMutation = useMutation({
+    mutationFn: ({ ticketId, technicianId }: { ticketId: string; technicianId: string }) => adminApi.assignTechnicianToTicket(ticketId, technicianId),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-tickets'] }); toast.success('Technician assigned successfully'); },
+    onError: () => toast.error('Failed to assign technician'),
+  });
+
+  const sendEstimateMutation = useMutation({
+    mutationFn: () => adminApi.sendEstimateToCustomer(selectedTicketForEstimate!.ticketId, { amount: parseFloat(adminEstimateAmount), breakdown: adminEstimateBreakdown }),
+    onSuccess: () => { 
+      qc.invalidateQueries({ queryKey: ['admin-tickets'] }); 
+      toast.success('Estimate sent to customer!');
+      setSelectedTicketForEstimate(null);
+    },
+    onError: () => toast.error('Failed to send estimate'),
+  });
+
+  const sendMessageMutation = useMutation({
+    mutationFn: () => adminApi.sendMessageToCustomer(selectedTicketForMessage!.ticketId, { message: customMessage, date: expectedDate }),
+    onSuccess: () => { 
+      qc.invalidateQueries({ queryKey: ['admin-tickets'] }); 
+      toast.success('Message sent to customer!');
+      setSelectedTicketForMessage(null);
+      setCustomMessage('');
+      setExpectedDate('');
+      
+      if (searchParams.get('action') === 'message') {
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete('action');
+        newUrl.searchParams.delete('ticketId');
+        window.history.replaceState({ path: newUrl.href }, '', newUrl.href);
+      }
+    },
+    onError: () => toast.error('Failed to send message'),
+  });
+
   const paginatedData = data?.data;
   const tickets: Ticket[] = paginatedData?.items ?? [];
+  const technicians = techData?.data?.items ?? [];
   const totalPages = paginatedData?.totalPages ?? 1;
+
+  useEffect(() => {
+    const action = searchParams.get('action');
+    const ticketId = searchParams.get('ticketId');
+    if (action === 'message' && ticketId && tickets.length > 0) {
+      const ticket = tickets.find((t) => t.ticketId === ticketId);
+      if (ticket && !selectedTicketForMessage) {
+        setSelectedTicketForMessage(ticket);
+      }
+    }
+  }, [searchParams, tickets, selectedTicketForMessage]);
 
   return (
     <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-7xl mx-auto">
@@ -98,6 +164,7 @@ export default function AdminTicketsPage() {
                 <th className="px-4 py-3 text-left">Technician</th>
                 <th className="px-4 py-3 text-left">Status</th>
                 <th className="px-4 py-3 text-left">Scheduled</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -116,7 +183,25 @@ export default function AdminTicketsPage() {
                   </td>
                   <td className="px-4 py-3 font-semibold text-slate-500">{SERVICE_LABELS[ticket.serviceType] ?? ticket.serviceType}</td>
                   <td className="px-4 py-3 font-semibold text-slate-500">
-                    {ticket.technicianName ?? <span className="text-slate-300 italic">Unassigned</span>}
+                    <div className="relative inline-block w-full max-w-[150px]">
+                      <select
+                        value={(ticket as any).technicianId || ''}
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            assignMutation.mutate({ ticketId: ticket.ticketId, technicianId: e.target.value });
+                          }
+                        }}
+                        className="w-full text-[10px] font-bold pl-2.5 pr-6 py-1 rounded border border-slate-200 bg-slate-50 cursor-pointer focus:ring-1 focus:ring-cyan-500/25 appearance-none text-slate-700 hover:bg-white transition-colors"
+                      >
+                        <option value="">Unassigned</option>
+                        {technicians.map((tech) => (
+                          <option key={tech.id} value={tech.id}>
+                            {tech.name}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none opacity-50" />
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <div className="relative inline-block">
@@ -152,6 +237,46 @@ export default function AdminTicketsPage() {
                       </p>
                     )}
                   </td>
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex flex-col items-end gap-2">
+                      {(ticket as any).estimateStatus === 'pending_admin_review' && (
+                        <button 
+                          onClick={() => {
+                            setSelectedTicketForEstimate(ticket);
+                            setAdminEstimateAmount(((ticket as any).techAssessmentAmount || '').toString());
+                            setAdminEstimateBreakdown((ticket as any).techAssessmentBreakdown || '');
+                          }}
+                          className="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-1 rounded hover:bg-amber-200 transition-colors"
+                        >
+                          Review Assessment
+                        </button>
+                      )}
+                      {(ticket as any).estimateStatus === 'sent_to_customer' && (
+                        <button 
+                          onClick={() => {
+                            setSelectedTicketForEstimate(ticket);
+                            setAdminEstimateAmount(((ticket as any).adminEstimateAmount || (ticket as any).techAssessmentAmount || '').toString());
+                            setAdminEstimateBreakdown((ticket as any).adminEstimateBreakdown || (ticket as any).techAssessmentBreakdown || '');
+                          }}
+                          className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded hover:bg-slate-200 transition-colors"
+                        >
+                          Edit Estimate
+                        </button>
+                      )}
+                      {(ticket as any).estimateStatus === 'approved' && (
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 px-2 py-1 rounded">Approved</span>
+                      )}
+                      {(ticket as any).estimateStatus === 'rejected' && (
+                        <span className="text-[10px] font-bold text-red-600 bg-red-100 px-2 py-1 rounded">Rejected</span>
+                      )}
+                      <button
+                        onClick={() => setSelectedTicketForMessage(ticket)}
+                        className="flex items-center gap-1 text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200 transition-colors mt-1"
+                      >
+                        <MessageSquare className="h-3 w-3" /> Message
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -175,6 +300,76 @@ export default function AdminTicketsPage() {
           </div>
         )}
       </div>
+
+      {/* Send Estimate Modal */}
+      {selectedTicketForEstimate && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+              <h2 className="font-bold text-slate-800">Send Estimate to Customer</h2>
+              <button onClick={() => setSelectedTicketForEstimate(null)} className="text-slate-400 hover:text-slate-600">
+                &times;
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                <p className="text-xs text-slate-500 font-semibold mb-1 uppercase tracking-wider">Technician's Assessment</p>
+                <p className="text-sm text-slate-600 mt-1 whitespace-pre-wrap">{(selectedTicketForEstimate as any).techAssessmentBreakdown}</p>
+              </div>
+              
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Final Amount to Charge (₹)</label>
+                <input type="number" value={adminEstimateAmount} onChange={e => setAdminEstimateAmount(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Problem Description & Cost Breakdown</label>
+                <textarea rows={4} value={adminEstimateBreakdown} onChange={e => setAdminEstimateBreakdown(e.target.value)}
+                  placeholder="e.g. Problem: Speaker blown. Breakdown: Speaker cost ₹500, Labor ₹200."
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/20 resize-none" />
+              </div>
+              
+              <button onClick={() => sendEstimateMutation.mutate()} disabled={sendEstimateMutation.isPending || !adminEstimateAmount}
+                className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-lg text-sm transition-colors flex justify-center items-center gap-2">
+                {sendEstimateMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                Approve & Send to Customer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Send Message Modal */}
+      {selectedTicketForMessage && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+              <h2 className="font-bold text-slate-800">Message Customer</h2>
+              <button onClick={() => setSelectedTicketForMessage(null)} className="text-slate-400 hover:text-slate-600">
+                &times;
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Update Message for {selectedTicketForMessage.customerName}</label>
+                <textarea rows={4} value={customMessage} onChange={e => setCustomMessage(e.target.value)}
+                  placeholder="e.g. Your repair has started. We are waiting for the spare parts..."
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Expected Delivery Date (Optional)</label>
+                <input type="date" value={expectedDate} onChange={e => setExpectedDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+              </div>
+              
+              <button onClick={() => sendMessageMutation.mutate()} disabled={sendMessageMutation.isPending || !customMessage}
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-lg text-sm transition-colors flex justify-center items-center gap-2">
+                {sendMessageMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                Send Message
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

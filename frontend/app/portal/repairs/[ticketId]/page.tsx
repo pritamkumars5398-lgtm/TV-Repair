@@ -28,11 +28,11 @@ const STATUS_COLORS: Record<TicketStatus, string> = {
 };
 
 interface PageProps {
-  params: Promise<{ ticketId: string }>;
+  params: { ticketId: string };
 }
 
 export default function RepairDetailPage({ params }: PageProps) {
-  const { ticketId } = use(params);
+  const { ticketId } = params;
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['repair-detail', ticketId],

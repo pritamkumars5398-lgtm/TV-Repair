@@ -6,6 +6,7 @@ import { Search, CheckCircle2, Circle, Loader2, AlertCircle, ArrowRight, Message
 import Link from 'next/link';
 import { publicApi } from '@/lib/api/public';
 import type { TrackTicketResponse, TicketStatus } from '@/types';
+import { toast } from 'sonner';
 
 const STAGES: { status: TicketStatus; label: string; desc: string }[] = [
   { status: 'tv_received', label: 'TV Received', desc: 'Your TV has been received at our service center.' },
@@ -116,6 +117,7 @@ function TrackContent() {
   const [trackData, setTrackData] = useState<TrackTicketResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<'not_found' | 'invalid' | 'api_error' | null>(null);
+  const [isSubmittingResponse, setIsSubmittingResponse] = useState(false);
 
   const TICKET_REGEX = /^TKT-\d{4}$/i;
 
@@ -144,11 +146,44 @@ function TrackContent() {
 
   useEffect(() => {
     const id = searchParams.get('id');
+    const action = searchParams.get('action'); // 'approve' or 'reject'
+    
     if (id) {
       setTicketInput(id);
-      handleSearch(id); // eslint-disable-line react-hooks/exhaustive-deps
+      
+      if (action === 'approve' || action === 'reject') {
+        // Auto process the action
+        handleEstimateResponse(action === 'approve' ? 'approved' : 'rejected', id);
+      } else {
+        handleSearch(id);
+      }
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleEstimateResponse = async (status: 'approved' | 'rejected', ticketIdStr?: string) => {
+    const id = ticketIdStr || (trackData?.ticketId);
+    if (!id) return;
+    
+    setIsSubmittingResponse(true);
+    try {
+      await publicApi.respondToEstimate(id, status);
+      toast.success(status === 'approved' ? 'Estimate Approved! Work will start soon.' : 'Estimate Rejected. We have cancelled the request.');
+      
+      // Remove 'action' from URL without reloading to prevent double submissions on refresh
+      if (window.history.replaceState) {
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete('action');
+        window.history.replaceState({ path: newUrl.href }, '', newUrl.href);
+      }
+      
+      handleSearch(id); // Refresh data
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to submit response');
+      handleSearch(id); // Still load the track data so they can try again manually
+    } finally {
+      setIsSubmittingResponse(false);
+    }
+  };
 
   return (
     <div className="bg-[#f8fafc] min-h-screen font-sans">
@@ -257,6 +292,97 @@ function TrackContent() {
               </div>
               
               <StatusTimeline data={trackData} />
+
+              {/* Estimate Section */}
+              {['sent_to_customer', 'approved', 'rejected'].includes(trackData.estimateStatus || '') && (
+                <div className="mt-8 pt-6 border-t border-slate-100">
+                  <div className={`border rounded-xl p-5 sm:p-6 shadow-sm ${
+                    trackData.estimateStatus === 'approved' ? 'bg-emerald-50 border-emerald-200' :
+                    trackData.estimateStatus === 'rejected' ? 'bg-red-50 border-red-200' :
+                    'bg-amber-50 border-amber-200'
+                  }`}>
+                    <h3 className={`text-sm font-extrabold uppercase tracking-wider mb-4 flex items-center gap-2 ${
+                      trackData.estimateStatus === 'approved' ? 'text-emerald-900' :
+                      trackData.estimateStatus === 'rejected' ? 'text-red-900' :
+                      'text-amber-900'
+                    }`}>
+                      {trackData.estimateStatus === 'approved' ? <CheckCircle2 className="h-4 w-4" /> :
+                       trackData.estimateStatus === 'rejected' ? <AlertCircle className="h-4 w-4" /> :
+                       <AlertCircle className="h-4 w-4" />}
+                      Final Repair Estimate
+                    </h3>
+                    
+                    <div className="flex flex-col sm:flex-row justify-between gap-6">
+                      <div className="flex-1">
+                        <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${
+                          trackData.estimateStatus === 'approved' ? 'text-emerald-700' :
+                          trackData.estimateStatus === 'rejected' ? 'text-red-700' :
+                          'text-amber-700'
+                        }`}>Total Cost</p>
+                        <p className={`text-3xl font-black mb-4 ${
+                          trackData.estimateStatus === 'approved' ? 'text-emerald-900' :
+                          trackData.estimateStatus === 'rejected' ? 'text-red-900' :
+                          'text-amber-900'
+                        }`}>₹{trackData.adminEstimateAmount?.toLocaleString('en-IN')}</p>
+                        
+                        <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${
+                          trackData.estimateStatus === 'approved' ? 'text-emerald-700' :
+                          trackData.estimateStatus === 'rejected' ? 'text-red-700' :
+                          'text-amber-700'
+                        }`}>Breakdown</p>
+                        <p className={`text-sm font-medium whitespace-pre-wrap leading-relaxed ${
+                          trackData.estimateStatus === 'approved' ? 'text-emerald-800' :
+                          trackData.estimateStatus === 'rejected' ? 'text-red-800' :
+                          'text-amber-800'
+                        }`}>{trackData.adminEstimateBreakdown}</p>
+                      </div>
+
+                      <div className={`flex flex-col gap-3 justify-center sm:w-48 shrink-0 border-t sm:border-t-0 sm:border-l pt-4 sm:pt-0 sm:pl-6 ${
+                        trackData.estimateStatus === 'approved' ? 'border-emerald-200/60' :
+                        trackData.estimateStatus === 'rejected' ? 'border-red-200/60' :
+                        'border-amber-200/60'
+                      }`}>
+                        {trackData.estimateStatus === 'sent_to_customer' ? (
+                          <>
+                            <button 
+                              onClick={() => handleEstimateResponse('approved')}
+                              disabled={isSubmittingResponse}
+                              className="w-full py-3 bg-amber-600 hover:bg-amber-700 disabled:opacity-70 text-white font-bold rounded-lg text-sm transition-colors shadow-sm flex items-center justify-center gap-2"
+                            >
+                              {isSubmittingResponse ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                              Approve Estimate
+                            </button>
+                            <button 
+                              onClick={() => handleEstimateResponse('rejected')}
+                              disabled={isSubmittingResponse}
+                              className="w-full py-3 bg-white hover:bg-amber-100 disabled:opacity-70 text-amber-700 border border-amber-300 font-bold rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
+                            >
+                              Reject
+                            </button>
+                            <p className="text-[10px] text-amber-600 text-center font-semibold mt-1">
+                              Approve to begin repair
+                            </p>
+                          </>
+                        ) : (
+                          <div className="text-center">
+                            <span className={`inline-block px-3 py-1.5 rounded-md font-bold text-xs uppercase tracking-wider ${
+                              trackData.estimateStatus === 'approved' ? 'bg-emerald-100 text-emerald-700' :
+                              'bg-red-100 text-red-700'
+                            }`}>
+                              {trackData.estimateStatus === 'approved' ? 'Approved' : 'Rejected'}
+                            </span>
+                            {trackData.estimateStatus === 'approved' && (
+                              <p className="text-[10px] text-emerald-600 font-semibold mt-2">
+                                Repair is in progress.
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               
               <div className="mt-8 pt-6 border-t border-slate-100 text-center">
                 <p className="text-xs font-semibold text-slate-500 mb-3">Need help with your repair?</p>

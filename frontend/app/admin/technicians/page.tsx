@@ -10,7 +10,8 @@ import type { Technician } from '@/types';
 export default function AdminTechniciansPage() {
   const qc = useQueryClient();
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ name: '', phone: '', email: '', specialization: '' });
+  const [form, setForm] = useState({ name: '', phone: '', email: '', specialization: '', photo: '' });
+  const [isUploading, setIsUploading] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-technicians'],
@@ -22,7 +23,7 @@ export default function AdminTechniciansPage() {
     onSuccess: () => {
       toast.success('Technician added');
       setShowModal(false);
-      setForm({ name: '', phone: '', email: '', specialization: '' });
+      setForm({ name: '', phone: '', email: '', specialization: '', photo: '' });
       qc.invalidateQueries({ queryKey: ['admin-technicians'] });
     },
     onError: () => toast.error('Failed to add technician'),
@@ -64,9 +65,13 @@ export default function AdminTechniciansPage() {
             <div key={tech.id} className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-4 hover:border-cyan-250 hover:shadow transition-all group">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-cyan-50 to-primary-50 text-cyan-700 flex items-center justify-center font-bold text-base border border-cyan-100 shadow-sm group-hover:scale-105 transition-transform">
-                    {tech.name[0].toUpperCase()}
-                  </div>
+                  {tech.photo ? (
+                    <img src={tech.photo} alt={tech.name} className="h-10 w-10 rounded-lg object-cover shadow-sm group-hover:scale-105 transition-transform" />
+                  ) : (
+                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-cyan-50 to-primary-50 text-cyan-700 flex items-center justify-center font-bold text-base border border-cyan-100 shadow-sm group-hover:scale-105 transition-transform">
+                      {tech.name[0].toUpperCase()}
+                    </div>
+                  )}
                   <div>
                     <p className="font-bold text-slate-850 text-xs leading-tight group-hover:text-cyan-700 transition-colors">{tech.name}</p>
                     <p className="text-[10px] font-semibold text-slate-400 mt-1">{tech.specialization}</p>
@@ -127,9 +132,36 @@ export default function AdminTechniciansPage() {
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500/20 font-medium" />
                 </div>
               ))}
+              
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1">Photo</label>
+                <input type="file" accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setIsUploading(true);
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    try {
+                      const res = await adminApi.uploadImage(formData);
+                      if (res.success) {
+                        setForm((f) => ({ ...f, photo: res.imageUrl }));
+                        toast.success('Image uploaded');
+                      }
+                    } catch (err) {
+                      toast.error('Failed to upload image');
+                    } finally {
+                      setIsUploading(false);
+                    }
+                  }}
+                  className="w-full text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100" />
+                {isUploading && <p className="text-[10px] text-cyan-600 font-semibold mt-1 flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" /> Uploading...</p>}
+                {form.photo && !isUploading && <img src={form.photo} alt="Preview" className="h-10 w-10 mt-2 rounded-lg object-cover border border-slate-200" />}
+              </div>
+
               <div className="flex gap-2 pt-2">
                 <button onClick={() => setShowModal(false)} className="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">Cancel</button>
-                <button onClick={() => createMutation.mutate()} disabled={createMutation.isPending || !form.name || !form.phone}
+                <button onClick={() => createMutation.mutate()} disabled={createMutation.isPending || isUploading || !form.name || !form.phone}
                   className="flex-1 flex items-center justify-center gap-1.5 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white text-xs font-bold py-2 rounded-lg shadow-sm transition-all disabled:opacity-60">
                   {createMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Add Technician'}
                 </button>

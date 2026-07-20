@@ -5,7 +5,7 @@ export const technicianApi = {
   getDashboard: () =>
     apiClient.get<ApiResponse<TechnicianDashboardStats>>('/technician/dashboard').then((r) => r.data),
 
-  getJobs: (params?: { status?: string }) =>
+  getJobs: (params?: { status?: string; technicianId?: string }) =>
     apiClient.get<ApiResponse<Job[]>>('/technician/jobs', { params }).then((r) => r.data),
 
   getJobDetail: (ticketId: string) =>
@@ -24,4 +24,13 @@ export const technicianApi = {
     apiClient.post<ApiResponse<{ url: string }>>(`/technician/jobs/${ticketId}/photos`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }).then((r) => r.data),
+
+  markOnTheWay: (ticketId: string) =>
+    apiClient.post<ApiResponse<{ otp: string }>>(`/technician/jobs/${ticketId}/on-the-way`).then((r) => r.data),
+
+  verifyPickupOtp: (ticketId: string, otp: string) =>
+    apiClient.post<ApiResponse<Job>>(`/technician/jobs/${ticketId}/verify-pickup`, { otp }).then((r) => r.data),
+
+  notifyPickup: (ticketId: string) =>
+    apiClient.post<ApiResponse<any>>(`/technician/jobs/${ticketId}/notify-pickup`).then((r) => r.data),
 };

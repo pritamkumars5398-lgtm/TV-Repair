@@ -24,16 +24,18 @@ const STATUS_LABELS: Record<TicketStatus, string> = {
 };
 
 interface PageProps {
-  params: Promise<{ ticketId: string }>;
+  params: { ticketId: string };
 }
 
 export default function TechnicianJobDetailPage({ params }: PageProps) {
-  const { ticketId } = use(params);
+  const { ticketId } = params;
   const qc = useQueryClient();
   const [note, setNote] = useState('');
   const [estimateAmount, setEstimateAmount] = useState('');
   const [estimateBreakdown, setEstimateBreakdown] = useState('');
   const [showEstimate, setShowEstimate] = useState(false);
+  const [pickupOtp, setPickupOtp] = useState('');
+  const [showOtpInput, setShowOtpInput] = useState(false);
 
   const { data: job, isLoading, isError } = useQuery({
     queryKey: ['tech-job', ticketId],
@@ -59,9 +61,41 @@ export default function TechnicianJobDetailPage({ params }: PageProps) {
   });
 
   const estimateMutation = useMutation({
-    mutationFn: () => technicianApi.createEstimate(ticketId, { amount: parseFloat(estimateAmount), breakdown: estimateBreakdown }),
-    onSuccess: () => { toast.success('Estimate submitted'); setShowEstimate(false); qc.invalidateQueries({ queryKey: ['tech-job', ticketId] }); },
-    onError: () => toast.error('Failed to submit estimate'),
+    mutationFn: () => technicianApi.createEstimate(ticketId, { amount: 0, breakdown: estimateBreakdown }),
+    onSuccess: () => { toast.success('Assessment submitted to Admin'); setShowEstimate(false); qc.invalidateQueries({ queryKey: ['tech-job', ticketId] }); },
+    onError: () => toast.error('Failed to submit assessment'),
+  });
+
+  const onTheWayMutation = useMutation({
+    mutationFn: () => technicianApi.markOnTheWay(ticketId),
+    onSuccess: (data) => {
+      toast.success('Marked on the way! OTP sent to customer.');
+      setShowOtpInput(true);
+      if (data?.data?.otp) {
+        toast.info(`Demo OTP: ${data.data.otp}`);
+      }
+      qc.invalidateQueries({ queryKey: ['tech-job', ticketId] });
+    },
+    onError: () => toast.error('Failed to mark on the way'),
+  });
+
+  const verifyOtpMutation = useMutation({
+    mutationFn: (otp: string) => technicianApi.verifyPickupOtp(ticketId, otp),
+    onSuccess: () => {
+      toast.success('Pickup verified successfully!');
+      setShowOtpInput(false);
+      qc.invalidateQueries({ queryKey: ['tech-job', ticketId] });
+    },
+    onError: () => toast.error('Invalid OTP or verification failed'),
+  });
+
+  const notifyPickupMutation = useMutation({
+    mutationFn: () => technicianApi.notifyPickup(ticketId),
+    onSuccess: () => {
+      toast.success('Admin notified about product pickup!');
+      qc.invalidateQueries({ queryKey: ['tech-job', ticketId] });
+    },
+    onError: () => toast.error('Failed to notify admin'),
   });
 
   if (isLoading) return <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary-600" /></div>;
@@ -142,6 +176,58 @@ export default function TechnicianJobDetailPage({ params }: PageProps) {
         </div>
       )}
 
+      {/* Notify Pickup */}
+      <div className="bg-white rounded-xl border border-neutral-200 shadow-card p-5">
+        <h2 className="font-semibold text-neutral-800 mb-2">Product Collection</h2>
+        <p className="text-sm text-neutral-500 mb-4">Notify the admin once you have successfully collected the product from the customer.</p>
+        <button
+          onClick={() => notifyPickupMutation.mutate()}
+          disabled={notifyPickupMutation.isPending}
+          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors disabled:opacity-60">
+          {notifyPickupMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          Notify Admin: Product Collected
+        </button>
+      </div>
+
+      {/* Pickup OTP Section */}
+      {(job as any).isPickup && job.status === 'tv_received' && !showOtpInput && !(job as any).pickupOtp && (
+        <div className="bg-white rounded-xl border border-neutral-200 shadow-card p-5">
+          <h2 className="font-semibold text-neutral-800 mb-2">Initiate Pickup</h2>
+          <p className="text-sm text-neutral-500 mb-4">Mark yourself as on the way to generate and send the Pickup OTP to the customer.</p>
+          <button
+            onClick={() => onTheWayMutation.mutate()}
+            disabled={onTheWayMutation.isPending}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors disabled:opacity-60">
+            {onTheWayMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            Mark On The Way
+          </button>
+        </div>
+      )}
+
+      {((showOtpInput || (job as any).pickupOtp) && job.status === 'tv_received') && (
+        <div className="bg-white rounded-xl border border-neutral-200 shadow-card p-5 border-l-4 border-l-primary-500">
+          <h2 className="font-semibold text-neutral-800 mb-2">Verify Pickup</h2>
+          <p className="text-sm text-neutral-500 mb-4">Ask the customer for the 4-digit Pickup OTP sent to their mobile.</p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              maxLength={4}
+              value={pickupOtp}
+              onChange={(e) => setPickupOtp(e.target.value.replace(/\D/g, ''))}
+              placeholder="Enter 4-digit OTP"
+              className="px-4 py-2 text-center tracking-widest text-lg border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 w-40"
+            />
+            <button
+              onClick={() => verifyOtpMutation.mutate(pickupOtp)}
+              disabled={pickupOtp.length !== 4 || verifyOtpMutation.isPending}
+              className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors disabled:opacity-60">
+              {verifyOtpMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              Verify
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Add note */}
       <div className="bg-white rounded-xl border border-neutral-200 shadow-card p-5">
         <h2 className="font-semibold text-neutral-800 mb-3">Add Repair Note</h2>
@@ -156,47 +242,52 @@ export default function TechnicianJobDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Create estimate */}
+      {/* Create estimate / assessment */}
       <div className="bg-white rounded-xl border border-neutral-200 shadow-card p-5">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-neutral-800">Estimate</h2>
+          <h2 className="font-semibold text-neutral-800">Assessment for Admin</h2>
           <button onClick={() => setShowEstimate((v) => !v)}
             className="flex items-center gap-1.5 text-sm text-primary-600 hover:underline">
-            <FileText className="h-4 w-4" /> {showEstimate ? 'Cancel' : 'Create Estimate'}
+            <FileText className="h-4 w-4" /> {showEstimate ? 'Cancel' : 'Create Assessment'}
           </button>
         </div>
-        {job.estimateAmount ? (
+        {(job as any).techAssessmentBreakdown ? (
           <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-            <p className="text-sm text-green-700 font-medium">Estimate submitted: ₹{job.estimateAmount.toLocaleString('en-IN')}</p>
+            <p className="text-sm text-green-700 font-medium">Assessment submitted successfully!</p>
           </div>
         ) : showEstimate ? (
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Total Amount (₹)</label>
-              <input type="number" value={estimateAmount} onChange={(e) => setEstimateAmount(e.target.value)}
-                placeholder="e.g. 2500"
-                className="w-full px-3 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Breakdown</label>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">Problem Description & Parts Required</label>
               <textarea rows={3} value={estimateBreakdown} onChange={(e) => setEstimateBreakdown(e.target.value)}
-                placeholder="Labour: ₹500, Parts: ₹2000..."
+                placeholder="e.g. Screen is broken. Needs new screen panel..."
                 className="w-full px-3 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" />
             </div>
-            <button onClick={() => estimateMutation.mutate()} disabled={!estimateAmount || estimateMutation.isPending}
+            <button onClick={() => estimateMutation.mutate()} disabled={!estimateBreakdown || estimateMutation.isPending}
               className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors disabled:opacity-60">
               {estimateMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              Submit Estimate
+              Send Assessment to Admin
             </button>
           </div>
         ) : (
-          <p className="text-sm text-neutral-400">No estimate created yet.</p>
+          <p className="text-sm text-neutral-400">No assessment created yet.</p>
         )}
       </div>
 
       {/* Photo upload placeholder */}
       <div className="bg-white rounded-xl border border-neutral-200 shadow-card p-5">
         <h2 className="font-semibold text-neutral-800 mb-3">Photos</h2>
+        
+        {job.photos && job.photos.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+            {job.photos.map((photoUrl: string, idx: number) => (
+              <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-neutral-200">
+                <img src={photoUrl} alt={`Job Photo ${idx + 1}`} className="w-full h-full object-cover" />
+              </div>
+            ))}
+          </div>
+        )}
+
         <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-neutral-200 rounded-xl p-8 cursor-pointer hover:border-primary-300 hover:bg-primary-50 transition-colors">
           <Camera className="h-8 w-8 text-neutral-300" />
           <p className="text-sm text-neutral-500">Upload before/after photos</p>
@@ -210,6 +301,7 @@ export default function TechnicianJobDetailPage({ params }: PageProps) {
               try {
                 await technicianApi.uploadPhoto(ticketId, fd);
                 toast.success('Photos uploaded');
+                qc.invalidateQueries({ queryKey: ['tech-job', ticketId] });
               } catch { toast.error('Upload failed'); }
             }} />
         </label>

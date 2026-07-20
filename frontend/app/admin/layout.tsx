@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -13,6 +13,8 @@ import {
 import { toast } from 'sonner';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { authApi } from '@/lib/api/auth';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { adminApi } from '@/lib/api/admin';
 
 const allNavItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager'] },
@@ -38,6 +40,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user, clearAuth } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { data: notificationsData } = useQuery({
+    queryKey: ['adminNotifications'],
+    queryFn: () => adminApi.getNotifications(),
+    refetchInterval: 30000,
+  });
+
+  const notifications = notificationsData?.data || [];
+  const unreadCount = notifications.filter((n: any) => !n.isRead).length;
+
+  const markReadMutation = useMutation({
+    mutationFn: (id: string) => adminApi.markNotificationRead(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminNotifications'] });
+    }
+  });
+
+  const handleNotificationClick = (n: any) => {
+    if (!n.isRead) {
+      markReadMutation.mutate(n.id);
+    }
+    setNotificationsOpen(false);
+    if (n.link) {
+      router.push(n.link);
+    }
+  };
 
   // If it's the login page, render it full screen without the dashboard layout
   if (pathname === '/admin/login') {
@@ -128,10 +158,49 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <input type="text" placeholder="Search..." className="bg-transparent border-none focus:outline-none text-sm ml-2 text-slate-700 placeholder:text-slate-400 w-40" />
             </div>
 
-            <button className="relative p-1.5 rounded-md text-slate-500 hover:bg-slate-100 transition-colors">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full"></span>
-            </button>
+            <div className="relative">
+              <button 
+                onClick={() => setNotificationsOpen(!notificationsOpen)}
+                className="relative p-1.5 rounded-md text-slate-500 hover:bg-slate-100 transition-colors"
+              >
+                <Bell className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full"></span>
+                )}
+              </button>
+              
+              {notificationsOpen && (
+                <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-md shadow-lg py-1 z-50 max-h-96 overflow-y-auto">
+                  <div className="px-4 py-2 border-b border-slate-100 flex justify-between items-center">
+                    <p className="text-sm font-semibold text-slate-800">Notifications</p>
+                    {unreadCount > 0 && (
+                      <span className="text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full">{unreadCount} New</span>
+                    )}
+                  </div>
+                  {notifications.length === 0 ? (
+                    <div className="px-4 py-6 text-center text-sm text-slate-500">
+                      No notifications yet
+                    </div>
+                  ) : (
+                    notifications.map((n: any) => (
+                      <div 
+                        key={n.id} 
+                        onClick={() => handleNotificationClick(n)}
+                        className={`px-4 py-3 border-b border-slate-50 cursor-pointer hover:bg-slate-50 transition-colors ${!n.isRead ? 'bg-blue-50/50' : ''}`}
+                      >
+                        <div className="flex justify-between items-start mb-1">
+                          <p className={`text-sm ${!n.isRead ? 'font-semibold text-slate-800' : 'text-slate-600'}`}>{n.title}</p>
+                          <span className="text-[10px] text-slate-400 whitespace-nowrap ml-2">
+                            {new Date(n.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 line-clamp-2">{n.message}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
             <div className="h-6 w-px bg-slate-200 hidden sm:block"></div>
 
             <div className="relative">

@@ -44,6 +44,15 @@ export const adminApi = {
   updateTicket: (id: string, data: { status?: string; technicianId?: string; notes?: string }) =>
     apiClient.put<ApiResponse<Ticket>>(`/tickets/${id}`, data).then((r) => r.data),
 
+  assignTechnicianToTicket: (ticketId: string, technicianId: string) =>
+    apiClient.post<ApiResponse<Ticket>>(`/admin/tickets/${ticketId}/assign`, { technicianId }).then((r) => r.data),
+
+  sendEstimateToCustomer: (ticketId: string, data: { amount: number; breakdown: string }) =>
+    apiClient.post<ApiResponse<any>>(`/admin/tickets/${ticketId}/send-estimate`, data).then((r) => r.data),
+
+  sendMessageToCustomer: (ticketId: string, data: { message: string; date?: string }) =>
+    apiClient.post<ApiResponse<any>>(`/admin/tickets/${ticketId}/send-message`, data).then((r) => r.data),
+
   // Customers
   getCustomers: (params?: { page?: number; limit?: number; search?: string }) =>
     apiClient.get<ApiResponse<PaginatedResponse<Customer>>>('/admin/customers', { params }).then((r) => r.data),
@@ -57,6 +66,11 @@ export const adminApi = {
 
   updateTechnician: (id: string, data: Partial<Technician>) =>
     apiClient.put<ApiResponse<Technician>>(`/admin/technicians/${id}`, data).then((r) => r.data),
+
+  uploadImage: (formData: FormData) =>
+    apiClient.post<{ success: boolean; imageUrl: string }>('/admin/upload-image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then((r) => r.data),
 
   // Inventory
   getInventory: (params?: { page?: number; limit?: number; search?: string }) =>
@@ -108,4 +122,11 @@ export const adminApi = {
   // Customers (Secondary endpoint or duplicate)
   getCustomersList: (params?: { page?: number; limit?: number; search?: string }) =>
     apiClient.get<PaginatedResponse<any>>('/customers', { params }).then((r) => r.data),
+
+  // Notifications
+  getNotifications: () =>
+    apiClient.get<ApiResponse<any[]>>('/admin/notifications').then((r) => r.data),
+    
+  markNotificationRead: (id: string) =>
+    apiClient.put<ApiResponse<any>>(`/admin/notifications/${id}/read`).then((r) => r.data),
 };
