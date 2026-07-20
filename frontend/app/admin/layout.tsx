@@ -47,6 +47,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     queryKey: ['adminNotifications'],
     queryFn: () => adminApi.getNotifications(),
     refetchInterval: 30000,
+    enabled: pathname !== '/admin/login',
   });
 
   const notifications = notificationsData?.data || [];

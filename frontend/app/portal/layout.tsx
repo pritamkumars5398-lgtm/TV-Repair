@@ -27,6 +27,10 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const { user, clearAuth } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  if (pathname === '/portal/login' || pathname === '/portal/register') {
+    return <>{children}</>;
+  }
+
   async function handleLogout() {
     try { await authApi.logout(); } catch { /* ignore */ }
     clearAuth();
