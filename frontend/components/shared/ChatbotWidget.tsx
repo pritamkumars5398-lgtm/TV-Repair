@@ -117,7 +117,7 @@ export function ChatbotWidget() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? 'Close chat' : 'Open chat assistant'}
-        className="fixed bottom-6 left-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary-600 text-white shadow-lg hover:bg-primary-700 transition-all duration-200 hover:scale-110"
+        className="fixed bottom-6 left-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-all duration-200 hover:scale-110"
       >
         {isOpen ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
       </button>

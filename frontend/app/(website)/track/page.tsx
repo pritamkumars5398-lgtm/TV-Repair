@@ -228,7 +228,7 @@ function TrackContent() {
               <button
                 onClick={() => handleSearch()}
                 disabled={loading}
-                className="px-8 py-3.5 bg-primary-600 hover:bg-primary-700 disabled:opacity-70 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 shadow-md"
+                className="px-8 py-3.5 bg-primary-600 hover:bg-primary-700 disabled:opacity-70 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                 {loading ? 'Searching...' : 'Track'}
@@ -347,7 +347,7 @@ function TrackContent() {
                             <button 
                               onClick={() => handleEstimateResponse('approved')}
                               disabled={isSubmittingResponse}
-                              className="w-full py-3 bg-amber-600 hover:bg-amber-700 disabled:opacity-70 text-white font-bold rounded-lg text-sm transition-colors shadow-sm flex items-center justify-center gap-2"
+                              className="w-full py-3 bg-amber-600 hover:bg-amber-700 disabled:opacity-70 text-white font-bold rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
                             >
                               {isSubmittingResponse ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                               Approve Estimate
@@ -390,7 +390,7 @@ function TrackContent() {
                   href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '918586887887'}?text=Hi, my ticket ID is ${trackData.ticketId}. I need help.`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#25D366] text-white text-xs font-bold rounded-md hover:bg-[#20bd5a] transition-colors shadow-sm"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#25D366] text-white text-xs font-bold rounded-md hover:bg-[#20bd5a] transition-colors"
                 >
                   <MessageCircle className="h-4 w-4" /> Message on WhatsApp
                 </a>

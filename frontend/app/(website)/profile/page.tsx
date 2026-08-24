@@ -272,7 +272,7 @@ export default function ProfilePage() {
               </div>
               <button
                 onClick={() => router.push('/book')}
-                className="bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold px-5 py-3 rounded-full shadow-sm transition hover:shadow group flex items-center gap-1"
+                className="bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold px-5 py-3 rounded-full transition group flex items-center gap-1"
               >
                 Book a New Repair <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </button>

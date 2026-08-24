@@ -220,7 +220,7 @@ export default function ServicesPage() {
   return (
     <div className="bg-slate-50 min-h-screen font-sans">
       {/* Hero */}
-      <section className="relative bg-slate-50 text-slate-800 pt-28 pb-32 overflow-hidden border-b border-slate-200">
+      <section className="relative bg-slate-50 text-slate-800 pt-16 sm:pt-20 pb-16 overflow-hidden border-b border-slate-200">
         <div className="absolute inset-0">
           <Image src={img1} alt="Services bg" fill priority className="object-cover opacity-45" />
         </div>
@@ -786,7 +786,7 @@ export default function ServicesPage() {
                 Get in touch with our experts to discuss how our state-of-the-art facilities can handle your requirements.
               </p>
               <div className="pt-2">
-                <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white text-xs font-bold rounded-xl hover:bg-primary-700 transition-all shadow-md shadow-primary-600/10 hover:-translate-y-0.5">
+                <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white text-xs font-bold rounded-xl hover:bg-primary-700 transition-all">
                   Contact Us Today <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -796,7 +796,7 @@ export default function ServicesPage() {
             <div className="lg:col-span-5">
               <div className="relative h-[220px] w-full rounded-2xl overflow-hidden shadow-lg border border-slate-200/80 bg-white">
                 <Image 
-                  src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=600&q=80" 
+                  src="/realimages/BONDING/DSC05309.webp" 
                   alt="Ready to work" 
                   fill 
                   className="object-cover" 

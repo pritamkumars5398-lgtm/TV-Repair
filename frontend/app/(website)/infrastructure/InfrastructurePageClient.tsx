@@ -1,24 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import AOS from "aos";
 import "aos/dist/aos.css";
-
-import infra1 from "../../../assets/img/Picture1.png";
-import infra2 from "../../../assets/img/Picture2.png";
-import infra3 from "../../../assets/img/Picture3.png";
-import infra4 from "../../../assets/img/Picture4.png";
-import infra5 from "../../../assets/img/Picture5.png";
-import infra6 from "../../../assets/img/Picture12.png"
-import infra7 from "../../../assets/img/Picture24.png"
-import infra8 from "../../../assets/img/Picture6.png"
-import infra9 from "../../../assets/img/Picture7.png"
-import infra10 from "../../../assets/img/Picture8.png"
-import infra11 from "../../../assets/img/Picture9.png"
-import infra12 from "../../../assets/img/Picture24.png"
-
 import {
   Building2,
   Wind,
@@ -26,21 +12,31 @@ import {
   Box,
   Settings,
   ArrowRight,
+  Sparkles,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
 } from "lucide-react";
 
-const facilities = [
+const infraHighlights = [
   {
     icon: Building2,
-    title: "20,000 Sq. Ft. Area",
-    desc: "Sprawling facility designed for high-volume manufacturing and repair.",
+    title: "40,000 Sq. Ft. Facility",
+    desc: "Spacious, modern manufacturing plant designed for high volume production and repair efficiency.",
   },
   {
     icon: Wind,
     title: "Class 100K Clean Room",
-    desc: "Air showered and specialized environments for precise panel bonding.",
+    desc: "Dust-free environment essential for screen assembly, panel bonding, and optical alignment.",
   },
   {
     icon: Settings,
+    title: "Laser COF Bonding Machines",
+    desc: "State-of-the-art machinery for high-precision panel bonding and display repair.",
+  },
+  {
+    icon: ShieldCheck,
     title: "Automated SOPs",
     desc: "Fully automated standard operating procedures ensuring consistent high yield.",
   },
@@ -56,9 +52,177 @@ const facilities = [
   },
 ];
 
-const images = [infra1, infra2, infra3, infra4, infra5, infra6, infra7, infra11, infra10, infra8, infra9, infra12];
+interface GalleryItem {
+  src: string;
+  category: 'Speaker Manufacturing' | 'Laser COF Bonding' | 'Cleanroom Assembly' | 'QC & Testing' | 'Facility Building';
+  title: string;
+  tag: string;
+}
+
+const galleryItems: GalleryItem[] = [
+  // Speaker Manufacturing
+  {
+    src: '/realimages/SPEAKER/DSC07635.webp',
+    category: 'Speaker Manufacturing',
+    title: 'Soundbar & Audio Driver Assembly Line',
+    tag: 'Audio Production',
+  },
+  {
+    src: '/realimages/SPEAKER/DSC07627.webp',
+    category: 'Speaker Manufacturing',
+    title: 'Tower Speaker Enclosure Quality Testing',
+    tag: 'Acoustic Quality',
+  },
+  {
+    src: '/realimages/SPEAKER/DSC07633.webp',
+    category: 'Speaker Manufacturing',
+    title: 'Intercom & Subwoofer Circuit Assembly',
+    tag: 'PCB & Wiring',
+  },
+  {
+    src: '/realimages/SPEAKER/DSC07640.webp',
+    category: 'Speaker Manufacturing',
+    title: 'High-Fidelity Audio System Final Inspection',
+    tag: 'Final Inspection',
+  },
+
+  // Laser COF Bonding
+  {
+    src: '/realimages/BONDING/DSC05309.webp',
+    category: 'Laser COF Bonding',
+    title: 'Automated Laser COF Panel Bonding Machine',
+    tag: 'Laser Machine',
+  },
+  {
+    src: '/realimages/BONDING/DSC05312.webp',
+    category: 'Laser COF Bonding',
+    title: 'Microscope Precision Flex Cable Alignment',
+    tag: 'Micro-Bonding',
+  },
+  {
+    src: '/realimages/BONDING/DSC05320.webp',
+    category: 'Laser COF Bonding',
+    title: 'High-Precision Driver IC Bonding Station',
+    tag: 'IC Bonding',
+  },
+  {
+    src: '/realimages/BONDING/DSC05327.webp',
+    category: 'Laser COF Bonding',
+    title: 'Thermal Pressing & Pulse Heat Unit',
+    tag: 'Pulse Heat',
+  },
+  {
+    src: '/realimages/BONDING/DSC05335.webp',
+    category: 'Laser COF Bonding',
+    title: 'COF Chip Replacement & Soldering Lab',
+    tag: 'Chip Repair',
+  },
+  {
+    src: '/realimages/BONDING/DSC05374.webp',
+    category: 'Laser COF Bonding',
+    title: 'Certified Engineer Bonding Workbench',
+    tag: 'Bonding Lab',
+  },
+
+  // Cleanroom Assembly
+  {
+    src: '/realimages/ASSEMBLY/DSC05238.webp',
+    category: 'Cleanroom Assembly',
+    title: 'Class 100K Dust-Free Cleanroom Workbench',
+    tag: 'Class 100K Lab',
+  },
+  {
+    src: '/realimages/ASSEMBLY/DSC05241.webp',
+    category: 'Cleanroom Assembly',
+    title: 'LED Backlight Array & Diffuser Installation',
+    tag: 'Backlight Assembly',
+  },
+  {
+    src: '/realimages/ASSEMBLY/DSC05247.webp',
+    category: 'Cleanroom Assembly',
+    title: 'Ultra-Clean Screen Mounting Station',
+    tag: 'Screen Assembly',
+  },
+  {
+    src: '/realimages/ASSEMBLY/DSC05250.webp',
+    category: 'Cleanroom Assembly',
+    title: 'Optical Film & Polarizer Layer Alignment',
+    tag: 'Optical Films',
+  },
+  {
+    src: '/realimages/ASSEMBLY/DSC05252.webp',
+    category: 'Cleanroom Assembly',
+    title: 'TV Panel Frame & Bezel Fitting Workbench',
+    tag: 'Frame Fitting',
+  },
+
+  // QC & Testing
+  {
+    src: '/realimages/QC/DSC05425.webp',
+    category: 'QC & Testing',
+    title: '12-Hour Screen Burn-in & Color Test',
+    tag: 'Aging Test',
+  },
+  {
+    src: '/realimages/QC/DSC05429.webp',
+    category: 'QC & Testing',
+    title: 'Power Board Voltage & Oscilloscope Test',
+    tag: 'Board Testing',
+  },
+  {
+    src: '/realimages/QC/DSC05431.webp',
+    category: 'QC & Testing',
+    title: '4K/8K Resolution & Motion Inspection',
+    tag: 'Display QC',
+  },
+  {
+    src: '/realimages/QC/DSC05474.webp',
+    category: 'QC & Testing',
+    title: 'Multi-Screen Display Aging & Heat Rack',
+    tag: 'Heat Chamber',
+  },
+  {
+    src: '/realimages/QC/DSC05495.webp',
+    category: 'QC & Testing',
+    title: 'Final OQA Inspection & Quality Certification',
+    tag: 'OQA Final',
+  },
+
+  // Facility Building
+  {
+    src: '/realimages/BUILDING/DSC05217.webp',
+    category: 'Facility Building',
+    title: '40,000 Sq. Ft. Manufacturing & Repair Plant',
+    tag: 'Main Building',
+  },
+  {
+    src: '/realimages/BUILDING/DSC05218.webp',
+    category: 'Facility Building',
+    title: 'Component Warehouse & Inventory Storage',
+    tag: 'Parts Warehouse',
+  },
+  {
+    src: '/realimages/BUILDING/DSC05225.webp',
+    category: 'Facility Building',
+    title: 'Dispatch & Safe Transit Packaging Zone',
+    tag: 'Logistics',
+  },
+];
+
+const categories = [
+  'All',
+  'Speaker Manufacturing',
+  'Laser COF Bonding',
+  'Cleanroom Assembly',
+  'QC & Testing',
+  'Facility Building',
+] as const;
 
 export default function InfrastructurePageClient() {
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [showAll, setShowAll] = useState<boolean>(false);
+
   useEffect(() => {
     AOS.init({
       once: true,
@@ -68,124 +232,277 @@ export default function InfrastructurePageClient() {
     });
   }, []);
 
+  const filteredItems = selectedCategory === 'All'
+    ? galleryItems
+    : galleryItems.filter((item) => item.category === selectedCategory);
+
+  const displayedItems = showAll ? filteredItems : filteredItems.slice(0, 8);
+
+  const activeLightboxItem = lightboxIndex !== null ? displayedItems[lightboxIndex] : null;
+
+  const handleCategoryChange = (cat: string) => {
+    setSelectedCategory(cat);
+    setShowAll(false);
+    setLightboxIndex(null);
+  };
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (lightboxIndex !== null) {
+      setLightboxIndex((prev) => (prev! === 0 ? displayedItems.length - 1 : prev! - 1));
+    }
+  };
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (lightboxIndex !== null) {
+      setLightboxIndex((prev) => (prev! === displayedItems.length - 1 ? 0 : prev! + 1));
+    }
+  };
+
   return (
     <div className="bg-slate-50 font-sans">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-slate-50 pt-28 pb-32 border-b border-slate-200">
+      <section className="relative overflow-hidden bg-slate-50 pt-16 sm:pt-20 pb-16 border-b border-slate-200">
         <div className="absolute inset-0">
           <Image
-            src={infra1}
+            src="/realimages/BUILDING/DSC05217.webp"
             alt="Infrastructure"
             fill
             priority
-            className="object-cover opacity-45"
+            className="object-cover opacity-40"
           />
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-50/5 via-slate-50/20 to-slate-50/35" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10 text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary-200 bg-primary-50 px-4 py-1.5 text-xs font-bold text-primary-700 mb-4">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>World-Class Infrastructure</span>
+          </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="zoom-in">
-          <span className="inline-block px-3 py-1 rounded-full bg-primary-50 text-primary-700 font-bold text-[10px] uppercase tracking-widest mb-4 border border-primary-200">
-            World Class Facility
-          </span>
-
-          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight mb-4">
-            State-of-the-art<br />
-            <span className="text-primary-600 bg-clip-text bg-gradient-to-r from-primary-600 to-cyan-600">Infrastructure</span>
+          <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight max-w-3xl mx-auto leading-tight mb-4">
+            Infrastructure & <span className="text-primary-600">Technology</span>
           </h1>
 
-          <p className="mx-auto max-w-2xl text-slate-600 text-sm font-medium">
-            Explore our 20,000 sq. ft. repair and manufacturing facility
-            equipped with advanced clean rooms, bonding machines, testing labs,
-            PCB repair stations and quality inspection systems.
+          <p className="text-slate-600 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed font-medium">
+            Our 40,000 sq. ft. facility features Class 100K cleanrooms, automated COF laser bonding machines, speaker manufacturing lines, and advanced QA testing labs.
           </p>
         </div>
       </section>
 
-      {/* Highlights */}
-      <section className="py-0 relative z-10 -mt-16 mx-4 sm:mx-auto max-w-6xl">
-        <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-8 sm:p-10">
-          <div className="text-center mb-10" data-aos="fade-up">
-            <h2 className="text-2xl font-extrabold text-slate-900">
-              Facility Highlights
+      {/* Facility Highlights Grid */}
+      <section className="py-16 sm:py-20 bg-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+              Infrastructure Highlights
             </h2>
-            <p className="mt-1.5 text-slate-500 text-xs font-medium uppercase tracking-wider">
-              Designed for maximum productivity and quality.
+            <p className="text-slate-600 font-medium">
+              Equipped with modern machinery and rigorous processes to deliver precision at scale.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {facilities.map((item, index) => (
-              <div
-                key={index}
-                data-aos="fade-up"
-                data-aos-delay={index * 100}
-                className="bg-slate-50 rounded-xl p-5 border border-slate-100 hover:border-primary-200 hover:bg-white hover:shadow-sm transition-all group"
-              >
-                <div className="w-10 h-10 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-primary-600 mb-3 shadow-sm group-hover:bg-primary-50 transition-colors">
-                  <item.icon className="w-5 h-5" strokeWidth={2} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {infraHighlights.map((item, idx) => {
+              const IconComp = item.icon;
+              return (
+                <div
+                  key={idx}
+                  className="bg-slate-50 rounded-2xl p-6 border border-slate-200/80 hover:border-primary-300 hover:bg-white transition-all duration-300 shadow-sm group"
+                  data-aos="fade-up"
+                  data-aos-delay={idx * 100}
+                >
+                  <div className="w-12 h-12 rounded-xl bg-primary-50 text-primary-600 border border-primary-100 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <IconComp className="w-6 h-6" />
+                  </div>
+
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">
+                    {item.title}
+                  </h3>
+
+                  <p className="text-slate-600 text-sm leading-relaxed font-medium">
+                    {item.desc}
+                  </p>
                 </div>
-                <h3 className="font-bold text-sm text-slate-900 mb-1">
-                  {item.title}
-                </h3>
-                <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
-                  {item.desc}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Gallery */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10" data-aos="fade-up">
-            <h2 className="text-2xl font-extrabold text-slate-900">
-              Inside Our Facility
+      {/* Facility Image Gallery (Filterable & Full Category Showcase) */}
+      <section className="py-16 sm:py-20 bg-slate-100/80 border-t border-slate-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+              Facility & Lab Gallery
             </h2>
-            <p className="text-slate-500 text-xs font-medium uppercase tracking-wider mt-1.5">
-              Clean rooms, production, and testing environments.
+            <p className="text-slate-600 font-medium text-sm sm:text-base">
+              Explore our speaker manufacturing lines, cleanroom assembly, COF bonding machines, and quality testing labs.
             </p>
           </div>
 
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-            {images.map((img, index) => (
+          {/* Category Filter Tabs */}
+          <div className="flex items-center justify-center flex-wrap gap-2 mb-10">
+            {categories.map((cat) => {
+              const isActive = selectedCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => handleCategoryChange(cat)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                    isActive
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-200'
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Image Grid (Initially 2 rows - 8 items) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {displayedItems.map((item, index) => (
               <div
                 key={index}
-                data-aos="zoom-in"
-                data-aos-delay={index * 50}
-                className="overflow-hidden rounded-xl border border-slate-200 shadow-sm group break-inside-avoid relative"
+                onClick={() => setLightboxIndex(index)}
+                className="group bg-white rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col"
+                data-aos="fade-up"
+                data-aos-delay={(index % 4) * 50}
               >
-                <Image
-                  src={img}
-                  alt={`Infrastructure ${index + 1}`}
-                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-transparent transition-colors" />
+                {/* Clean Unobstructed Image Container */}
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-900">
+                  <Image
+                    src={item.src}
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+
+                  {/* Hover Center Overlay Badge */}
+                  <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <span className="px-3.5 py-1.5 rounded-full bg-white text-slate-900 text-xs font-bold shadow-lg flex items-center gap-1.5 transform scale-95 group-hover:scale-100 transition-transform">
+                      <Maximize2 className="w-3.5 h-3.5 text-primary-600" /> Click to Expand
+                    </span>
+                  </div>
+
+                  {/* Top Tag Badge */}
+                  <div className="absolute top-3 left-3">
+                    <span className="px-2.5 py-1 rounded-md bg-slate-900/80 backdrop-blur-md text-[10px] font-extrabold text-white tracking-wider uppercase">
+                      {item.tag}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Clean Title Section Below Image */}
+                <div className="p-3.5 sm:p-4 bg-white flex-1 flex flex-col justify-between border-t border-slate-100">
+                  <p className="text-xs font-extrabold text-slate-800 group-hover:text-primary-600 transition-colors leading-snug line-clamp-2">
+                    {item.title}
+                  </p>
+                  <div className="mt-2.5 flex items-center justify-between text-[11px] text-slate-400 font-semibold">
+                    <span>{item.category}</span>
+                    <span className="text-primary-600 font-bold group-hover:underline">View Photo &rarr;</span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
+
+          {/* Show More / Show Less Toggle Button */}
+          {filteredItems.length > 8 && (
+            <div className="mt-10 text-center">
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="inline-flex items-center gap-2 px-7 py-3 bg-white hover:bg-slate-50 text-slate-800 text-xs font-extrabold rounded-xl border border-slate-300 transition-all hover:border-primary-500 hover:text-primary-600 active:scale-[0.98]"
+              >
+                {showAll ? (
+                  <>Show Less</>
+                ) : (
+                  <>Show More ({filteredItems.length - 8} More Photos) <ChevronRight className="w-4 h-4" /></>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="relative py-16 bg-white border-t border-slate-200/60 overflow-hidden" data-aos="zoom-in">
-        {/* Soft Glow */}
-        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-50/50 blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-indigo-50/50 blur-[90px] pointer-events-none" />
+      {/* Lightbox Modal */}
+      {activeLightboxItem && (
+        <div
+          className="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4"
+          onClick={() => setLightboxIndex(null)}
+        >
+          <div className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center">
+            {/* Close Button */}
+            <button
+              onClick={() => setLightboxIndex(null)}
+              className="absolute -top-12 right-0 p-2 text-white hover:text-slate-300 bg-white/10 rounded-full backdrop-blur-md transition-colors z-20"
+            >
+              <X className="w-6 h-6" />
+            </button>
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
-          <div className="grid lg:grid-cols-12 gap-8 items-center">
+            {/* Main Lightbox Image */}
+            <div
+              className="relative w-full h-[65vh] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={activeLightboxItem.src}
+                alt={activeLightboxItem.title}
+                fill
+                className="object-contain bg-black"
+              />
 
-            {/* Left Side: Content */}
-            <div className="lg:col-span-7 text-left space-y-4">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">Visit Our Infrastructure</h2>
-              <p className="text-slate-655 text-sm font-medium leading-relaxed">
-                Schedule a visit to our Noida manufacturing and repair facility.
+              {/* Prev / Next Nav Buttons */}
+              <button
+                onClick={handlePrev}
+                className="absolute left-3 top-1/2 -translate-y-1/2 p-3 bg-slate-900/80 hover:bg-slate-900 text-white rounded-full transition-all border border-slate-700"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleNext}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-3 bg-slate-900/80 hover:bg-slate-900 text-white rounded-full transition-all border border-slate-700"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Caption Info */}
+            <div className="mt-4 text-center text-white" onClick={(e) => e.stopPropagation()}>
+              <span className="px-3 py-1 bg-primary-600 text-white text-[10px] font-black rounded-full uppercase tracking-wider">
+                {activeLightboxItem.category}
+              </span>
+              <h3 className="text-base sm:text-lg font-bold mt-2">{activeLightboxItem.title}</h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Photo {lightboxIndex! + 1} of {filteredItems.length}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CTA Section */}
+      <section className="py-16 sm:py-20 bg-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="bg-slate-50 border border-slate-200 rounded-3xl p-8 sm:p-12 grid lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Left Side: Text */}
+            <div className="lg:col-span-7 space-y-4">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+                Want a Tour of Our Facility?
+              </h2>
+              <p className="text-slate-600 text-sm font-medium leading-relaxed">
+                Connect with our team to schedule an OEM partnership visit or discuss bulk electronics repair contracts.
               </p>
               <div className="pt-2">
-                <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white text-xs font-bold rounded-xl hover:bg-primary-700 transition-all shadow-md shadow-primary-600/10 hover:-translate-y-0.5">
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white text-xs font-bold rounded-xl hover:bg-primary-700 transition-all"
+                >
                   Contact Us <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -193,9 +510,9 @@ export default function InfrastructurePageClient() {
 
             {/* Right Side: Image */}
             <div className="lg:col-span-5">
-              <div className="relative h-[220px] w-full rounded-2xl overflow-hidden shadow-lg border border-slate-200/80 bg-white">
+              <div className="relative h-[220px] w-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white">
                 <Image
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqZDFyBAJVQKmi_Gi4naD3fcyslGqVY1_IWqMTWFIQKQ&s=10"
+                  src="/realimages/BONDING/DSC05374.webp"
                   alt="Visit Our Infrastructure"
                   fill
                   className="object-cover"

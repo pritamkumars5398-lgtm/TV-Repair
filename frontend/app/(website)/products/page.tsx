@@ -66,7 +66,7 @@ export default function ProductsPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-800 pt-32 pb-24 overflow-hidden border-b border-slate-200/60">
+      <section className="relative bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-800 pt-16 sm:pt-20 pb-16 overflow-hidden border-b border-slate-200/60">
         {/* Technical Grid Pattern overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-100/40 via-white to-white pointer-events-none" />
@@ -157,7 +157,7 @@ export default function ProductsPage() {
                       </div>
                       <button
                         onClick={() => setModal({ open: true, product: p.name })}
-                        className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-none shadow-sm hover:shadow-md transition-all"
+                        className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-xl transition-all"
                       >
                         Get Quote <ArrowRight className="h-3.5 w-3.5" />
                       </button>
@@ -170,55 +170,57 @@ export default function ProductsPage() {
         </div>
       </section>
 
-      {/* Inquiry Modal */}
+      {/* Inquiry Modal - Higher z-index & scrollable container so full form is visible */}
       {modal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/70 backdrop-blur-md overflow-y-auto">
           <div
-            className="bg-white rounded-3xl w-full max-w-lg shadow-2xl shadow-slate-900/50 border border-slate-100 relative overflow-hidden"
-            data-aos="zoom-in"
-            data-aos-duration="200"
+            className="bg-white rounded-3xl w-full max-w-lg border border-slate-200/80 relative overflow-hidden my-auto max-h-[90vh] flex flex-col"
           >
             {/* Modal Header */}
-            <div className="bg-slate-50 px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+            <div className="bg-slate-50 px-6 py-4 sm:py-5 border-b border-slate-100 flex items-center justify-between shrink-0">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Product Inquiry</h2>
-                <p className="text-sm text-slate-500 mt-1">We will send you a custom quote within 2 hours.</p>
+                <h2 className="text-lg sm:text-xl font-bold text-slate-900">Product Inquiry</h2>
+                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">We will send you a custom quote within 2 hours.</p>
               </div>
-              <button onClick={() => setModal({ open: false, product: '' })} className="p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-all">
+              <button
+                onClick={() => setModal({ open: false, product: '' })}
+                className="p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-all shrink-0"
+                aria-label="Close modal"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="p-6 sm:p-8">
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                <div className="grid grid-cols-2 gap-4">
+            <div className="p-5 sm:p-7 overflow-y-auto">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-2">Name *</label>
-                    <input {...register('name')} placeholder="Full name" className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-slate-50 hover:bg-white focus:bg-white" />
-                    {errors.name && <p className="text-xs text-rose-500 mt-1.5 font-medium">{errors.name.message}</p>}
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Name *</label>
+                    <input {...register('name')} placeholder="Full name" className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-slate-50 hover:bg-white focus:bg-white font-medium" />
+                    {errors.name && <p className="text-xs text-rose-500 mt-1 font-medium">{errors.name.message}</p>}
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-2">Phone *</label>
-                    <input {...register('phone')} placeholder="10-digit number" className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-slate-50 hover:bg-white focus:bg-white" />
-                    {errors.phone && <p className="text-xs text-rose-500 mt-1.5 font-medium">{errors.phone.message}</p>}
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Phone *</label>
+                    <input {...register('phone')} placeholder="10-digit number" className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-slate-50 hover:bg-white focus:bg-white font-medium" />
+                    {errors.phone && <p className="text-xs text-rose-500 mt-1 font-medium">{errors.phone.message}</p>}
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-2">Email *</label>
-                  <input {...register('email')} type="email" placeholder="Your email address" className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-slate-50 hover:bg-white focus:bg-white" />
-                  {errors.email && <p className="text-xs text-rose-500 mt-1.5 font-medium">{errors.email.message}</p>}
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Email *</label>
+                  <input {...register('email')} type="email" placeholder="Your email address" className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-slate-50 hover:bg-white focus:bg-white font-medium" />
+                  {errors.email && <p className="text-xs text-rose-500 mt-1 font-medium">{errors.email.message}</p>}
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-2">Product *</label>
-                  <input {...register('productInterest')} defaultValue={modal.product} className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-slate-50 font-semibold text-slate-700" readOnly />
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Product *</label>
+                  <input {...register('productInterest')} defaultValue={modal.product} className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-slate-50 font-semibold text-slate-700" readOnly />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-2">Your Requirement *</label>
-                  <textarea {...register('message')} rows={3} placeholder="Room size, usage, budget..." className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-slate-50 hover:bg-white focus:bg-white resize-none" />
-                  {errors.message && <p className="text-xs text-rose-500 mt-1.5 font-medium">{errors.message.message}</p>}
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Your Requirement *</label>
+                  <textarea {...register('message')} rows={3} placeholder="Room size, usage, budget..." className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-slate-50 hover:bg-white focus:bg-white resize-none font-medium" />
+                  {errors.message && <p className="text-xs text-rose-500 mt-1 font-medium">{errors.message.message}</p>}
                 </div>
-                <div className="pt-2">
-                  <button type="submit" disabled={isSubmitting} className="w-full py-4 bg-primary-600 hover:bg-primary-500 disabled:opacity-60 text-white text-base font-bold rounded-xl shadow-lg shadow-primary-600/20 transition-all hover:-translate-y-0.5">
+                <div className="pt-1">
+                  <button type="submit" disabled={isSubmitting} className="w-full py-3.5 bg-primary-600 hover:bg-primary-500 disabled:opacity-60 text-white text-sm font-bold rounded-xl transition-all active:scale-[0.99]">
                     {isSubmitting ? 'Sending...' : 'Send Inquiry'}
                   </button>
                 </div>

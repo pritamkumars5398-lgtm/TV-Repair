@@ -113,7 +113,7 @@ export function PriceEstimator() {
 
           <Link
             href={`/book?size=${size}&issue=${issue}`}
-            className="w-full py-3 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white font-extrabold text-xs rounded-xl shadow-md transition-all active:scale-[0.98] inline-flex items-center justify-center gap-1"
+            className="w-full py-3 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white font-extrabold text-xs rounded-xl transition-all active:scale-[0.98] inline-flex items-center justify-center gap-1"
           >
             Book Diagnostics Service <ChevronRight className="h-4 w-4" />
           </Link>

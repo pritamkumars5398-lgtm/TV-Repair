@@ -97,7 +97,7 @@ export function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center justify-center h-10 w-10 rounded-full bg-primary-600 hover:bg-primary-750 text-white font-extrabold text-sm border border-slate-200/50 shadow-sm transition-all focus:outline-none"
+                  className="flex items-center justify-center h-10 w-10 rounded-full bg-primary-600 hover:bg-primary-750 text-white font-extrabold text-sm border border-slate-200/50 transition-all focus:outline-none"
                 >
                   {customer?.name?.[0]?.toUpperCase() || 'C'}
                 </button>
@@ -107,7 +107,7 @@ export function Navbar() {
                       className="fixed inset-0 z-40"
                       onClick={() => setDropdownOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2.5 w-48 bg-white border border-slate-200 rounded-xl  py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="absolute right-0 mt-2.5 w-48 bg-white border border-slate-200 rounded-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                       <div className="px-4 py-2 border-b border-slate-100 mb-1">
                         <p className="text-xs font-black text-slate-900 truncate">{customer?.name}</p>
                         <p className="text-[10px] text-slate-400 font-semibold truncate mt-0.5">{customer?.email}</p>
@@ -138,14 +138,14 @@ export function Navbar() {
             ) : hasSignedUp ? (
               <Link
                 href="/login"
-                className="flex items-center gap-1.5 px-5 py-2.5 text-[13px] font-bold text-slate-700 bg-white border border-slate-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 rounded-full transition-all shadow-sm group"
+                className="flex items-center gap-1.5 px-5 py-2.5 text-[13px] font-bold text-slate-700 bg-white border border-slate-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 rounded-full transition-all group"
               >
                 Log In
               </Link>
             ) : (
               <Link
                 href="/signup"
-                className="flex items-center gap-1.5 px-5 py-2.5 text-[13px] font-bold text-slate-700 bg-white border border-slate-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 rounded-full transition-all shadow-sm group"
+                className="flex items-center gap-1.5 px-5 py-2.5 text-[13px] font-bold text-slate-700 bg-white border border-slate-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 rounded-full transition-all group"
               >
                 Sign Up
               </Link>
@@ -196,7 +196,7 @@ export function Navbar() {
                     <div className="grid grid-cols-2 gap-3 mb-3">
                       <Link
                         href="/profile"
-                        className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-all shadow-sm"
+                        className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-all"
                         onClick={() => setIsOpen(false)}
                       >
                         <User className="w-4 h-4 text-slate-400" /> Profile
@@ -217,7 +217,7 @@ export function Navbar() {
                 ) : hasSignedUp ? (
                   <Link
                     href="/login"
-                    className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary-600 rounded-xl transition-all shadow-sm w-full"
+                    className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary-600 rounded-xl transition-all w-full"
                     onClick={() => setIsOpen(false)}
                   >
                     Log In
@@ -225,7 +225,7 @@ export function Navbar() {
                 ) : (
                   <Link
                     href="/signup"
-                    className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary-600 rounded-xl transition-all shadow-sm w-full"
+                    className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary-600 rounded-xl transition-all w-full"
                     onClick={() => setIsOpen(false)}
                   >
                     Sign Up
@@ -234,14 +234,14 @@ export function Navbar() {
               </div>
               <Link
                 href="/track"
-                className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary-600 rounded-xl transition-all shadow-sm"
+                className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-primary-600 rounded-xl transition-all"
                 onClick={() => setIsOpen(false)}
               >
                 <Activity className="w-4 h-4 text-primary-500" /> Track Repair
               </Link>
               <Link
                 href="/book"
-                className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.25)]"
+                className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-all"
                 onClick={() => setIsOpen(false)}
               >
                 Book a Repair <ArrowRight className="w-4 h-4" />

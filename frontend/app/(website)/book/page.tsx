@@ -236,7 +236,7 @@ function Step1({ onNext }: { onNext: (data: Step1Input) => void }) {
       </div>
 
       <div className="pt-2">
-        <button type="submit" className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white text-xs font-extrabold rounded-xl transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-[0.98] uppercase tracking-wider shadow-md">
+        <button type="submit" className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white text-xs font-extrabold rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wider">
           Proceed to Address <ChevronRight className="h-4 w-4" />
         </button>
       </div>
@@ -323,7 +323,7 @@ function Step2({ onNext, onBack }: { onNext: (data: Step2Input) => void; onBack:
         <button type="button" onClick={onBack} className="flex-1 py-3 bg-slate-100 text-slate-700 text-xs font-extrabold rounded-xl hover:bg-slate-200 transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider hover:-translate-y-0.5">
           <ChevronLeft className="h-4 w-4" /> Back
         </button>
-        <button type="submit" className="flex-[2] py-3 bg-primary-600 hover:bg-primary-700 text-white text-xs font-extrabold rounded-xl transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider hover:-translate-y-0.5 shadow-md">
+        <button type="submit" className="flex-[2] py-3 bg-primary-600 hover:bg-primary-700 text-white text-xs font-extrabold rounded-xl transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider">
           Proceed to Payment <ChevronRight className="h-4 w-4" />
         </button>
       </div>
@@ -450,7 +450,7 @@ function Step3({ onBack }: { onBack: () => void }) {
         <button
           onClick={handlePayment}
           disabled={isProcessing}
-          className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-70 text-white text-xs font-extrabold rounded-xl transition-all flex items-center justify-center uppercase tracking-wider hover:-translate-y-0.5 shadow-md"
+          className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-70 text-white text-xs font-extrabold rounded-xl transition-all flex items-center justify-center uppercase tracking-wider"
         >
           {isProcessing ? 'Processing...' : 'Pay ₹250 & Confirm'}
         </button>

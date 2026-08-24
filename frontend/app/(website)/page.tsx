@@ -8,7 +8,8 @@ import {
 } from 'lucide-react';
 import { HeroSlideshow } from '@/components/website/HeroSlideshow';
 import { FaqAccordion } from '@/components/website/FaqAccordion';
-import Repair from '../../assets/img/repai12.jpg'
+import { TestimonialsSlider } from '@/components/website/TestimonialsSlider';
+import { GallerySection } from '@/components/website/GallerySection';
 
 export const metadata: Metadata = {
   title: 'RC RepairCart — Electronics Repair & Manufacturing',
@@ -58,7 +59,7 @@ const blogPosts = [
     category: 'Technology',
     date: 'Oct 12, 2023',
     desc: 'Discover how advanced clean room environments are revolutionizing the way we bond and repair large-scale LED panels.',
-    img: 'https://images.unsplash.com/photo-1581092918056-0c4c3aebb8e9?w=600&q=80'
+    img: '/realimages/BONDING/DSC05309.webp'
   },
   {
     id: 2,
@@ -66,7 +67,7 @@ const blogPosts = [
     category: 'Business',
     date: 'Nov 05, 2023',
     desc: 'Dead on Arrival (DOA) stock can bleed revenue. Learn how proper refurbishment and master checking can save millions.',
-    img: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&q=80'
+    img: '/realimages/QC/DSC05425.webp'
   },
   {
     id: 3,
@@ -74,7 +75,7 @@ const blogPosts = [
     category: 'Sustainability',
     date: 'Nov 28, 2023',
     desc: 'E-waste is a growing concern. Explore our eco-friendly recycling processes for units that are beyond economic repair.',
-    img: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=600&q=80'
+    img: '/realimages/ASSEMBLY/DSC05238.webp'
   }
 ];
 
@@ -99,7 +100,7 @@ const localBusinessSchema = {
     { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], opens: '09:00', closes: '19:00' },
   ],
   priceRange: '₹₹',
-  image: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=1200&q=80',
+  image: 'https://www.inchellcorparation.com/realimages/BUILDING/DSC05423.webp',
   aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.9', reviewCount: '4200' },
 };
 
@@ -109,23 +110,23 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
 
       {/* ── Hero ── */}
-      <section className="relative bg-gradient-to-b from-[#f8fafc] via-[#f1f5f9]/50 to-white text-slate-800 pt-28 pb-24 overflow-hidden border-b border-slate-200/60">
+      <section className="relative bg-gradient-to-b from-[#f8fafc] via-[#f1f5f9]/50 to-white text-slate-800 pt-16 sm:pt-20 pb-12 sm:pb-16 overflow-hidden border-b border-slate-200/60">
         {/* Technical Grid Pattern & Soft Radial Glow */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-100/20 via-white to-white pointer-events-none" />
         <div className="absolute top-1/4 -right-1/4 w-[600px] h-[600px] bg-primary-100/10 rounded-full blur-[100px] pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
-          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
+          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary-150 bg-primary-50/50 px-3.5 py-1.5 text-[11px] font-extrabold text-primary-700 shadow-sm mb-6 backdrop-blur-sm" data-aos="fade-up">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary-150 bg-primary-50/50 px-3.5 py-1.5 text-[11px] font-extrabold text-primary-700 shadow-sm mb-3 backdrop-blur-sm" data-aos="fade-up">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-pulse" />
                 <span>RC RepairCart — ISO Certified Partner</span>
               </div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-slate-900 mb-6" data-aos="fade-up" data-aos-delay="100">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-slate-900 mb-4" data-aos="fade-up" data-aos-delay="100">
                 Total Solutions for <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700">LED TVs.</span>
               </h1>
-              <p className="text-slate-655 text-sm md:text-base leading-relaxed mb-8 max-w-lg font-medium" data-aos="fade-up" data-aos-delay="150">
+              <p className="text-slate-655 text-sm md:text-base leading-relaxed mb-5 max-w-lg font-medium" data-aos="fade-up" data-aos-delay="150">
                 World class repair and servicing environment. We specialize in LED TV panels, power board bonding, backlight repair, and DOA management.
               </p>
               <div className="flex flex-col sm:flex-row gap-3.5" data-aos="fade-up" data-aos-delay="200">
@@ -145,22 +146,23 @@ export default function HomePage() {
             </div>
 
             {/* Hero image card */}
-            <div className="block relative mt-10 lg:mt-0" data-aos="fade-left" data-aos-delay="300">
+            <div className="block relative mt-8 lg:mt-0" data-aos="fade-left" data-aos-delay="300">
               {/* Glowing spots */}
-              <div className="absolute -top-12 -right-12 w-36 h-36 bg-blue-400/20 rounded-full blur-2xl pointer-events-none animate-pulse-slow" />
-              <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-indigo-400/20 rounded-full blur-2xl pointer-events-none animate-pulse-slow" />
+              <div className="absolute -top-12 -right-12 w-36 h-36 bg-blue-400/20 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-indigo-400/20 rounded-full blur-2xl pointer-events-none" />
 
-              {/* Floating Slide Card */}
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200/80 h-[260px] sm:h-[380px] animate-float z-10 bg-white">
+              {/* Hero Slide Card - Flush rounded corners without white gaps */}
+              <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/80 h-[240px] sm:h-[380px] z-10 bg-slate-900">
                 <HeroSlideshow />
               </div>
-              <div className="absolute -bottom-5 -left-5 bg-white border border-slate-200/80 rounded-2xl p-4 shadow-xl flex items-center gap-3.5 backdrop-blur-sm z-20 animate-float" style={{ animationDelay: '1.5s' }}>
-                <div className="h-10 w-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-                  <CheckCircle2 className="h-5 w-5" />
+              {/* Warranty Badge - Mobile position fixed inside card corner, desktop position -bottom-5 -left-5 */}
+              <div className="absolute bottom-3 left-3 sm:-bottom-5 sm:-left-5 bg-white border border-slate-200/90 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-md flex items-center gap-2.5 sm:gap-3.5 backdrop-blur-md z-20 whitespace-nowrap">
+                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                  <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
                 <div>
                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Warranty</p>
-                  <p className="text-xs font-extrabold text-slate-800 mt-1 leading-tight">30-Day Guarantee</p>
+                  <p className="text-[11px] sm:text-xs font-extrabold text-slate-800 mt-0.5 sm:mt-1 leading-tight">30-Day Guarantee</p>
                 </div>
               </div>
             </div>
@@ -169,7 +171,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Stats ── */}
-      <section className="bg-white py-8 relative z-10 -mt-10 mx-4 sm:mx-auto max-w-5xl rounded-xl shadow-md border border-slate-100" data-aos="fade-up">
+      <section className="bg-white py-6 sm:py-8 relative z-10 mt-6 sm:-mt-10 mx-4 sm:mx-auto max-w-5xl rounded-xl border border-slate-200/80" data-aos="fade-up">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-y-4 md:gap-y-0">
           {stats.map((s, idx) => (
             <div
@@ -197,25 +199,25 @@ export default function HomePage() {
             <h2 className="text-2xl font-extrabold text-slate-900 mb-2">Premium Repair Services</h2>
             <p className="text-sm text-slate-500 font-medium">Expert repairs with genuine parts and transparent pricing.</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {services.map((svc, i) => (
               <Link
                 key={svc.title}
                 href="/book"
                 data-aos="fade-up"
                 data-aos-delay={i * 50}
-                className="group flex flex-col gap-3 p-5 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-primary-200 transition-all"
+                className="group flex flex-col gap-2.5 sm:gap-3 p-3.5 sm:p-5 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-primary-200 transition-all"
               >
-                <div className="h-10 w-10 rounded-lg bg-slate-50 text-slate-600 group-hover:bg-primary-50 group-hover:text-primary-600 flex items-center justify-center transition-colors border border-slate-100">
-                  <svc.icon className="h-5 w-5" strokeWidth={2} />
+                <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-slate-50 text-slate-600 group-hover:bg-primary-50 group-hover:text-primary-600 flex items-center justify-center transition-colors border border-slate-100 shrink-0">
+                  <svc.icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2} />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-900 mb-1">{svc.title}</p>
-                  <p className="text-xs text-slate-500 leading-relaxed">{svc.desc}</p>
+                  <p className="text-xs sm:text-sm font-bold text-slate-900 mb-1 leading-snug">{svc.title}</p>
+                  <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed">{svc.desc}</p>
                 </div>
-                <div className="mt-auto pt-3 border-t border-slate-50">
-                  <span className="inline-flex items-center text-[11px] font-bold text-primary-600 uppercase tracking-wider">
-                    Book Service <ArrowRight className="ml-1.5 h-3 w-3 transition-transform group-hover:translate-x-1" />
+                <div className="mt-auto pt-2.5 sm:pt-3 border-t border-slate-50">
+                  <span className="inline-flex items-center text-[10px] sm:text-[11px] font-bold text-primary-600 uppercase tracking-wider">
+                    Book Service <ArrowRight className="ml-1 sm:ml-1.5 h-3 w-3 transition-transform group-hover:translate-x-1" />
                   </span>
                 </div>
               </Link>
@@ -232,13 +234,13 @@ export default function HomePage() {
 
 
       {/* ── Why Us ── */}
-      <section className="py-20 bg-white border-y border-slate-200">
+      <section className="py-12 sm:py-20 bg-white border-y border-slate-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Image */}
-            <div className="relative rounded-2xl overflow-hidden h-[280px] sm:h-[400px] border border-slate-200 shadow-md" data-aos="fade-right">
+            <div className="relative rounded-2xl overflow-hidden h-[240px] sm:h-[400px] border border-slate-200 shadow-md" data-aos="fade-right">
               <Image
-                src={Repair}
+                src="/realimages/BONDING/DSC05309.webp"
                 alt="TV repair workshop"
                 fill
                 className="object-cover"
@@ -258,21 +260,23 @@ export default function HomePage() {
             </div>
             {/* Text */}
             <div data-aos="fade-left">
-              <p className="text-primary-600 text-[10px] font-bold uppercase tracking-widest mb-2">Why Choose Us</p>
-              <h2 className="text-3xl font-extrabold text-slate-900 mb-4 leading-tight">
+              <p className="text-primary-600 text-[10px] font-bold uppercase tracking-widest mb-1 sm:mb-2">Why Choose Us</p>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2 sm:mb-3 leading-tight">
                 Quality service and<br />customer satisfaction.
               </h2>
-              <p className="text-slate-500 leading-relaxed mb-8 text-sm font-medium">
+              <p className="text-slate-500 leading-relaxed mb-3.5 sm:mb-5 text-sm font-medium">
                 RC RepairCart provides remarkable quality in products and services at best prices. With a 20,000 sq ft facility, clean rooms, and close relationships with Chinese spare part manufacturers, we ensure high yield percentages.
               </p>
-              <div className="grid sm:grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
                 {features.map((f) => (
-                  <div key={f.title} className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                    <div className="h-8 w-8 rounded bg-white flex items-center justify-center mb-3 shadow-sm border border-slate-100">
-                      <f.icon className="h-4 w-4 text-primary-600" strokeWidth={2.5} />
+                  <div key={f.title} className="p-3 sm:p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col justify-between">
+                    <div>
+                      <div className="h-7 w-7 sm:h-8 sm:w-8 rounded bg-white flex items-center justify-center mb-2 sm:mb-3 shadow-sm border border-slate-100 shrink-0">
+                        <f.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary-600" strokeWidth={2.5} />
+                      </div>
+                      <p className="text-xs font-bold text-slate-900 mb-1 leading-snug">{f.title}</p>
+                      <p className="text-[10px] sm:text-[11px] text-slate-500 leading-relaxed">{f.desc}</p>
                     </div>
-                    <p className="text-xs font-bold text-slate-900 mb-1">{f.title}</p>
-                    <p className="text-[11px] text-slate-500 leading-relaxed">{f.desc}</p>
                   </div>
                 ))}
               </div>
@@ -292,7 +296,7 @@ export default function HomePage() {
             <p className="text-sm text-slate-500 font-medium">We invest in the highest grade robotic repair machinery for precise screen panel bonding and diagnostics.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {[
               {
                 title: 'Laser COF Bonding Machine',
@@ -319,7 +323,7 @@ export default function HomePage() {
                 badge: 'OEM Diagnostics'
               }
             ].map((mach, i) => (
-              <div key={i} className="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
+              <div key={i} className="bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-3.5 sm:p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-all">
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <div className="h-10 w-10 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center border border-slate-100">
@@ -353,16 +357,16 @@ export default function HomePage() {
             <h2 className="text-2xl font-extrabold text-slate-900 mb-2">How it works</h2>
             <p className="text-sm text-slate-500 font-medium">Get your TV repaired in 8 simple steps — from doorstep booking to certified lab repair.</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
             {[
               { step: '01', title: 'Book Online', desc: 'Fill a quick form and pay a minor ₹250 visit charge.', img: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&q=75' },
               { step: '02', title: 'Time Slot Sync', desc: 'Our team coordinates with you to schedule the visit.', img: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=400&q=75' },
-              { step: '03', title: 'Doorstep Visit', desc: 'Certified engineer arrives with diagnostics kit.', img: 'https://images.unsplash.com/photo-1581092918056-0c4c3aebb8e9?w=400&q=75' },
-              { step: '04', title: 'Fault Analysis', desc: 'Identify root board failure and share cost estimate.', img: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&q=75' },
-              { step: '05', title: 'Safe Packaging', desc: 'TV is packaged securely in custom thick transit boxes.', img: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&q=75' },
-              { step: '06', title: 'Precision Repair', desc: 'Laser COF panel bonding and board level repair in clean lab.', img: 'https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=400&q=75' },
-              { step: '07', title: 'Stress Testing', desc: 'Rigorous 12-hour color, resolution & heat checking.', img: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&q=75' },
-              { step: '08', title: 'Warranty Delivery', desc: 'TV returned securely with standard 30-day warranty.', img: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400&q=75' },
+              { step: '03', title: 'Doorstep Visit', desc: 'Certified engineer arrives with diagnostics kit.', img: '/realimages/BUILDING/DSC05217.webp' },
+              { step: '04', title: 'Fault Analysis', desc: 'Identify root board failure and share cost estimate.', img: '/realimages/QC/DSC05425.webp' },
+              { step: '05', title: 'Safe Packaging', desc: 'TV is packaged securely in custom thick transit boxes.', img: '/realimages/ASSEMBLY/DSC05247.webp' },
+              { step: '06', title: 'Precision Repair', desc: 'Laser COF panel bonding and board level repair in clean lab.', img: '/realimages/BONDING/DSC05309.webp' },
+              { step: '07', title: 'Stress Testing', desc: 'Rigorous 12-hour color, resolution & heat checking.', img: '/realimages/QC/DSC05431.webp' },
+              { step: '08', title: 'Warranty Delivery', desc: 'TV returned securely with standard 30-day warranty.', img: '/realimages/BUILDING/DSC05424.webp' },
             ].map((item, i) => (
               <div key={item.step} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-300" data-aos="fade-up" data-aos-delay={i * 50}>
                 <div className="relative h-36 bg-slate-100 overflow-hidden">
@@ -529,31 +533,9 @@ export default function HomePage() {
 
 
       {/* ── Testimonials ── */}
-      <section className="py-20 bg-white border-t border-slate-200">
+      <section className="py-16 sm:py-20 bg-white border-t border-slate-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 text-center" data-aos="fade-up">
-            <h2 className="text-2xl font-extrabold text-slate-900 mb-2">What partners say</h2>
-            <p className="text-slate-500 text-sm font-medium">Trusted by leading brands across the industry.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {testimonials.map((t, index) => (
-              <div key={t.name} data-aos="fade-up" data-aos-delay={index * 100} className="p-6 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star key={i} className="h-4 w-4 text-amber-400 fill-amber-400" />
-                  ))}
-                </div>
-                <p className="text-sm text-slate-600 leading-relaxed mb-6 font-medium">"{t.text}"</p>
-                <div className="flex items-center justify-between pt-4 border-t border-slate-200/60">
-                  <div>
-                    <p className="text-xs font-bold text-slate-900">{t.name}</p>
-                    <p className="text-[10px] text-primary-600 font-bold uppercase tracking-wider mt-0.5">{t.service}</p>
-                  </div>
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                </div>
-              </div>
-            ))}
-          </div>
+          <TestimonialsSlider testimonials={testimonials} />
         </div>
       </section>
 
@@ -612,10 +594,10 @@ export default function HomePage() {
               {/* Glowing spots */}
               <div className="absolute -top-12 -right-12 w-28 h-28 bg-blue-400/5 rounded-full blur-2xl pointer-events-none" />
 
-              <div className="relative h-[280px] w-full max-w-5400px] mx-auto lg:mr-0  overflow-hidden shadow-lg border border-slate-200/80 bg-white">
+              <div className="relative h-[280px] w-full max-w-[400px] mx-auto lg:mr-0 rounded-2xl overflow-hidden shadow-lg border border-slate-200/80 bg-white">
                 <Image
-                  src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80"
-                  alt="Partner with us"
+                  src="/realimages/BUILDING/DSC05423.webp"
+                  alt="Partner with us - RC RepairCart Team"
                   fill
                   className="object-cover"
                 />

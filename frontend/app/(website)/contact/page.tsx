@@ -100,7 +100,7 @@ export default function ContactPage() {
         <div className="relative mx-auto max-w-6xl px-4 z-10">
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary-150 bg-primary-50/50 px-3 py-1.5 text-[11px] font-extrabold text-primary-700 shadow-sm mb-5 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary-150 bg-primary-50/50 px-3 py-1.5 text-[11px] font-extrabold text-primary-700 mb-5 backdrop-blur-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-pulse" />
                 <span>Doorstep Repair & Pickup Service</span>
               </div>
@@ -115,20 +115,20 @@ export default function ContactPage() {
                   href={`https://wa.me/${wa}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-6 py-3 text-xs font-extrabold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-500 hover:shadow-emerald-500/30 transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+                  className="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-6 py-3 text-xs font-extrabold text-white hover:bg-emerald-500 transition-all active:scale-[0.98]"
                 >
                   Chat on WhatsApp <MessageCircle className="ml-1.5 h-4.5 w-4.5" />
                 </a>
                 <a
                   href="tel:8586887887"
-                  className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-xs font-extrabold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all hover:-translate-y-0.5 shadow-sm active:scale-[0.98]"
+                  className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-xs font-extrabold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-[0.98]"
                 >
                   Call Now <Phone className="ml-1.5 h-4.5 w-4.5 text-slate-400" />
                 </a>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5">
               <div className="grid grid-cols-2 gap-4">
                 {[
                   { label: 'Response time', value: 'Within 2 hrs', desc: 'Fastest diagnostic TAT', icon: Clock, color: 'text-blue-650 bg-blue-50/70 border-blue-100' },
@@ -136,7 +136,7 @@ export default function ContactPage() {
                   { label: 'Warranty Policy', value: '30-day guarantee', desc: '100% genuine parts only', icon: ShieldCheck, color: 'text-emerald-655 bg-emerald-50/70 border-emerald-100' },
                   { label: 'Supported Brands', value: 'Samsung, LG, Sony', desc: 'All leading OEM models', icon: Award, color: 'text-amber-655 bg-amber-50/70 border-amber-100' },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 transition-all duration-300 hover:shadow-md hover:bg-white hover:border-primary-100/50 group">
+                  <div key={item.label} className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 transition-all duration-300 hover:bg-white hover:border-primary-100/50 group">
                     <div className="flex items-center justify-between mb-3">
                       <div className={`w-8 h-8 rounded-lg border flex items-center justify-center ${item.color} transition-all group-hover:scale-110`}>
                         <item.icon className="w-4.5 h-4.5" strokeWidth={2.5} />
@@ -161,7 +161,7 @@ export default function ContactPage() {
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
 
             {/* Contact Form */}
-            <div className="rounded-xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-sm">
+            <div className="rounded-xl border border-slate-200/80 bg-white p-6 sm:p-8">
               <div className="mb-6">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-primary-600 mb-1">Send a message</p>
                 <h2 className="text-xl font-bold text-slate-800">Tell us what you need</h2>
@@ -232,7 +232,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full sm:w-auto inline-flex items-center justify-center rounded-lg bg-primary-600 px-5 py-2.5 text-xs font-bold text-white shadow hover:bg-primary-500 transition-all hover:-translate-y-0.5 disabled:opacity-60"
+                    className="w-full sm:w-auto inline-flex items-center justify-center rounded-lg bg-primary-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-primary-500 transition-all disabled:opacity-60"
                   >
                     {isSubmitting ? 'Sending...' : 'Send Message'}
                     <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
@@ -245,7 +245,7 @@ export default function ContactPage() {
             <div className="space-y-5">
 
               {/* Simple Clean Map Container */}
-              <div className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm h-48">
+              <div className="overflow-hidden rounded-xl border border-slate-200/80 bg-white h-48">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14013.250486043455!2d77.3175!3d28.5885!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce45f0d778d91%3A0xc3f1d3c7b64010a3!2sSector%2010%2C%20Noida%2C%20Uttar%20Pradesh%20201301!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
                   width="100%"
@@ -260,7 +260,7 @@ export default function ContactPage() {
               </div>
 
               {/* Contact Details Card */}
-              <div className="rounded-xl border border-slate-200 bg-white p-5 text-slate-800 shadow-md space-y-4">
+              <div className="rounded-xl border border-slate-200 bg-white p-5 text-slate-800 space-y-4">
                 <h3 className="text-sm font-bold border-b border-slate-100 pb-2 text-slate-900">Office Locations & Details</h3>
                 <div className="grid gap-3.5 text-xs">
                   {contactItems.map((item) => (
@@ -306,7 +306,7 @@ export default function ContactPage() {
             <p className="text-xs text-slate-450 mt-1">Help us improve our services by sharing your experience.</p>
           </div>
 
-          <div className="bg-slate-50 rounded-xl p-5 border border-slate-200/80 shadow-sm">
+          <div className="bg-slate-50 rounded-xl p-5 border border-slate-200/80">
             {feedbackSubmitted ? (
               <div className="text-center py-6">
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-50 border border-green-200 mb-3 animate-in zoom-in-50">
@@ -339,7 +339,7 @@ export default function ContactPage() {
                         key={star}
                         type="button"
                         onClick={() => setRating(star)}
-                        className={`p-1 transition-all ${rating >= star ? 'text-amber-400 drop-shadow-sm scale-105' : 'text-slate-200'}`}
+                        className={`p-1 transition-all ${rating >= star ? 'text-amber-400 scale-105' : 'text-slate-200'}`}
                       >
                         <Star className="w-6 h-6 fill-current" />
                       </button>
@@ -352,7 +352,7 @@ export default function ContactPage() {
                   <textarea {...registerFeedback('message', { required: true })} rows={3} className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500/20 transition-all resize-none font-medium" placeholder="Tell us what you liked or how we can improve..." required></textarea>
                 </div>
 
-                <button type="submit" disabled={isSubmittingFeedback} className="w-full rounded-lg bg-primary-600 px-5 py-2.5 text-xs font-bold text-white shadow hover:bg-primary-500 disabled:opacity-60 transition-all">
+                <button type="submit" disabled={isSubmittingFeedback} className="w-full rounded-lg bg-primary-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-primary-500 disabled:opacity-60 transition-all">
                   {isSubmittingFeedback ? 'Submitting...' : 'Submit Feedback'}
                 </button>
               </form>

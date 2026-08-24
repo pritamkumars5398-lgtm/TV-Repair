@@ -7,7 +7,6 @@ import Image from 'next/image';
 import { Loader2, Mail, Lock, KeyRound, ArrowLeft, ShieldCheck, Hash } from 'lucide-react';
 import { toast } from 'sonner';
 import { publicApi } from '@/lib/api/public';
-import User from '../../../assets/img/User1 (1).png';
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -90,7 +89,7 @@ export default function ForgotPasswordPage() {
       {/* Left Side - Image (Hidden on Mobile) */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-slate-900 overflow-hidden select-none">
         <Image
-          src={User}
+          src="/realimages/QC/DSC05474.webp"
           alt="Premium Service"
           fill
           className="object-cover opacity-100"

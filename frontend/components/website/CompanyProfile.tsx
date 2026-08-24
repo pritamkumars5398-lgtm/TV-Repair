@@ -98,7 +98,7 @@ export function CompanyProfile() {
               </ul>
             </div>
             <div className="relative aspect-square lg:aspect-auto lg:h-[700px] rounded-[3rem] overflow-hidden shadow-2xl" data-aos="zoom-in">
-              <Image src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1000&q=80" alt="Infrastructure" fill className="object-cover" />
+              <Image src="/realimages/BUILDING/DSC05217.webp" alt="Infrastructure" fill className="object-cover" />
             </div>
           </div>
         </div>

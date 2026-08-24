@@ -7,7 +7,6 @@ import Image from 'next/image';
 import { Loader2, UserPlus, Mail, Lock, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { publicApi } from '@/lib/api/public';
-import User2 from '../../../assets/img/User1 (2).png';
 
 function RegisterFormContent() {
   const router = useRouter();
@@ -62,7 +61,7 @@ function RegisterFormContent() {
       {/* Left Side - Image (Hidden on Mobile) */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-slate-900 overflow-hidden select-none">
         <Image
-          src={User2}
+          src="/realimages/ASSEMBLY/DSC05238.webp"
           alt="Premium Service"
           fill
           className="object-cover opacity-100"
@@ -152,7 +151,7 @@ function RegisterFormContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white font-extrabold py-3.5 rounded-xl text-sm transition-all shadow-md hover:shadow-lg active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none mt-6"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white font-extrabold py-3.5 rounded-xl text-sm transition-all active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none mt-6"
               >
                 {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><UserPlus className="h-5 w-5" /> Create Account</>}
               </button>
