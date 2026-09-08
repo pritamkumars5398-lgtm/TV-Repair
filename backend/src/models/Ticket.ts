@@ -32,6 +32,28 @@ const ticketSchema = new mongoose.Schema(
     issueDescription: {
       type: String,
     },
+    tvBrand: {
+      type: String,
+    },
+    tvSize: {
+      type: String,
+    },
+    tvType: {
+      type: String,
+    },
+    modelNumber: {
+      type: String,
+    },
+    photos: {
+      type: [String],
+      default: [],
+    },
+    pickupOtp: {
+      type: String,
+    },
+    deliveryOtp: {
+      type: String,
+    },
     address: {
       type: String,
     },
@@ -69,11 +91,40 @@ const ticketSchema = new mongoose.Schema(
     technicianName: {
       type: String,
     },
+    technicianPhone: {
+      type: String,
+    },
+    technicianPhoto: {
+      type: String,
+    },
     scheduledAt: {
       type: Date,
     },
     notes: {
       type: String,
+    },
+    estimateAmount: {
+      type: Number,
+    },
+    estimateBreakdown: {
+      type: String,
+    },
+    techAssessmentAmount: {
+      type: Number,
+    },
+    techAssessmentBreakdown: {
+      type: String,
+    },
+    adminEstimateAmount: {
+      type: Number,
+    },
+    adminEstimateBreakdown: {
+      type: String,
+    },
+    estimateStatus: {
+      type: String,
+      enum: ['pending', 'pending_admin_review', 'sent_to_customer', 'approved', 'rejected'],
+      default: 'pending',
     },
     statusHistory: [
       {

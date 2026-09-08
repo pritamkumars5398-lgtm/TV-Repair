@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import Admin from '../models/Admin';
 import Customer from '../models/Customer';
+import Technician from '../models/Technician';
 
 // Extend Express Request interface to include user
 declare global {
@@ -18,23 +19,23 @@ export const protectAdmin = async (req: Request, res: Response, next: NextFuncti
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
-
       const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
-
       req.user = await Admin.findById(decoded.id).select('-password');
 
       if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'manager')) {
         res.status(401).json({ message: 'Not authorized as an admin' });
         return;
       }
-
-      next();
     } catch (error) {
       res.status(401).json({ message: 'Not authorized, token failed' });
+      return;
     }
   } else {
     res.status(401).json({ message: 'Not authorized, no token' });
+    return;
   }
+  
+  next();
 };
 
 export const protectCustomer = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -50,6 +51,31 @@ export const protectCustomer = async (req: Request, res: Response, next: NextFun
 
       if (!req.user) {
         res.status(401).json({ message: 'Not authorized as a customer' });
+        return;
+      }
+
+      next();
+    } catch (error) {
+      res.status(401).json({ message: 'Not authorized, token failed' });
+    }
+  } else {
+    res.status(401).json({ message: 'Not authorized, no token' });
+  }
+};
+
+export const protectTechnician = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  let token;
+
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    try {
+      token = req.headers.authorization.split(' ')[1];
+
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
+
+      req.user = await Technician.findById(decoded.id);
+
+      if (!req.user) {
+        res.status(401).json({ message: 'Not authorized as a technician' });
         return;
       }
 

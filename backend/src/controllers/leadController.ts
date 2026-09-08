@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Lead from '../models/Lead';
+import { sendSMS } from '../utils/sendSMS';
 
 // @desc    Create a public inquiry (lead)
 // @route   POST /api/v1/public/inquiries
@@ -18,6 +19,14 @@ export const createPublicInquiry = async (req: Request, res: Response): Promise<
       message,
       status: 'NEW',
     });
+
+    if (phone) {
+      const smsMessage = `Dear ${name}, thank you for contacting RC RepairCart. We have received your inquiry regarding ${productInterest}. Our specialist will get in touch with you shortly.`;
+      
+      sendSMS({ phone, message: smsMessage }).catch((err) => {
+        console.error(`Failed to send inquiry SMS to ${phone}:`, err.message);
+      });
+    }
 
     res.status(201).json(lead);
   } catch (error: any) {

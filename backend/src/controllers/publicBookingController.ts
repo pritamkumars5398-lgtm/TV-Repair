@@ -3,6 +3,8 @@ import Ticket from '../models/Ticket';
 import Payment from '../models/Payment';
 import crypto from 'crypto';
 import Razorpay from 'razorpay';
+import { sendSMS } from '../utils/sendSMS';
+import Notification from '../models/Notification';
 
 // Helper to generate a unique ticket ID
 const generateTicketId = () => {
@@ -14,7 +16,7 @@ const generateTicketId = () => {
 // @access  Public
 export const createBooking = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, phone, email, serviceType, preferredDate, preferredTime, issueDescription, address, area, city, pincode, isPickup } = req.body;
+    const { name, phone, email, serviceType, preferredDate, preferredTime, issueDescription, tvBrand, tvSize, tvType, modelNumber, address, area, city, pincode, isPickup } = req.body;
 
     // Create a new Ticket with paymentStatus 'pending'
     const ticket = await Ticket.create({
@@ -26,6 +28,10 @@ export const createBooking = async (req: Request, res: Response): Promise<void> 
       preferredDate,
       preferredTime,
       issueDescription,
+      tvBrand,
+      tvSize,
+      tvType,
+      modelNumber,
       address,
       area,
       city,
@@ -68,6 +74,17 @@ export const createBooking = async (req: Request, res: Response): Promise<void> 
       status: 'PENDING',
       razorpayOrderId,
     });
+
+    // Send SMS Notification
+    if (phone) {
+      const message = `Dear ${name}, thank you for choosing RC RepairCart. Your repair request (${ticket.ticketId}) for ${serviceType} has been registered successfully. Track status: http://localhost:3000/track?id=${ticket.ticketId}`;
+      sendSMS({
+        phone: phone,
+        message,
+      }).catch((err) => {
+        console.error(`Failed to send booking SMS to ${phone}:`, err.message);
+      });
+    }
 
     res.status(201).json({
       razorpayOrderId,
@@ -119,6 +136,18 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
       }
     );
 
+    // Send Confirmation SMS
+    if (ticket.customerPhone) {
+      const message = `Dear ${ticket.customerName}, payment for repair ticket ${ticket.ticketId} is confirmed. Our technician will visit your location shortly. Track live updates: http://localhost:3000/track?id=${ticket.ticketId} - RC RepairCart`;
+      
+      sendSMS({
+        phone: ticket.customerPhone,
+        message,
+      }).catch((err) => {
+        console.error(`Failed to send booking confirmation SMS to ${ticket.customerPhone}:`, err.message);
+      });
+    }
+
     res.json({
       success: true,
       ticketId: ticket.ticketId,
@@ -148,7 +177,73 @@ export const trackTicket = async (req: Request, res: Response): Promise<void> =>
         status: ticket.status,
         serviceType: ticket.serviceType,
         statusHistory: ticket.statusHistory,
+        adminEstimateAmount: ticket.adminEstimateAmount,
+        adminEstimateBreakdown: ticket.adminEstimateBreakdown,
+        estimateStatus: ticket.estimateStatus,
       }
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Respond to an estimate
+// @route   POST /api/v1/public/track/:ticketId/estimate-response
+// @access  Public
+export const respondToEstimate = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { ticketId } = req.params;
+    const { status } = req.body; // 'approved' or 'rejected'
+
+    if (status !== 'approved' && status !== 'rejected') {
+      res.status(400).json({ message: 'Invalid status' });
+      return;
+    }
+
+    const ticket = await Ticket.findOne({ ticketId });
+
+    if (!ticket) {
+      res.status(404).json({ message: 'Ticket not found' });
+      return;
+    }
+
+    ticket.estimateStatus = status;
+    
+    let note = '';
+    let smsMessage = '';
+    
+    if (status === 'approved') {
+      ticket.status = 'work_started';
+      ticket.statusHistory.push({ status: 'work_started', note: 'Customer approved estimate.' });
+      smsMessage = `Dear ${ticket.customerName}, thank you for approving the estimate for ticket ${ticket.ticketId}. Repair work has commenced. Your product will be ready and delivered within 2-3 business days. - RC RepairCart`;
+    } else if (status === 'rejected') {
+      ticket.status = 'cancelled';
+      ticket.statusHistory.push({ status: 'cancelled', note: 'Customer rejected estimate.' });
+      smsMessage = `Dear ${ticket.customerName}, as per your request, repair for ticket ${ticket.ticketId} has been cancelled. Our team will coordinate the safe return of your product shortly. - RC RepairCart`;
+    }
+
+    await ticket.save();
+
+    // Create a notification for the Admin
+    await Notification.create({
+      title: `Estimate ${status === 'approved' ? 'Approved' : 'Rejected'}`,
+      message: `Customer ${ticket.customerName} has ${status} the estimate for ticket ${ticket.ticketId}.`,
+      type: status === 'approved' ? 'SUCCESS' : 'WARNING',
+      link: `/admin/tickets?action=message&ticketId=${ticket.ticketId}`,
+    });
+
+    if (ticket.customerPhone) {
+      sendSMS({
+        phone: ticket.customerPhone,
+        message: smsMessage,
+      }).catch((err) => {
+        console.error(`Failed to send status update SMS to ${ticket.customerPhone}:`, err.message);
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Estimate response recorded successfully',
     });
   } catch (error: any) {
     res.status(500).json({ message: error.message || 'Server Error' });

@@ -5,6 +5,39 @@ import Technician from '../models/Technician';
 import Payment from '../models/Payment';
 import Customer from '../models/Customer';
 import InventoryItem from '../models/InventoryItem';
+import Notification from '../models/Notification';
+
+// @desc    Get Admin Notifications
+// @route   GET /api/v1/admin/notifications
+// @access  Private/Admin
+export const getNotifications = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const notifications = await Notification.find().sort({ createdAt: -1 }).limit(20);
+    res.json({ success: true, data: notifications });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Mark Notification as Read
+// @route   PUT /api/v1/admin/notifications/:id/read
+// @access  Private/Admin
+export const markNotificationRead = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const notification = await Notification.findByIdAndUpdate(
+      req.params.id,
+      { isRead: true },
+      { returnDocument: 'after' }
+    );
+    if (!notification) {
+      res.status(404).json({ success: false, message: 'Notification not found' });
+      return;
+    }
+    res.json({ success: true, data: notification });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
+  }
+};
 
 // @desc    Get Admin Dashboard Stats
 // @route   GET /api/v1/admin/dashboard
@@ -366,6 +399,193 @@ export const getReports = async (req: Request, res: Response): Promise<void> => 
     }
 
     res.json({ success: true, data });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
+  }
+};
+
+import { sendSMS } from '../utils/sendSMS';
+
+// @desc    Assign technician to a ticket
+// @route   POST /api/v1/admin/tickets/:ticketId/assign
+// @access  Private/Admin
+export const assignTechnician = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { ticketId } = req.params;
+    const { technicianId } = req.body;
+
+    const technician = await Technician.findById(technicianId);
+    if (!technician) {
+      res.status(404).json({ success: false, message: 'Technician not found' });
+      return;
+    }
+
+    const ticket = await Ticket.findOne({ ticketId });
+    if (!ticket) {
+      res.status(404).json({ success: false, message: 'Ticket not found' });
+      return;
+    }
+
+    ticket.technicianId = technician._id;
+    ticket.technicianName = technician.name;
+    ticket.technicianPhone = technician.phone;
+    ticket.technicianPhoto = technician.photo || '';
+    ticket.statusHistory.push({
+      status: ticket.status,
+      note: `Assigned to technician ${technician.name}`,
+    });
+
+    await ticket.save();
+
+    // Send SMS to customer
+    if (ticket.customerPhone) {
+      const message = `Dear ${ticket.customerName}, technician ${technician.name} (${technician.phone}) has been assigned to your repair request (${ticket.ticketId}) and will contact you shortly. - RC RepairCart`;
+      
+      sendSMS({ phone: ticket.customerPhone, message }).catch((err) => {
+        console.error(`Failed to send technician assignment SMS to ${ticket.customerPhone}:`, err.message);
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Technician assigned successfully',
+      data: ticket,
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Admin sends final estimate to customer
+// @route   POST /api/v1/admin/tickets/:ticketId/send-estimate
+// @access  Private/Admin
+export const sendEstimateToCustomer = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { ticketId } = req.params;
+    const { amount, breakdown } = req.body;
+
+    const ticket = await Ticket.findOne({ ticketId });
+    if (!ticket) {
+      res.status(404).json({ success: false, message: 'Ticket not found' });
+      return;
+    }
+
+    ticket.adminEstimateAmount = amount;
+    ticket.adminEstimateBreakdown = breakdown;
+    ticket.estimateAmount = amount; // Backwards compatibility for the track page if needed
+    ticket.estimateBreakdown = breakdown; // Backwards compatibility
+    ticket.estimateStatus = 'sent_to_customer';
+    
+    ticket.statusHistory.push({
+      status: ticket.status,
+      note: `Final Estimate sent to Customer by Admin. Amount: ₹${amount}. Breakdown: ${breakdown}`,
+    });
+
+    await ticket.save();
+
+    if (ticket.customerPhone) {
+      const message = `Dear ${ticket.customerName}, inspection for ticket ${ticket.ticketId} is complete. Estimated cost: Rs.${amount}. Details: ${breakdown}. Please review & approve to start repair: http://localhost:3000/track?id=${ticket.ticketId} - RC RepairCart`;
+      
+      sendSMS({
+        phone: ticket.customerPhone,
+        message,
+      }).catch((err) => {
+        console.error(`Failed to send estimate SMS to ${ticket.customerPhone}:`, err.message);
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Estimate sent to customer successfully',
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Admin sends a custom message to customer
+// @route   POST /api/v1/admin/tickets/:ticketId/send-message
+// @access  Private/Admin
+export const sendMessageToCustomer = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { ticketId } = req.params;
+    const { message, date } = req.body;
+
+    const ticket = await Ticket.findOne({ ticketId });
+    if (!ticket) {
+      res.status(404).json({ success: false, message: 'Ticket not found' });
+      return;
+    }
+
+    const dateStr = date ? ` Expected completion: ${new Date(date).toLocaleDateString()}.` : '';
+    
+    ticket.statusHistory.push({
+      status: ticket.status,
+      note: `Admin Message: ${message}.${dateStr}`,
+    });
+
+    await ticket.save();
+
+    if (ticket.customerPhone) {
+      const smsMessage = `Dear ${ticket.customerName}, update for ticket ${ticket.ticketId}: ${message}.${dateStr} Thank you for your patience. - RC RepairCart`;
+      
+      sendSMS({
+        phone: ticket.customerPhone,
+        message: smsMessage,
+      }).catch((err) => {
+        console.error(`Failed to send custom message SMS to ${ticket.customerPhone}:`, err.message);
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Message sent to customer successfully',
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Global search across entities
+// @route   GET /api/v1/admin/search
+// @access  Private/Admin
+export const globalSearch = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const q = req.query.q as string;
+    if (!q || q.length < 2) {
+      res.json({ success: true, data: { tickets: [], customers: [], leads: [] } });
+      return;
+    }
+
+    const searchRegex = new RegExp(q, 'i');
+
+    const tickets = await Ticket.find({
+      $or: [
+        { ticketId: searchRegex },
+        { customerName: searchRegex },
+        { customerPhone: searchRegex }
+      ]
+    }).limit(5).select('ticketId customerName status');
+
+    const customers = await Customer.find({
+      $or: [
+        { name: searchRegex },
+        { email: searchRegex },
+        { phone: searchRegex }
+      ]
+    }).limit(5).select('name email phone');
+
+    const leads = await Lead.find({
+      $or: [
+        { name: searchRegex },
+        { phone: searchRegex }
+      ]
+    }).limit(5).select('name phone status');
+
+    res.json({
+      success: true,
+      data: { tickets, customers, leads },
+    });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message || 'Server Error' });
   }

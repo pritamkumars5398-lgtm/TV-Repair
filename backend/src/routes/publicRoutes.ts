@@ -1,6 +1,6 @@
 import express from 'express';
 import { createPublicInquiry } from '../controllers/leadController';
-import { createBooking, verifyPayment, trackTicket } from '../controllers/publicBookingController';
+import { createBooking, verifyPayment, trackTicket, respondToEstimate } from '../controllers/publicBookingController';
 
 const router = express.Router();
 
@@ -11,5 +11,6 @@ router.post('/bookings', createBooking);
 router.post('/bookings/verify-payment', verifyPayment);
 
 router.get('/track/:ticketId', trackTicket);
+router.post('/track/:ticketId/estimate-response', respondToEstimate);
 
 export default router;

@@ -10,16 +10,15 @@ const customerSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
-      unique: true,
       lowercase: true,
     },
     phone: {
       type: String,
+      required: true,
+      unique: true,
     },
     password: {
       type: String,
-      required: true,
     },
     address: {
       type: String,
@@ -33,10 +32,10 @@ const customerSchema = new mongoose.Schema(
     pincode: {
       type: String,
     },
-    resetPasswordOTP: {
+    authOTP: {
       type: String,
     },
-    resetPasswordOTPExpires: {
+    authOTPExpires: {
       type: Date,
     },
   },
@@ -53,12 +52,13 @@ customerSchema.virtual('id').get(function () {
 
 // Method to match entered password with hashed password in database
 customerSchema.methods.matchPassword = async function (enteredPassword: string) {
+  if (!this.password) return false;
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
 // Middleware to hash password before saving
 customerSchema.pre('save', async function () {
-  if (!this.isModified('password')) {
+  if (!this.isModified('password') || !this.password) {
     return;
   }
   const salt = await bcrypt.genSalt(10);

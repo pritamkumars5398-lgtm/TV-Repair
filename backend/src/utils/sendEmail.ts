@@ -35,6 +35,9 @@ export const sendEmail = async (options: EmailOptions): Promise<void> => {
       user,
       pass,
     },
+    tls: {
+      rejectUnauthorized: false, // Fix for self-signed certificate error in local dev
+    },
   });
 
   const mailOptions = {

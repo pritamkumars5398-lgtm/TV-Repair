@@ -11,6 +11,7 @@ import customerAuthRoutes from './customerAuthRoutes';
 import customerRoutes from './customerRoutes';
 import customerPortalRoutes from './customerPortalRoutes';
 import adminRoutes from './adminRoutes';
+import technicianRoutes from './technicianRoutes';
 import { protectAdmin } from '../middlewares/authMiddleware';
 
 const router = express.Router();
@@ -26,7 +27,7 @@ router.use('/tickets', ticketRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/blogs', blogRoutes);
 router.use('/feedbacks', feedbackRoutes);
+router.use('/technician', technicianRoutes);
 router.use('/admin', protectAdmin, adminRoutes);
 
 export default router;
-
