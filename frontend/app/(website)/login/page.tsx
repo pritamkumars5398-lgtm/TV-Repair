@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Loader2, Mail, Lock, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Loader2, Phone, CheckCircle2, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { publicApi } from '@/lib/api/public';
@@ -13,11 +13,16 @@ function LoginFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/';
+  
   const [loading, setLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
   const [userData, setUserData] = useState<{ name: string } | null>(null);
-  const [form, setForm] = useState({ email: '', password: '' });
+  
+  const [step, setStep] = useState<'PHONE' | 'OTP'>('PHONE');
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  
   const setAuth = useCustomerStore((state) => state.setAuth);
 
   useEffect(() => {
@@ -33,19 +38,29 @@ function LoginFormContent() {
     }
   }, [router, searchParams]);
 
-  function update(field: keyof typeof form, value: string) {
-    setForm((f) => ({ ...f, [field]: value }));
-  }
-
-  async function handleLogin(e: React.FormEvent) {
+  async function handleSendOTP(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.email.includes('@')) { toast.error('Enter a valid email address'); return; }
-    if (form.password.length < 6) { toast.error('Enter a valid password'); return; }
+    if (phone.length < 10) { toast.error('Enter a valid phone number'); return; }
 
     setLoading(true);
-
     try {
-      const data = await publicApi.loginCustomer(form);
+      await publicApi.sendCustomerAuthOTP({ phone });
+      toast.success('OTP sent successfully!');
+      setStep('OTP');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to send OTP. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleVerifyOTP(e: React.FormEvent) {
+    e.preventDefault();
+    if (otp.length < 6) { toast.error('Enter a valid 6-digit OTP'); return; }
+
+    setLoading(true);
+    try {
+      const data = await publicApi.verifyCustomerAuthOTP({ phone, otp });
       setAuth(
         { id: data.id, name: data.name, email: data.email },
         data.token
@@ -57,7 +72,7 @@ function LoginFormContent() {
         router.push(redirect);
       }, 1500);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Invalid email or password');
+      toast.error(error.response?.data?.message || 'Invalid OTP');
     } finally {
       setLoading(false);
     }
@@ -106,59 +121,66 @@ function LoginFormContent() {
         <div className="w-full max-w-md relative z-10 animate-in fade-in slide-in-from-right-4 duration-500">
           <div className="mb-8 text-center lg:text-left">
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Welcome Back</h1>
-            <p className="mt-2 text-sm text-slate-500 font-medium">Please sign in to manage your bookings.</p>
+            <p className="mt-2 text-sm text-slate-500 font-medium">Please sign in with your phone number.</p>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl shadow-md p-8 space-y-6">
-            <form onSubmit={handleLogin} className="space-y-5">
-              <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Email Address</label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-                    <Mail className="w-5 h-5" />
-                  </span>
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => update('email', e.target.value)}
-                    placeholder="rajesh@example.com"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800 placeholder:text-slate-400"
-                    required
-                  />
+            {step === 'PHONE' ? (
+              <form onSubmit={handleSendOTP} className="space-y-5">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Phone Number</label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                      <Phone className="w-5 h-5" />
+                    </span>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="Enter 10-digit number"
+                      className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800 placeholder:text-slate-400"
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider">Password</label>
-                  <Link href="/forgot-password" className="text-xs font-bold text-primary-650 hover:text-cyan-650 transition-colors">
-                    Forgot?
-                  </Link>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white font-extrabold py-3.5 rounded-xl text-sm transition-all active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none mt-6"
+                >
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Send OTP <ArrowRight className="h-5 w-5" /></>}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOTP} className="space-y-5 animate-in slide-in-from-right-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Enter OTP</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      placeholder="••••••"
+                      className="w-full text-center tracking-[0.5em] text-xl py-3 bg-slate-50 border border-slate-200 rounded-xl font-bold focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800"
+                      required
+                    />
+                  </div>
+                  <p className="mt-3 text-xs text-center text-slate-500 font-medium">
+                    OTP sent to {phone}.{' '}
+                    <button type="button" onClick={() => setStep('PHONE')} className="text-primary-600 font-bold hover:underline">Change</button>
+                  </p>
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-                    <Lock className="w-5 h-5" />
-                  </span>
-                  <input
-                    type="password"
-                    value={form.password}
-                    onChange={(e) => update('password', e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800 placeholder:text-slate-400"
-                    required
-                    minLength={6}
-                  />
-                </div>
-              </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white font-extrabold py-3.5 rounded-xl text-sm transition-all active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none mt-6"
-              >
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><ArrowRight className="h-5 w-5" /> Sign In</>}
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white font-extrabold py-3.5 rounded-xl text-sm transition-all active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none mt-6"
+                >
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Verify & Login <CheckCircle2 className="h-5 w-5" /></>}
+                </button>
+              </form>
+            )}
           </div>
 
           <div className="mt-8 text-center">

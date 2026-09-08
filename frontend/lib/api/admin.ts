@@ -129,4 +129,8 @@ export const adminApi = {
     
   markNotificationRead: (id: string) =>
     apiClient.put<ApiResponse<any>>(`/admin/notifications/${id}/read`).then((r) => r.data),
+
+  // Global Search
+  globalSearch: (q: string) =>
+    apiClient.get<ApiResponse<{ tickets: any[], customers: any[], leads: any[] }>>('/admin/search', { params: { q } }).then((r) => r.data),
 };

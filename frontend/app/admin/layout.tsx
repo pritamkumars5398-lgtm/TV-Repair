@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Users, Ticket, UserCheck, Package,
   FileText, CreditCard, BarChart2, Settings, Globe,
   LogOut, Menu, Bell, ChevronRight, Wrench, ChevronDown, User,
-  MessageSquare,
+  MessageSquare, Loader2, Search
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/lib/stores/auth-store';
@@ -42,6 +42,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const queryClient = useQueryClient();
+  
+  // Global Search State
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setSearchOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const { data: searchResults, isLoading: isSearchLoading } = useQuery({
+    queryKey: ['globalSearch', debouncedSearch],
+    queryFn: () => adminApi.globalSearch(debouncedSearch),
+    enabled: debouncedSearch.length > 1,
+  });
 
   const { data: notificationsData } = useQuery({
     queryKey: ['adminNotifications'],
@@ -153,10 +182,84 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Search (Mock) */}
-            <div className="hidden md:flex items-center bg-slate-100 rounded-md px-3 py-1.5 border border-slate-200">
-              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-              <input type="text" placeholder="Search..." className="bg-transparent border-none focus:outline-none text-sm ml-2 text-slate-700 placeholder:text-slate-400 w-40" />
+            {/* Global Search */}
+            <div className="hidden md:flex relative" ref={searchRef}>
+              <div className="flex items-center bg-slate-100 rounded-md px-3 py-1.5 border border-slate-200">
+                <Search className="w-4 h-4 text-slate-400" />
+                <input 
+                  type="text" 
+                  placeholder="Search tickets, customers, leads..." 
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setSearchOpen(true);
+                  }}
+                  onFocus={() => setSearchOpen(true)}
+                  className="bg-transparent border-none focus:outline-none text-sm ml-2 text-slate-700 placeholder:text-slate-400 w-56 lg:w-72" 
+                />
+                {isSearchLoading && searchQuery.length > 1 && (
+                  <Loader2 className="w-4 h-4 animate-spin text-slate-400 ml-2" />
+                )}
+              </div>
+
+              {searchOpen && searchQuery.length > 1 && (
+                <div className="absolute top-full left-0 mt-2 w-80 lg:w-96 bg-white border border-slate-200 rounded-lg shadow-xl z-50 max-h-[400px] overflow-y-auto">
+                  {searchResults?.data?.tickets?.length === 0 && searchResults?.data?.customers?.length === 0 && searchResults?.data?.leads?.length === 0 && !isSearchLoading && (
+                    <div className="p-4 text-center text-sm text-slate-500">No results found for "{searchQuery}"</div>
+                  )}
+
+                  {searchResults?.data?.tickets && searchResults.data.tickets.length > 0 && (
+                    <div className="py-2">
+                      <div className="px-3 py-1 text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-50">Tickets</div>
+                      {searchResults.data.tickets.map((t: any) => (
+                        <Link 
+                          key={t._id} 
+                          href={`/admin/tickets?search=${t.ticketId}`}
+                          onClick={() => setSearchOpen(false)}
+                          className="block px-4 py-2 hover:bg-slate-50 transition-colors"
+                        >
+                          <div className="font-semibold text-sm text-cyan-700">{t.ticketId}</div>
+                          <div className="text-xs text-slate-500 mt-0.5">{t.customerName} &bull; {t.status.replace(/_/g, ' ')}</div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
+                  {searchResults?.data?.customers && searchResults.data.customers.length > 0 && (
+                    <div className="py-2 border-t border-slate-100">
+                      <div className="px-3 py-1 text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-50">Customers</div>
+                      {searchResults.data.customers.map((c: any) => (
+                        <Link 
+                          key={c._id} 
+                          href={`/admin/customers?search=${c.phone}`}
+                          onClick={() => setSearchOpen(false)}
+                          className="block px-4 py-2 hover:bg-slate-50 transition-colors"
+                        >
+                          <div className="font-semibold text-sm text-slate-800">{c.name}</div>
+                          <div className="text-xs text-slate-500 mt-0.5">{c.phone} &bull; {c.email}</div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
+                  {searchResults?.data?.leads && searchResults.data.leads.length > 0 && (
+                    <div className="py-2 border-t border-slate-100">
+                      <div className="px-3 py-1 text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-50">Leads</div>
+                      {searchResults.data.leads.map((l: any) => (
+                        <Link 
+                          key={l._id} 
+                          href={`/admin/leads?search=${l.phone}`}
+                          onClick={() => setSearchOpen(false)}
+                          className="block px-4 py-2 hover:bg-slate-50 transition-colors"
+                        >
+                          <div className="font-semibold text-sm text-slate-800">{l.name}</div>
+                          <div className="text-xs text-slate-500 mt-0.5">{l.phone} &bull; {l.status}</div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="relative">
