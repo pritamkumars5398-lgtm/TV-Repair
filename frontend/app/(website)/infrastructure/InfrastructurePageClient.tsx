@@ -18,6 +18,7 @@ import {
   ChevronRight,
   Maximize2,
 } from "lucide-react";
+import { CtaSection } from "@/components/website/CtaSection";
 
 const infraHighlights = [
   {
@@ -486,43 +487,17 @@ export default function InfrastructurePageClient() {
       )}
 
       {/* CTA Section */}
-      <section className="py-16 sm:py-20 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="bg-slate-50 border border-slate-200 rounded-3xl p-8 sm:p-12 grid lg:grid-cols-12 gap-8 items-center">
-            
-            {/* Left Side: Text */}
-            <div className="lg:col-span-7 space-y-4">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
-                Want a Tour of Our Facility?
-              </h2>
-              <p className="text-slate-600 text-sm font-medium leading-relaxed">
-                Connect with our team to schedule an OEM partnership visit or discuss bulk electronics repair contracts.
-              </p>
-              <div className="pt-2">
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white text-xs font-bold rounded-xl hover:bg-primary-700 transition-all"
-                >
-                  Contact Us <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Right Side: Image */}
-            <div className="lg:col-span-5">
-              <div className="relative h-[220px] w-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white">
-                <Image
-                  src="/realimages/BONDING/DSC05374.webp"
-                  alt="Visit Our Infrastructure"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
+      <CtaSection
+        title="Want a Tour of Our Facility?"
+        description="Connect with our team to schedule an OEM partnership visit or discuss bulk electronics repair contracts."
+        primaryBtnText="Book a Repair"
+        primaryBtnHref="/book"
+        secondaryBtnText="Contact Us"
+        secondaryBtnHref="/contact"
+        badgeText="OEM & B2B Visits"
+        imageSrc="/realimages/BONDING/DSC05374.webp"
+        imageAlt="Visit Our Infrastructure"
+      />
     </div>
   );
 }

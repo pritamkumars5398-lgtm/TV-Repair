@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { publicApi } from '@/lib/api/public';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
+import { CtaSection } from '@/components/website/CtaSection';
 
 const inquirySchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -169,6 +170,19 @@ export default function ProductsPage() {
           )}
         </div>
       </section>
+
+      {/* CTA Section */}
+      <CtaSection
+        title="Looking for Custom Speaker Manufacturing?"
+        description="Whether you require bulk OEM speaker assembly, portable Bluetooth speakers, or custom soundbars, our certified engineers deliver superior acoustics."
+        primaryBtnText="Get in Touch"
+        primaryBtnHref="/contact"
+        secondaryBtnText="Explore Services"
+        secondaryBtnHref="/services"
+        badgeText="OEM & Bulk Orders"
+        imageSrc="/realimages/SPEAKER/DSC07635.webp"
+        imageAlt="Audio & Speaker Manufacturing Line"
+      />
 
       {/* Inquiry Modal - Higher z-index & scrollable container so full form is visible */}
       {modal.open && (

@@ -12,6 +12,7 @@ import {
   Check, Target, TrendingUp, Clock, ShieldCheck, Users, Settings, BarChart, Briefcase, CalendarClock, PhoneCall, Smartphone, Factory,
   Recycle, RefreshCw, Warehouse, PackageCheck, ClipboardCheck, ArrowDown, Building2, CheckSquare, FileText, Activity, ClipboardList, MapPin, Search, Eye, Award, Layers, Video, SearchCode, Tags, Scale
 } from 'lucide-react';
+import { CtaSection } from '@/components/website/CtaSection';
 
 import img1 from "../../../assets/img/Picture1.png";
 import img2 from "../../../assets/img/Picture2.png";
@@ -568,7 +569,12 @@ export default function ServicesPage() {
             </div>
             <div className="relative" data-aos="fade-left">
               <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-xl border border-slate-200/80">
-                <Image src={img6} alt="USP" fill className="object-cover" />
+                <Image
+                  src="/realimages/BONDING/DSC05363.webp"
+                  alt="Precision Laser Bonding Station - Our USP"
+                  fill
+                  className="object-cover"
+                />
               </div>
               <div className="absolute -bottom-6 -left-6 bg-white text-slate-900 p-5 rounded-xl shadow-md border border-slate-200/80">
                 <div className="flex items-center gap-3 mb-1">
@@ -771,42 +777,17 @@ export default function ServicesPage() {
       </section>
 
       {/* CTA */}
-      <section className="relative py-16 bg-white border-t border-slate-200/60 overflow-hidden" data-aos="zoom-in">
-        {/* Soft Glow */}
-        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-50/50 blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-indigo-50/50 blur-[90px] pointer-events-none" />
-
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
-          <div className="grid lg:grid-cols-12 gap-8 items-center">
-            
-            {/* Left Side: Content */}
-            <div className="lg:col-span-7 text-left space-y-4">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">Ready to work with the best?</h2>
-              <p className="text-slate-655 text-sm font-medium leading-relaxed">
-                Get in touch with our experts to discuss how our state-of-the-art facilities can handle your requirements.
-              </p>
-              <div className="pt-2">
-                <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white text-xs font-bold rounded-xl hover:bg-primary-700 transition-all">
-                  Contact Us Today <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Right Side: Image */}
-            <div className="lg:col-span-5">
-              <div className="relative h-[220px] w-full rounded-2xl overflow-hidden shadow-lg border border-slate-200/80 bg-white">
-                <Image 
-                  src="/realimages/BONDING/DSC05309.webp" 
-                  alt="Ready to work" 
-                  fill 
-                  className="object-cover" 
-                />
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
+      <CtaSection
+        title="Ready to work with the best?"
+        description="Get in touch with our experts to discuss how our state-of-the-art facilities can handle your requirements."
+        primaryBtnText="Book a Repair"
+        primaryBtnHref="/book"
+        secondaryBtnText="Contact Us Today"
+        secondaryBtnHref="/contact"
+        badgeText="Get Started"
+        imageSrc="/realimages/BONDING/DSC05309.webp"
+        imageAlt="Ready to work with RC RepairCart"
+      />
     </div>
   );
 }

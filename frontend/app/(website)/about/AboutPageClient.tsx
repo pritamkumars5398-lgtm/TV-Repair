@@ -10,6 +10,7 @@ import {
   MapPin, Settings, Cpu, HardDrive, CircleDot, Zap, Tv, Smartphone, Speaker, Truck
 } from 'lucide-react';
 import { CompanyProfile } from '@/components/website/CompanyProfile';
+import { CtaSection } from '@/components/website/CtaSection';
 
 import img1 from "../../../assets/img/Picture15.png";
 import img2 from "../../../assets/img/Picture16.png";
@@ -716,6 +717,14 @@ export default function AboutPageClient() {
           </div>
         </div>
       </section>
+
+      {/* CTA Section */}
+      <CtaSection
+        title="Partner with RC RepairCart Today"
+        description="Experience world-class electronics repair, panel bonding, and manufacturing solutions backed by certified engineers and state-of-the-art facilities."
+        imageSrc="/realimages/BUILDING/DSC05423.webp"
+        imageAlt="RC RepairCart Facility & Operations"
+      />
 
     </div>
   );

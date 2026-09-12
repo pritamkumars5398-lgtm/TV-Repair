@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { publicApi } from '@/lib/api/public';
 import type { TrackTicketResponse, TicketStatus } from '@/types';
 import { toast } from 'sonner';
+import { CtaSection } from '@/components/website/CtaSection';
 
 const STAGES: { status: TicketStatus; label: string; desc: string }[] = [
   { status: 'tv_received', label: 'TV Received', desc: 'Your TV has been received at our service center.' },
@@ -454,6 +455,19 @@ function TrackContent() {
           </div>
         </div>
       </section>
+
+      {/* CTA Section */}
+      <CtaSection
+        title="Need Another TV or Appliance Serviced?"
+        description="Book online in under 2 minutes. Enjoy doorstep pickup, transparent estimates, certified lab repair, and a 30-day warranty."
+        primaryBtnText="Book a Repair"
+        primaryBtnHref="/book"
+        secondaryBtnText="Explore Services"
+        secondaryBtnHref="/services"
+        badgeText="Quick Service"
+        imageSrc="/realimages/ASSEMBLY/DSC05238.webp"
+        imageAlt="RepairCart Workshop & Repair"
+      />
     </div>
   );
 }

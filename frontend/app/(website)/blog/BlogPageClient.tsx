@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowRight, Search, Calendar, Clock } from 'lucide-react';
 import { useState } from 'react';
+import { CtaSection } from '@/components/website/CtaSection';
 
 import { useQuery } from '@tanstack/react-query';
 import { publicApi } from '@/lib/api/public';
@@ -190,6 +191,19 @@ export default function BlogPageClient() {
           )}
         </div>
       </section>
+
+      {/* CTA Section */}
+      <CtaSection
+        title="Need Technical Help with Your Electronics?"
+        description="Our repair engineers are ready to diagnose, repair, and restore your smart TVs and electronics with genuine parts and warranty."
+        primaryBtnText="Book a Repair"
+        primaryBtnHref="/book"
+        secondaryBtnText="Explore Services"
+        secondaryBtnHref="/services"
+        badgeText="Get In Touch"
+        imageSrc="/realimages/QC/DSC05425.webp"
+        imageAlt="RepairCart Technical Team"
+      />
     </div>
   );
 }

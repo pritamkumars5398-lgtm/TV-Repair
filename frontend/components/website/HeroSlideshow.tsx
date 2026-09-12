@@ -24,10 +24,6 @@ const images: {
     alt: 'Certified Repair Engineer Bonding Station',
   },
   {
-    src: '/realimages/BUILDING/DSC05217.webp',
-    alt: '40,000 Sq. Ft. Manufacturing & Repair Facility',
-  },
-  {
     src: '/realimages/ASSEMBLY/DSC05252.webp',
     alt: 'Precision Electronics Repair Workbench',
   },
@@ -36,28 +32,20 @@ const images: {
     alt: 'Quality Assurance & Screen Aging Test Zone',
   },
   {
-    src: '/realimages/SPEAKER/DSC07635.webp',
-    alt: 'Soundbar & Audio System Assembly Line',
+    src: '/realimages/BUILDING/DSC05423.webp',
+    alt: 'RC RepairCart Facility & Operations Team',
   },
   {
-    src: '/realimages/SPEAKER/DSC07627.webp',
-    alt: 'GOONZ Premium Tower Speaker Manufacturing',
+    src: '/realimages/SPEAKER/DSC07653.webp',
+    alt: 'Audio & Speaker Manufacturing Station',
   },
   {
-    src: '/realimages/SPEAKER/DSC07633.webp',
-    alt: 'Mega Bass XT Audio Systems',
+    src: '/realimages/QC/DSC05513.webp',
+    alt: 'Quality Control & Display Panel Inspection',
   },
   {
-    src: '/realimages/SPEAKER/DSC07640.webp',
-    alt: 'Professional Single Tower Speaker Systems',
-  },
-  {
-    src: '/realimages/BUILDING/DSC05218.webp',
-    alt: 'Premium Soundbar and Subwoofer Assembly',
-  },
-  {
-    src: '/realimages/BUILDING/DSC05225.webp',
-    alt: 'INCHELL Production Facility',
+    src: '/realimages/BONDING/DSC05342.webp',
+    alt: 'COF Panel Bonding & Laser Alignment Process',
   },
 ];
 

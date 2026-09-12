@@ -73,18 +73,22 @@ export default function ContactPage() {
     href?: string;
     values?: Array<{ text: string; href: string }>;
   }> = [
-    { icon: MapPin, label: 'Head Office', value: 'C-295, Sector-10, Noida, UP-201301' },
-    { icon: MapPin, label: 'Branch Office', value: 'B-115, Sector-5, Noida, UP-201301' },
-    { icon: Phone, label: 'Phone Support', values: [
-      { text: '+91 8586887887', href: 'tel:8586887887' },
-      { text: '8586807887', href: 'tel:8586807887' }
-    ] },
-    { icon: Mail, label: 'Email Support', values: [
-      { text: 'support@repaircart.co.in', href: 'mailto:support@repaircart.co.in' },
-      { text: 'info@repaircart.in', href: 'mailto:info@repaircart.in' }
-    ] },
-    { icon: Clock, label: 'Business Hours', value: 'Mon–Sat: 9:00 AM – 7:00 PM' },
-  ];
+      { icon: MapPin, label: 'Head Office', value: 'C-295, Sector-10, Noida, UP-201301' },
+      { icon: MapPin, label: 'Branch Office', value: 'B-115, Sector-5, Noida, UP-201301' },
+      {
+        icon: Phone, label: 'Phone Support', values: [
+          { text: '+91 8586887887', href: 'tel:8586887887' },
+          { text: '8586807887', href: 'tel:8586807887' }
+        ]
+      },
+      {
+        icon: Mail, label: 'Email Support', values: [
+          { text: 'support@repaircart.co.in', href: 'mailto:support@repaircart.co.in' },
+          { text: 'info@repaircart.in', href: 'mailto:info@repaircart.in' }
+        ]
+      },
+      { icon: Clock, label: 'Business Hours', value: 'Mon–Sat: 9:00 AM – 7:00 PM' },
+    ];
 
   return (
     <>
