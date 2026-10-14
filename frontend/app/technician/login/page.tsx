@@ -157,7 +157,7 @@ export default function TechnicianLoginPage() {
                     placeholder="• • • • • •"
                     className="w-full text-center tracking-[0.5em] text-2xl px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all shadow-sm" 
                   />
-                  <p className="text-center text-xs text-slate-400 mt-3 font-medium">Mock OTP is 123456</p>
+                  <p className="text-center text-xs text-slate-400 mt-3 font-medium">Enter the 6-digit OTP sent to your phone</p>
                 </div>
                 
                 <button 
