@@ -229,10 +229,22 @@ export const verifyOtp = async (req: Request, res: Response): Promise<void> => {
     if (role === 'customer' || !role) {
       let targetCustomer = customer;
       if (!targetCustomer) {
-        targetCustomer = await Customer.create({
-          name: name || 'Customer',
-          phone: cleanPhone,
-        });
+        try {
+          targetCustomer = await Customer.create({
+            name: name || 'Customer',
+            phone: cleanPhone,
+          });
+        } catch (err: any) {
+          if (err.code === 11000 && err.message?.includes('email')) {
+            targetCustomer = await Customer.create({
+              name: name || 'Customer',
+              phone: cleanPhone,
+              email: `${cleanPhone.replace(/\D/g, '')}@customer.repaircart.co.in`,
+            });
+          } else {
+            throw err;
+          }
+        }
       }
 
       const token = generateToken(targetCustomer._id.toString(), 'customer');

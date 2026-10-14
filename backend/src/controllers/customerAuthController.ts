@@ -45,11 +45,26 @@ export const sendAuthOTP = async (req: Request, res: Response): Promise<void> =>
     // Since unified flow, if we don't have name and they don't exist, we might ask them to sign up.
     // For simplicity, let's just generate the OTP on the existing customer or create a new one.
     if (!customer) {
-      customer = await Customer.create({
-        name: name || 'Customer',
-        email: email || undefined,
-        phone,
-      });
+      try {
+        const createData: any = {
+          name: name || 'Customer',
+          phone,
+        };
+        if (email && email.trim()) {
+          createData.email = email.trim();
+        }
+        customer = await Customer.create(createData);
+      } catch (err: any) {
+        if (err.code === 11000 && err.message?.includes('email')) {
+          customer = await Customer.create({
+            name: name || 'Customer',
+            phone,
+            email: `${phone.replace(/\D/g, '')}@customer.repaircart.co.in`,
+          });
+        } else {
+          throw err;
+        }
+      }
     }
 
     // Generate random 6-digit OTP
