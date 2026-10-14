@@ -2,7 +2,9 @@ import { Request, Response } from 'express';
 import Admin from '../models/Admin';
 import generateToken from '../utils/generateToken';
 import Technician from '../models/Technician';
-import { sendSMS } from '../utils/sendSMS';
+import Customer from '../models/Customer';
+import Otp from '../models/Otp';
+import { sendOTP } from '../utils/sendSMS';
 
 // @desc    Auth admin & get token
 // @route   POST /api/v1/auth/admin/login
@@ -87,58 +89,172 @@ export const registerAdmin = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// @desc    Mock Send OTP
+// @desc    Send Dynamic OTP for Authentication
 // @route   POST /api/v1/auth/send-otp
 // @access  Public
 export const sendOtp = async (req: Request, res: Response): Promise<void> => {
-  const { phone } = req.body;
-  const otp = '123456'; // Mock OTP for now
-  
-  await sendSMS({
-    phone,
-    message: `Dear User, your RC RepairCart verification code is ${otp}. Valid for 10 minutes. - RC RepairCart`,
-  });
+  try {
+    const { phone, role } = req.body;
 
-  res.json({ success: true, message: 'OTP sent successfully' });
+    if (!phone) {
+      res.status(400).json({ success: false, message: 'Phone number is required' });
+      return;
+    }
+
+    const cleanPhone = phone.toString().trim();
+    // Generate secure dynamic 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    // Persist to unified Otp collection with TTL
+    await Otp.findOneAndUpdate(
+      { phone: cleanPhone },
+      { otp, role: role || 'technician', expiresAt },
+      { upsert: true, new: true }
+    );
+
+    // Also update Technician model if technician exists
+    const tech = await Technician.findOne({ phone: cleanPhone });
+    if (tech) {
+      (tech as any).authOTP = otp;
+      (tech as any).authOTPExpires = expiresAt;
+      await tech.save();
+    }
+
+    // Also update Customer model if customer exists
+    const customer = await Customer.findOne({ phone: cleanPhone });
+    if (customer) {
+      customer.authOTP = otp;
+      customer.authOTPExpires = expiresAt;
+      await customer.save();
+    }
+
+    console.log(`[OTP DEBUG] Dynamic OTP for ${cleanPhone} (${role || 'user'}) is: ${otp}`);
+
+    // Dispatch real OTP via MSG91 Flow: repaircart-otp
+    await sendOTP(cleanPhone, otp);
+
+    res.json({ success: true, message: 'OTP sent successfully' });
+  } catch (error: any) {
+    console.error('Failed to dispatch dynamic OTP:', error);
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
+  }
 };
 
-// @desc    Mock Verify OTP
+// @desc    Verify Dynamic OTP
 // @route   POST /api/v1/auth/verify-otp
 // @access  Public
 export const verifyOtp = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { phone, otp, role } = req.body;
-    
-    // For demo: any OTP passes as long as it's 6 chars, say '123456'
-    if (otp !== '123456') {
-      res.status(400).json({ success: false, message: 'Invalid OTP' });
+    const { phone, otp, role, name } = req.body;
+
+    if (!phone || !otp) {
+      res.status(400).json({ success: false, message: 'Phone and OTP are required' });
       return;
     }
 
+    const cleanPhone = phone.toString().trim();
+    const cleanOtp = otp.toString().trim();
+
+    // Verify against Otp collection, Customer, or Technician
+    const otpRecord = await Otp.findOne({
+      phone: cleanPhone,
+      otp: cleanOtp,
+      expiresAt: { $gt: new Date() },
+    });
+
+    const tech = await Technician.findOne({ phone: cleanPhone });
+    const customer = await Customer.findOne({ phone: cleanPhone });
+
+    const isTechOtpValid =
+      tech &&
+      (tech as any).authOTP === cleanOtp &&
+      (tech as any).authOTPExpires &&
+      (tech as any).authOTPExpires > new Date();
+
+    const isCustOtpValid =
+      customer &&
+      customer.authOTP === cleanOtp &&
+      customer.authOTPExpires &&
+      customer.authOTPExpires > new Date();
+
+    if (!otpRecord && !isTechOtpValid && !isCustOtpValid) {
+      res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
+      return;
+    }
+
+    // Clear used OTP
+    if (otpRecord) {
+      await Otp.deleteOne({ _id: otpRecord._id });
+    }
+    if (tech) {
+      (tech as any).authOTP = undefined;
+      (tech as any).authOTPExpires = undefined;
+      await tech.save();
+    }
+    if (customer) {
+      customer.authOTP = undefined;
+      customer.authOTPExpires = undefined;
+      await customer.save();
+    }
+
+    // Handle Technician Authentication
     if (role === 'technician') {
-      let tech = await Technician.findOne({ phone });
-      if (!tech) {
-        // Fallback for easy testing: just get the first technician in the DB
-        tech = await Technician.findOne();
+      let targetTech = tech;
+      if (!targetTech) {
+        targetTech = await Technician.create({
+          name: name || `Technician ${cleanPhone.slice(-4)}`,
+          phone: cleanPhone,
+          specialization: 'General Repair',
+        });
       }
-      if (!tech) {
-        res.status(404).json({ success: false, message: 'No technician found in database' });
-        return;
-      }
-      
-      const token = generateToken(tech._id.toString(), 'technician');
+
+      const token = generateToken(targetTech._id.toString(), 'technician');
       res.json({
         success: true,
         data: {
-          user: { id: tech._id, name: tech.name, phone: tech.phone, role: 'technician' },
+          user: {
+            id: targetTech._id,
+            name: targetTech.name,
+            phone: targetTech.phone,
+            role: 'technician',
+          },
           token,
-        }
+        },
       });
       return;
     }
-    
-    res.status(400).json({ success: false, message: 'Role not supported for mock auth' });
+
+    // Handle Customer Authentication (used by portal / login)
+    if (role === 'customer' || !role) {
+      let targetCustomer = customer;
+      if (!targetCustomer) {
+        targetCustomer = await Customer.create({
+          name: name || 'Customer',
+          phone: cleanPhone,
+        });
+      }
+
+      const token = generateToken(targetCustomer._id.toString(), 'customer');
+      res.json({
+        success: true,
+        data: {
+          user: {
+            id: targetCustomer._id,
+            name: targetCustomer.name,
+            phone: targetCustomer.phone,
+            email: targetCustomer.email,
+            role: 'customer',
+          },
+          token,
+        },
+      });
+      return;
+    }
+
+    res.status(400).json({ success: false, message: 'Role not supported for OTP auth' });
   } catch (error: any) {
+    console.error('Failed to verify OTP:', error);
     res.status(500).json({ success: false, message: error.message || 'Server Error' });
   }
 };

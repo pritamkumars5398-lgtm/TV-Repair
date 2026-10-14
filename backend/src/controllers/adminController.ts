@@ -6,6 +6,12 @@ import Payment from '../models/Payment';
 import Customer from '../models/Customer';
 import InventoryItem from '../models/InventoryItem';
 import Notification from '../models/Notification';
+import {
+  sendTechnicianAssigned,
+  sendEstimateQuotation,
+  sendDeliveryDateUpdate,
+  sendTicketStatusUpdate,
+} from '../utils/sendSMS';
 
 // @desc    Get Admin Notifications
 // @route   GET /api/v1/admin/notifications
@@ -404,8 +410,6 @@ export const getReports = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-import { sendSMS } from '../utils/sendSMS';
-
 // @desc    Assign technician to a ticket
 // @route   POST /api/v1/admin/tickets/:ticketId/assign
 // @access  Private/Admin
@@ -437,11 +441,14 @@ export const assignTechnician = async (req: Request, res: Response): Promise<voi
 
     await ticket.save();
 
-    // Send SMS to customer
+    // Send SMS to customer via MSG91 Flow: repaircart-technician-assigned
     if (ticket.customerPhone) {
-      const message = `Dear ${ticket.customerName}, technician ${technician.name} (${technician.phone}) has been assigned to your repair request (${ticket.ticketId}) and will contact you shortly. - RC RepairCart`;
-      
-      sendSMS({ phone: ticket.customerPhone, message }).catch((err) => {
+      sendTechnicianAssigned(ticket.customerPhone, {
+        name: ticket.customerName,
+        tech_name: technician.name,
+        tech_phone: technician.phone,
+        ticket: ticket.ticketId,
+      }).catch((err) => {
         console.error(`Failed to send technician assignment SMS to ${ticket.customerPhone}:`, err.message);
       });
     }
@@ -483,12 +490,13 @@ export const sendEstimateToCustomer = async (req: Request, res: Response): Promi
 
     await ticket.save();
 
+    // Send SMS to customer via MSG91 Flow: repaircart-estimate-quotation
     if (ticket.customerPhone) {
-      const message = `Dear ${ticket.customerName}, inspection for ticket ${ticket.ticketId} is complete. Estimated cost: Rs.${amount}. Details: ${breakdown}. Please review & approve to start repair: http://localhost:3000/track?id=${ticket.ticketId} - RC RepairCart`;
-      
-      sendSMS({
-        phone: ticket.customerPhone,
-        message,
+      sendEstimateQuotation(ticket.customerPhone, {
+        name: ticket.customerName,
+        ticket: ticket.ticketId,
+        cost: amount,
+        details: breakdown || 'Inspection & Repair',
       }).catch((err) => {
         console.error(`Failed to send estimate SMS to ${ticket.customerPhone}:`, err.message);
       });
@@ -527,14 +535,31 @@ export const sendMessageToCustomer = async (req: Request, res: Response): Promis
     await ticket.save();
 
     if (ticket.customerPhone) {
-      const smsMessage = `Dear ${ticket.customerName}, update for ticket ${ticket.ticketId}: ${message}.${dateStr} Thank you for your patience. - RC RepairCart`;
-      
-      sendSMS({
-        phone: ticket.customerPhone,
-        message: smsMessage,
-      }).catch((err) => {
-        console.error(`Failed to send custom message SMS to ${ticket.customerPhone}:`, err.message);
-      });
+      if (date) {
+        // Send SMS via MSG91 Flow: repaircart-delivery-date-update
+        const formattedDate = new Date(date).toLocaleDateString('en-IN', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        });
+        sendDeliveryDateUpdate(ticket.customerPhone, {
+          name: ticket.customerName,
+          ticket: ticket.ticketId,
+          date: formattedDate,
+        }).catch((err) => {
+          console.error(`Failed to send delivery date SMS to ${ticket.customerPhone}:`, err.message);
+        });
+      } else {
+        // Send status update SMS via MSG91 Flow: repaircart-ticket-status-update
+        sendTicketStatusUpdate(ticket.customerPhone, {
+          name: ticket.customerName,
+          ticket: ticket.ticketId,
+          status: ticket.status,
+          note: message || 'Repair update from admin.',
+        }).catch((err) => {
+          console.error(`Failed to send status update SMS to ${ticket.customerPhone}:`, err.message);
+        });
+      }
     }
 
     res.json({

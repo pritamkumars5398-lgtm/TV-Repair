@@ -3,7 +3,7 @@ import Ticket from '../models/Ticket';
 import Payment from '../models/Payment';
 import crypto from 'crypto';
 import Razorpay from 'razorpay';
-import { sendSMS } from '../utils/sendSMS';
+import { sendBookingReceived, sendBookingPaymentConfirm, sendTicketStatusUpdate } from '../utils/sendSMS';
 import Notification from '../models/Notification';
 
 // Helper to generate a unique ticket ID
@@ -75,12 +75,13 @@ export const createBooking = async (req: Request, res: Response): Promise<void> 
       razorpayOrderId,
     });
 
-    // Send SMS Notification
+    // Send SMS Notification via MSG91 Flow: repaircart-booking-received
     if (phone) {
-      const message = `Dear ${name}, thank you for choosing RC RepairCart. Your repair request (${ticket.ticketId}) for ${serviceType} has been registered successfully. Track status: http://localhost:3000/track?id=${ticket.ticketId}`;
-      sendSMS({
-        phone: phone,
-        message,
+      const itemDescription = [ticket.tvBrand, ticket.tvSize, ticket.serviceType].filter(Boolean).join(' ') || ticket.serviceType;
+      sendBookingReceived(phone, {
+        name: name || 'Customer',
+        ticket: ticket.ticketId,
+        item: itemDescription,
       }).catch((err) => {
         console.error(`Failed to send booking SMS to ${phone}:`, err.message);
       });
@@ -136,13 +137,11 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
       }
     );
 
-    // Send Confirmation SMS
+    // Send Confirmation SMS via MSG91 Flow: repaircart-booking-payment-confirm
     if (ticket.customerPhone) {
-      const message = `Dear ${ticket.customerName}, payment for repair ticket ${ticket.ticketId} is confirmed. Our technician will visit your location shortly. Track live updates: http://localhost:3000/track?id=${ticket.ticketId} - RC RepairCart`;
-      
-      sendSMS({
-        phone: ticket.customerPhone,
-        message,
+      sendBookingPaymentConfirm(ticket.customerPhone, {
+        name: ticket.customerName,
+        ticket: ticket.ticketId,
       }).catch((err) => {
         console.error(`Failed to send booking confirmation SMS to ${ticket.customerPhone}:`, err.message);
       });
@@ -233,9 +232,11 @@ export const respondToEstimate = async (req: Request, res: Response): Promise<vo
     });
 
     if (ticket.customerPhone) {
-      sendSMS({
-        phone: ticket.customerPhone,
-        message: smsMessage,
+      sendTicketStatusUpdate(ticket.customerPhone, {
+        name: ticket.customerName,
+        ticket: ticket.ticketId,
+        status: status === 'approved' ? 'Work Started' : 'Cancelled',
+        note: status === 'approved' ? 'Estimate approved by customer.' : 'Estimate declined by customer.',
       }).catch((err) => {
         console.error(`Failed to send status update SMS to ${ticket.customerPhone}:`, err.message);
       });

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import Lead from '../models/Lead';
-import { sendSMS } from '../utils/sendSMS';
+import { sendLeadInquiryReceived } from '../utils/sendSMS';
 
 // @desc    Create a public inquiry (lead)
 // @route   POST /api/v1/public/inquiries
@@ -20,10 +20,12 @@ export const createPublicInquiry = async (req: Request, res: Response): Promise<
       status: 'NEW',
     });
 
+    // Send SMS via MSG91 Flow: repaircart-lead-inquiry-received
     if (phone) {
-      const smsMessage = `Dear ${name}, thank you for contacting RC RepairCart. We have received your inquiry regarding ${productInterest}. Our specialist will get in touch with you shortly.`;
-      
-      sendSMS({ phone, message: smsMessage }).catch((err) => {
+      sendLeadInquiryReceived(phone, {
+        name: name || 'Customer',
+        inquiry: productInterest || serviceType || 'TV Repair Service',
+      }).catch((err) => {
         console.error(`Failed to send inquiry SMS to ${phone}:`, err.message);
       });
     }

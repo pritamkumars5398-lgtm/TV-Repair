@@ -36,6 +36,12 @@ const technicianSchema = new mongoose.Schema(
       type: Number,
       default: 5.0,
     },
+    authOTP: {
+      type: String,
+    },
+    authOTPExpires: {
+      type: Date,
+    },
   },
   {
     timestamps: true,

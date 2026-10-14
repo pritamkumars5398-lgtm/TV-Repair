@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import Ticket from '../models/Ticket';
-import { sendSMS } from '../utils/sendSMS';
+import { sendTicketStatusUpdate } from '../utils/sendSMS';
 
 const STATUS_LABELS: Record<string, string> = {
   tv_received: 'TV Received',
@@ -80,17 +80,17 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
         runValidators: true,
       });
 
-      // Send SMS notification to customer if status changed
+      // Send SMS notification to customer if status changed via MSG91 Flow: repaircart-ticket-status-update
       if (statusChanged && updatedTicket && updatedTicket.customerPhone) {
         const ticketId = updatedTicket.ticketId;
         const statusLabel = STATUS_LABELS[newStatus] || newStatus;
         const note = req.body.notes || 'Status updated.';
         
-        const message = `Dear ${updatedTicket.customerName}, your repair ticket ${ticketId} status has been updated to: ${statusLabel}. Note: ${note}. Track live: http://localhost:3000/track?id=${ticketId} - RC RepairCart`;
-        
-        sendSMS({
-          phone: updatedTicket.customerPhone,
-          message,
+        sendTicketStatusUpdate(updatedTicket.customerPhone, {
+          name: updatedTicket.customerName,
+          ticket: ticketId,
+          status: statusLabel,
+          note: note,
         }).catch((err) => {
           console.error(`Failed to send status update SMS to ${updatedTicket.customerPhone}:`, err.message);
         });

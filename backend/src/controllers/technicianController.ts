@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import Ticket from '../models/Ticket';
-import crypto from 'crypto';
-import { sendSMS } from '../utils/sendSMS';
+import { sendPickupOTP, sendAdminPickupAlert } from '../utils/sendSMS';
 import Notification from '../models/Notification';
 import Technician from '../models/Technician';
 import { uploadToCloudinary } from '../utils/cloudinary';
@@ -100,13 +99,13 @@ export const markOnTheWay = async (req: Request, res: Response): Promise<void> =
 
     await ticket.save();
 
-    // Send OTP via SMS
+    // Send OTP via SMS (MSG91 Flow: repaircart-pickup-otp)
     if (ticket.customerPhone) {
-      const message = `Dear ${ticket.customerName}, technician ${ticket.technicianName} is on the way for TV pickup. Please share Pickup OTP: ${otp} only upon handover. Contact: ${ticket.technicianPhone}. - RC RepairCart`;
-      
-      sendSMS({
-        phone: ticket.customerPhone,
-        message,
+      sendPickupOTP(ticket.customerPhone, {
+        name: ticket.customerName,
+        tech_name: ticket.technicianName || 'Our Technician',
+        otp,
+        contact: ticket.technicianPhone || 'Support',
       }).catch((err) => {
         console.error(`Failed to send OTP SMS to ${ticket.customerPhone}:`, err.message);
       });
@@ -160,11 +159,13 @@ export const verifyPickupOtp = async (req: Request, res: Response): Promise<void
       link: '/admin/tickets',
     });
 
-    // 2. Send SMS to Admin
+    // 2. Send SMS to Admin (MSG91 Flow: repaircart-admin-pickup-alert)
     const adminPhone = process.env.ADMIN_PHONE || '9999999999';
-    const message = `[RC Alert] Ticket #${ticket.ticketId}: TV safely picked up by Tech ${ticket.technicianName}. Customer: ${ticket.customerName}. Status: Received.`;
-    
-    sendSMS({ phone: adminPhone, message }).catch((err) => {
+    sendAdminPickupAlert(adminPhone, {
+      ticket: ticket.ticketId,
+      tech_name: ticket.technicianName || 'Technician',
+      customer_name: ticket.customerName,
+    }).catch((err) => {
       console.error('Failed to send pickup notification to admin:', err.message);
     });
 
@@ -306,9 +307,10 @@ export const updateJobStatus = async (req: Request, res: Response): Promise<void
       });
 
       const adminPhone = process.env.ADMIN_PHONE || '9999999999';
-      sendSMS({
-        phone: adminPhone,
-        message: `[RC Alert] Ticket #${ticket.ticketId}: Product marked as received by Tech ${ticket.technicianName}. Customer: ${ticket.customerName}.`,
+      sendAdminPickupAlert(adminPhone, {
+        ticket: ticket.ticketId,
+        tech_name: ticket.technicianName || 'Technician',
+        customer_name: ticket.customerName,
       }).catch((err) => console.error('Failed to notify admin:', err.message));
     }
 

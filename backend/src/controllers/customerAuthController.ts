@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import Customer from '../models/Customer';
-import { sendSMS } from '../utils/sendSMS';
+import { sendOTP } from '../utils/sendSMS';
 
 const generateToken = (id: string): string => {
   return jwt.sign({ id }, process.env.JWT_SECRET as string, {
@@ -62,15 +62,10 @@ export const sendAuthOTP = async (req: Request, res: Response): Promise<void> =>
 
     console.log(`[OTP DEBUG] OTP for customer ${phone} is: ${otp}`);
 
-    const message = `Dear Customer, your RC RepairCart verification code is ${otp}. Valid for 10 minutes. Please do not share this OTP with anyone. - RC RepairCart`;
-
     try {
-      await sendSMS({
-        phone: customer.phone,
-        message,
-      });
-    } catch (smsError) {
-      console.error('Failed to send SMS:', smsError);
+      await sendOTP(customer.phone, otp);
+    } catch (smsError: any) {
+      console.error('Failed to dispatch OTP via MSG91:', smsError?.message || smsError);
     }
 
     res.json({ message: `OTP sent successfully.` });
