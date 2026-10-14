@@ -176,14 +176,17 @@ const seedInitialData = async () => {
 };
 
 let dbError: string | null = null;
+let cachedPromise: Promise<typeof mongoose> | null = null;
 
 export const getDbError = () => dbError;
 
 export const connectDB = async () => {
-  // If already connected or connecting, run seedProducts and return
-  if (mongoose.connection.readyState >= 1) {
-    seedProducts();
-    return;
+  if (mongoose.connection.readyState === 1) {
+    return mongoose;
+  }
+
+  if (cachedPromise) {
+    return cachedPromise;
   }
 
   try {
@@ -191,16 +194,26 @@ export const connectDB = async () => {
     if (!mongoUri) {
       throw new Error('MONGO_URI environment variable is missing.');
     }
-    const conn = await mongoose.connect(mongoUri);
+
+    cachedPromise = mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 8000,
+    });
+
+    const conn = await cachedPromise;
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     dbError = null;
-    
-    await seedInitialData();
-    await seedProducts();
+
+    if (process.env.NODE_ENV !== 'production') {
+      seedInitialData().catch(() => {});
+      seedProducts().catch(() => {});
+    }
+
+    return conn;
   } catch (error: any) {
+    cachedPromise = null;
     dbError = error.message || String(error);
     console.error(`Database Connection Error: ${error.message}`);
-    // Do not call process.exit(1) to prevent crashing the serverless container
+    throw error;
   }
 };
 

@@ -43,6 +43,16 @@ app.get('/', (req: Request, res: Response) => {
   });
 });
 
+// Database Connection Middleware for Serverless
+app.use(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await connectDB();
+  } catch (err: any) {
+    console.error('Database connection error in request middleware:', err.message);
+  }
+  next();
+});
+
 // Mount API Routes
 app.use('/api/v1', apiRoutes);
 
