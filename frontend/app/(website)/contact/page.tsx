@@ -3,10 +3,12 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { Phone, Mail, MapPin, Clock, MessageCircle, CheckCircle2, ArrowRight, ShieldCheck, Star, Truck, Award } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, MessageCircle, CheckCircle2, ArrowRight, ShieldCheck, Star, Truck, Award, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import { publicApi } from '@/lib/api/public';
 import { contactSchema, type ContactInput } from '@/lib/validations/booking';
+
+const GOOGLE_MAPS_LOCATION_URL = "https://www.google.com/maps/place/28%C2%B035'26.0%22N+77%C2%B019'14.6%22E/@28.5905644,77.3181377,17z/data=!3m1!4b1!4m4!3m3!8m2!3d28.5905644!4d77.3207126";
 
 export default function ContactPage() {
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ContactInput>({
@@ -32,6 +34,12 @@ export default function ContactPage() {
     url: 'https://www.inchellcorparation.com/contact',
     telephone: '+918586887887',
     email: 'support@repaircart.co.in',
+    hasMap: GOOGLE_MAPS_LOCATION_URL,
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 28.5905644,
+      longitude: 77.3207126,
+    },
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'C-295 Sector 10',
@@ -73,7 +81,7 @@ export default function ContactPage() {
     href?: string;
     values?: Array<{ text: string; href: string }>;
   }> = [
-      { icon: MapPin, label: 'Head Office', value: 'C-295, Sector-10, Noida, UP-201301' },
+      { icon: MapPin, label: 'Head Office', value: 'C-295, Sector-10, Noida, UP-201301', href: GOOGLE_MAPS_LOCATION_URL },
       { icon: MapPin, label: 'Branch Office', value: 'B-115, Sector-5, Noida, UP-201301' },
       {
         icon: Phone, label: 'Phone Support', values: [
@@ -249,18 +257,28 @@ export default function ContactPage() {
             <div className="space-y-5">
 
               {/* Simple Clean Map Container */}
-              <div className="overflow-hidden rounded-xl border border-slate-200/80 bg-white h-48">
+              <div className="overflow-hidden rounded-xl border border-slate-200/80 bg-white h-52 relative group shadow-sm">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14013.250486043455!2d77.3175!3d28.5885!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce45f0d778d91%3A0xc3f1d3c7b64010a3!2sSector%2010%2C%20Noida%2C%20Uttar%20Pradesh%20201301!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                  src="https://maps.google.com/maps?q=28.5905644,77.3207126&hl=en&z=16&output=embed"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Location"
-                  className="grayscale contrast-[1.05]"
+                  title="RC RepairCart Head Office Location - Sector 10 Noida"
+                  className="w-full h-full"
                 />
+                <a
+                  href={GOOGLE_MAPS_LOCATION_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/95 text-slate-800 text-[11px] font-bold shadow-md hover:bg-primary-600 hover:text-white transition-all backdrop-blur-sm border border-slate-200/80 group-hover:scale-105"
+                >
+                  <MapPin className="h-3 w-3 text-primary-600 group-hover:text-white" />
+                  <span>Open in Google Maps</span>
+                  <ExternalLink className="h-2.5 w-2.5 opacity-70" />
+                </a>
               </div>
 
               {/* Contact Details Card */}
@@ -286,8 +304,14 @@ export default function ContactPage() {
                             ))}
                           </div>
                         ) : item.href ? (
-                          <a href={item.href} className="mt-0.5 block font-semibold text-slate-800 hover:text-primary-600 transition-colors">
-                            {item.value}
+                          <a
+                            href={item.href}
+                            target={item.href.startsWith('http') ? '_blank' : undefined}
+                            rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                            className="mt-0.5 inline-flex items-center gap-1 font-semibold text-slate-800 hover:text-primary-600 transition-colors"
+                          >
+                            <span>{item.value}</span>
+                            {item.href.startsWith('http') && <ExternalLink className="h-2.5 w-2.5 text-slate-400" />}
                           </a>
                         ) : (
                           <p className="mt-0.5 font-semibold text-slate-800">{item.value}</p>

@@ -96,7 +96,8 @@ const localBusinessSchema = {
     postalCode: '201301',
     addressCountry: 'IN',
   },
-  geo: { '@type': 'GeoCoordinates', latitude: 28.5885, longitude: 77.3175 },
+  geo: { '@type': 'GeoCoordinates', latitude: 28.5905644, longitude: 77.3207126 },
+  hasMap: "https://www.google.com/maps/place/28%C2%B035'26.0%22N+77%C2%B019'14.6%22E/@28.5905644,77.3181377,17z/data=!3m1!4b1!4m4!3m3!8m2!3d28.5905644!4d77.3207126",
   openingHoursSpecification: [
     { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], opens: '09:00', closes: '19:00' },
   ],

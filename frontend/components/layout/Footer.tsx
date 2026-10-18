@@ -70,7 +70,15 @@ export function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <MapPin className="h-4 w-4 mt-0.5 text-primary-500 shrink-0" />
-                <span className="text-slate-500">C-295, Sector-10, Noida, UP-201301</span>
+                <a
+                  href="https://www.google.com/maps/place/28%C2%B035'26.0%22N+77%C2%B019'14.6%22E/@28.5905644,77.3181377,17z/data=!3m1!4b1!4m4!3m3!8m2!3d28.5905644!4d77.3207126"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-500 hover:text-primary-600 transition-colors"
+                  title="View on Google Maps"
+                >
+                  C-295, Sector-10, Noida, UP-201301
+                </a>
               </li>
               <li className="flex items-start gap-3">
                 <Phone className="h-4 w-4 text-primary-500 shrink-0 mt-1" />
