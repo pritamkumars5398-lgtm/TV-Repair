@@ -145,7 +145,7 @@ export default function ContactPage() {
                 {[
                   { label: 'Response time', value: 'Within 2 hrs', desc: 'Fastest diagnostic TAT', icon: Clock, color: 'text-blue-650 bg-blue-50/70 border-blue-100' },
                   { label: 'Service Coverage', value: 'Doorstep & pickup', desc: 'Across Mumbai & Noida', icon: Truck, color: 'text-indigo-650 bg-indigo-50/70 border-indigo-100' },
-                  { label: 'Warranty Policy', value: '30-day guarantee', desc: '100% genuine parts only', icon: ShieldCheck, color: 'text-emerald-655 bg-emerald-50/70 border-emerald-100' },
+                  { label: 'Warranty Policy', value: '45-day warranty', desc: '45 days same fault guarantee', icon: ShieldCheck, color: 'text-emerald-655 bg-emerald-50/70 border-emerald-100' },
                   { label: 'Supported Brands', value: 'Samsung, LG, Sony', desc: 'All leading OEM models', icon: Award, color: 'text-amber-655 bg-amber-50/70 border-amber-100' },
                 ].map((item) => (
                   <div key={item.label} className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 transition-all duration-300 hover:bg-white hover:border-primary-100/50 group">
@@ -221,10 +221,10 @@ export default function ContactPage() {
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 outline-none transition-all focus:border-primary-500 focus:bg-white focus:ring-1 focus:ring-primary-500/20 hover:bg-white appearance-none cursor-pointer font-semibold"
                   >
                     <option value="">Select a service</option>
-                    <option value="PANEL_REPAIR">LED TV Panel Repair</option>
-                    <option value="SPEAKER_MFG">Speaker Manufacturing</option>
-                    <option value="DOA_MANAGEMENT">DOA Management</option>
-                    <option value="RECYCLING">Recycling Services</option>
+                    <option value="PANEL_REPAIR">LED TV Panel Repair (Active)</option>
+                    <option value="SPEAKER_MFG" disabled className="text-slate-400">Speaker Manufacturing (Coming Soon)</option>
+                    <option value="DOA_MANAGEMENT" disabled className="text-slate-400">DOA Management (Enterprise Only)</option>
+                    <option value="RECYCLING" disabled className="text-slate-400">Recycling Services (Coming Soon)</option>
                   </select>
                   {errors.serviceType && <p className="mt-1 text-[10px] font-semibold text-rose-500">{errors.serviceType.message}</p>}
                 </div>

@@ -13,16 +13,16 @@ function LoginFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/';
-  
+
   const [loading, setLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
   const [userData, setUserData] = useState<{ name: string } | null>(null);
-  
+
   const [step, setStep] = useState<'PHONE' | 'OTP'>('PHONE');
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
-  
+
   const setAuth = useCustomerStore((state) => state.setAuth);
 
   useEffect(() => {

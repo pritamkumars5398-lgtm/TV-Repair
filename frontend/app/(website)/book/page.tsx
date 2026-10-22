@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { CheckCircle2, Upload, X, ChevronLeft, ChevronRight, Tv, MapPin, CreditCard, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, Upload, X, ChevronLeft, ChevronRight, Tv, MapPin, CreditCard, ShieldCheck, Speaker, Sparkles, Wrench, Headphones } from 'lucide-react';
 import Script from 'next/script';
 import { useBookingStore } from '@/lib/stores/booking-store';
 import { step1Schema, step2Schema, type Step1Input, type Step2Input } from '@/lib/validations/booking';
@@ -20,11 +20,11 @@ declare global {
 const TIME_SLOTS = ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM'];
 
 const SERVICE_OPTIONS = [
-  { value: 'TV_REPAIR', label: 'LED / Smart TV Repair' },
-  { value: 'SPEAKER_REPAIR', label: 'Speaker Repair' },
-  { value: 'HOME_VISIT', label: 'Home Visit (Assessment)' },
-  { value: 'SPEAKER_INSTALL', label: 'Speaker Installation' },
-  { value: 'HOME_THEATER', label: 'Home Theater Setup' },
+  { value: 'TV_REPAIR', label: 'LED / Smart TV Repair', icon: Tv, available: true, desc: 'Panel, Motherboard, Backlight & Sound' },
+  { value: 'SPEAKER_REPAIR', label: 'Speaker Repair', icon: Speaker, available: false, desc: 'Tower, Bluetooth & Soundbar repair' },
+  { value: 'HOME_VISIT', label: 'Home Visit (Assessment)', icon: Sparkles, available: false, desc: 'General inspection & diagnosis' },
+  { value: 'SPEAKER_INSTALL', label: 'Speaker Installation', icon: Wrench, available: false, desc: 'Wall mount & acoustic setup' },
+  { value: 'HOME_THEATER', label: 'Home Theater Setup', icon: Headphones, available: false, desc: 'Multi-channel surround audio' },
 ];
 
 function StepIndicator({ currentStep }: { currentStep: number }) {
@@ -47,10 +47,10 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
         
         return (
           <div key={step.num} className="flex flex-col items-center bg-white px-2">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center border-[3px] border-white transition-all duration-300 shadow-sm ${isActive ? 'bg-primary-600 text-white shadow-primary-500/30 ring-4 ring-primary-50' : isCompleted ? 'bg-primary-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center border-[3px] border-white transition-all duration-300 shadow-sm ${isActive ? 'bg-primary-600 text-white shadow-primary-500/30 ring-4 ring-primary-50' : isCompleted ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-700 border border-slate-200'}`}>
                {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <step.icon className="w-4 h-4" />}
             </div>
-            <span className={`text-[10px] font-bold mt-2 uppercase tracking-wider ${isActive ? 'text-primary-700' : isCompleted ? 'text-slate-800' : 'text-slate-400'}`}>
+            <span className={`text-xs font-bold mt-2 uppercase tracking-wider ${isActive ? 'text-primary-700 font-extrabold' : isCompleted ? 'text-slate-900 font-extrabold' : 'text-slate-700'}`}>
               {step.label}
             </span>
           </div>
@@ -66,13 +66,13 @@ function Step1({ onNext }: { onNext: (data: Step1Input) => void }) {
   const [photos, setPhotos] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<Step1Input>({
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<Step1Input>({
     resolver: zodResolver(step1Schema),
     defaultValues: {
       name: formData.name || '',
       phone: formData.phone || '',
       email: formData.email || '',
-      serviceType: formData.serviceType || 'TV_REPAIR',
+      serviceType: 'TV_REPAIR',
       preferredDate: formData.preferredDate || '',
       preferredTime: formData.preferredTime || '',
       issueDescription: formData.issueDescription || '',
@@ -83,7 +83,7 @@ function Step1({ onNext }: { onNext: (data: Step1Input) => void }) {
     },
   });
 
-  const watchServiceType = watch('serviceType');
+  const watchServiceType = watch('serviceType') || 'TV_REPAIR';
 
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
@@ -107,52 +107,98 @@ function Step1({ onNext }: { onNext: (data: Step1Input) => void }) {
   const minDate = new Date().toISOString().split('T')[0];
 
   const inputClass = "w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all placeholder:text-slate-400 focus:bg-white";
-  const labelClass = "block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2";
+  const labelClass = "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2";
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className={labelClass}>Full Name *</label>
+          <label className={labelClass}>Full Name <span className="text-red-500">*</span></label>
           <input {...register('name')} placeholder="Your full name" className={inputClass} />
           {errors.name && <p className="text-[10px] text-red-500 mt-1">{errors.name.message}</p>}
         </div>
         <div>
-          <label className={labelClass}>Phone Number *</label>
+          <label className={labelClass}>Phone Number <span className="text-red-500">*</span></label>
           <input {...register('phone')} placeholder="10-digit mobile number" className={inputClass} />
           {errors.phone && <p className="text-[10px] text-red-500 mt-1">{errors.phone.message}</p>}
         </div>
       </div>
 
       <div>
-        <label className={labelClass}>Email Address *</label>
+        <label className={labelClass}>Email Address <span className="text-red-500">*</span></label>
         <input {...register('email')} type="email" placeholder="Your email address" className={inputClass} />
         {errors.email && <p className="text-[10px] text-red-500 mt-1">{errors.email.message}</p>}
       </div>
 
       <div>
-        <label className={labelClass}>Service Type *</label>
-        <div className="relative">
-          <select {...register('serviceType')} className={`${inputClass} appearance-none cursor-pointer pr-8`}>
-            {SERVICE_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
-            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-          </div>
+        <div className="flex items-center justify-between mb-2">
+          <label className={labelClass}>Service Type <span className="text-red-500">*</span></label>
+          <span className="text-[10px] text-primary-700 font-bold bg-primary-50 px-2.5 py-0.5 rounded-full border border-primary-200">
+            TV Repair Active
+          </span>
         </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          {SERVICE_OPTIONS.map((o) => {
+            const isTv = o.value === 'TV_REPAIR';
+            const Icon = o.icon;
+
+            if (isTv) {
+              return (
+                <div
+                  key={o.value}
+                  onClick={() => setValue('serviceType', 'TV_REPAIR', { shouldValidate: true })}
+                  className="relative p-3.5 rounded-xl border-2 border-primary-600 bg-primary-50/50 cursor-pointer shadow-sm flex items-start gap-3 transition-all"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-primary-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1">
+                      <p className="text-xs font-bold text-slate-900 leading-tight">{o.label}</p>
+                      <span className="text-[9px] font-extrabold uppercase tracking-wider bg-primary-600 text-white px-2 py-0.5 rounded-full shrink-0">
+                        Selected
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-0.5 font-medium">{o.desc}</p>
+                  </div>
+                </div>
+              );
+            }
+
+            return (
+              <div
+                key={o.value}
+                className="relative p-3.5 rounded-xl border border-dashed border-slate-200 bg-slate-50/60 opacity-40 cursor-not-allowed select-none flex items-start gap-3 transition-all"
+                title="Currently only TV Repair is available for booking"
+              >
+                <div className="w-9 h-9 rounded-lg bg-slate-200 text-slate-400 flex items-center justify-center shrink-0">
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1">
+                    <p className="text-xs font-semibold text-slate-500 leading-tight">{o.label}</p>
+                    <span className="text-[9px] font-bold uppercase tracking-wider bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded-full shrink-0">
+                      Coming Soon
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-400 mt-0.5 font-medium">{o.desc}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <input type="hidden" {...register('serviceType')} value="TV_REPAIR" />
         {errors.serviceType && <p className="text-[10px] text-red-500 mt-1">{errors.serviceType.message}</p>}
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className={labelClass}>Preferred Date *</label>
+          <label className={labelClass}>Preferred Date <span className="text-red-500">*</span></label>
           <input {...register('preferredDate')} type="date" min={minDate} className={inputClass} />
           {errors.preferredDate && <p className="text-[10px] text-red-500 mt-1">{errors.preferredDate.message}</p>}
         </div>
         <div>
-          <label className={labelClass}>Preferred Time *</label>
+          <label className={labelClass}>Preferred Time <span className="text-red-500">*</span></label>
           <div className="relative">
             <select {...register('preferredTime')} className={`${inputClass} appearance-none cursor-pointer pr-8`}>
               <option value="">Select a time slot</option>
@@ -167,7 +213,7 @@ function Step1({ onNext }: { onNext: (data: Step1Input) => void }) {
       </div>
 
       <div>
-        <label className={labelClass}>Describe the Issue *</label>
+        <label className={labelClass}>Describe the Issue <span className="text-red-500">*</span></label>
         <textarea {...register('issueDescription')} rows={2} placeholder="E.g., Screen is dark, no sound..." className={`${inputClass} resize-none`} />
         {errors.issueDescription && <p className="text-[10px] text-red-500 mt-1">{errors.issueDescription.message}</p>}
       </div>
@@ -208,14 +254,14 @@ function Step1({ onNext }: { onNext: (data: Step1Input) => void }) {
 
       {/* Photo Upload */}
       <div>
-        <label className={labelClass}>Upload Photos <span className="font-normal lowercase normal-case">(optional, max 5)</span></label>
+        <label className={labelClass}>Upload Photos <span className="font-semibold lowercase normal-case text-slate-500">(optional, max 5)</span></label>
         <div
           onClick={() => fileInputRef.current?.click()}
           className="border border-dashed border-slate-300 rounded-md p-4 text-center cursor-pointer hover:border-primary-400 hover:bg-slate-50 transition-all flex flex-col items-center justify-center gap-1"
         >
           <Upload className="h-4 w-4 text-slate-400 mb-1" />
           <p className="text-xs font-semibold text-slate-600">Click to upload photos</p>
-          <p className="text-[10px] text-slate-400">JPEG, PNG up to 5MB each</p>
+          <p className="text-[10px] text-slate-500">JPEG, PNG up to 5MB each</p>
         </div>
         <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
         
@@ -267,31 +313,31 @@ function Step2({ onNext, onBack }: { onNext: (data: Step2Input) => void; onBack:
   };
 
   const inputClass = "w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all placeholder:text-slate-400 focus:bg-white";
-  const labelClass = "block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2";
+  const labelClass = "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2";
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div>
-        <label className={labelClass}>Full Address *</label>
+        <label className={labelClass}>Full Address <span className="text-red-500">*</span></label>
         <input {...register('address')} placeholder="Flat/House no., Building name, Street" className={inputClass} />
         {errors.address && <p className="text-[10px] text-red-500 mt-1">{errors.address.message}</p>}
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className={labelClass}>Area / Locality *</label>
+          <label className={labelClass}>Area / Locality <span className="text-red-500">*</span></label>
           <input {...register('area')} placeholder="e.g., Bandra West" className={inputClass} />
           {errors.area && <p className="text-[10px] text-red-500 mt-1">{errors.area.message}</p>}
         </div>
         <div>
-          <label className={labelClass}>City *</label>
+          <label className={labelClass}>City <span className="text-red-500">*</span></label>
           <input {...register('city')} placeholder="City name" className={inputClass} />
           {errors.city && <p className="text-[10px] text-red-500 mt-1">{errors.city.message}</p>}
         </div>
       </div>
 
       <div>
-        <label className={labelClass}>Pincode *</label>
+        <label className={labelClass}>Pincode <span className="text-red-500">*</span></label>
         <input {...register('pincode')} placeholder="6-digit pincode" maxLength={6} className={inputClass} />
         {errors.pincode && <p className="text-[10px] text-red-500 mt-1">{errors.pincode.message}</p>}
       </div>
@@ -510,7 +556,7 @@ export default function BookPage() {
                <ShieldCheck className="w-3.5 h-3.5 text-slate-400" /> Genuine Parts
             </div>
             <div className="flex items-center gap-1.5 text-slate-500 font-bold text-[10px] uppercase tracking-wider">
-               <CheckCircle2 className="w-3.5 h-3.5 text-slate-400" /> 30-Day Warranty
+               <CheckCircle2 className="w-3.5 h-3.5 text-slate-400" /> 45 Days Same Fault Warranty
             </div>
           </div>
         </div>

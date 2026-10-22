@@ -14,11 +14,11 @@ function RegisterFormContent() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
-  
+
   const [step, setStep] = useState<'DETAILS' | 'OTP'>('DETAILS');
   const [form, setForm] = useState({ phone: '' });
   const [otp, setOtp] = useState('');
-  
+
   const setAuth = useCustomerStore((state) => state.setAuth);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ function RegisterFormContent() {
   async function handleSendOTP(e: React.FormEvent) {
     e.preventDefault();
     if (form.phone.length < 10) { toast.error('Enter a valid 10-digit phone number'); return; }
-    
+
     setLoading(true);
 
     try {

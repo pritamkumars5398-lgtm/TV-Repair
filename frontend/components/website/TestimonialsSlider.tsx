@@ -70,7 +70,7 @@ export function TestimonialsSlider({ testimonials }: TestimonialsSliderProps) {
   };
 
   return (
-    <div 
+    <div
       className="relative group w-full"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -141,11 +141,10 @@ export function TestimonialsSlider({ testimonials }: TestimonialsSliderProps) {
             key={idx}
             onClick={() => scrollToIndex(idx)}
             aria-label={`Go to slide ${idx + 1}`}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              activeIndex === idx
+            className={`h-2 rounded-full transition-all duration-300 ${activeIndex === idx
                 ? 'w-6 bg-primary-600'
                 : 'w-2 bg-slate-300 hover:bg-slate-400'
-            }`}
+              }`}
           />
         ))}
       </div>

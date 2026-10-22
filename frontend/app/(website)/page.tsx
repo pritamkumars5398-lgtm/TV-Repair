@@ -18,17 +18,17 @@ export const metadata: Metadata = {
 };
 
 const services = [
-  { icon: Tv, title: 'LED TV Panel Repair', desc: 'Repairing up to 110 inch panels with Class 100K clean room.' },
-  { icon: Speaker, title: 'Speaker Manufacturing', desc: 'Portable speakers, Home theater, Tower speakers.' },
-  { icon: Wrench, title: 'Component Level Repair', desc: 'PCB, AC, Washing machine boards, and other electronics.' },
-  { icon: Shield, title: 'DOA Management', desc: 'Check, repair, and refurbish DOA stocks for redeployment.' },
-  { icon: Sparkles, title: 'Refurbishment (ETN)', desc: 'Equal to New product refurbishment.' },
-  { icon: Clock, title: 'Parts Cannibalization', desc: 'Efficient parts swap and sorting services.' },
-  { icon: Lightbulb, title: 'Recycling Support', desc: 'Recycling Beyond Economic Repair products appropriately.' },
-  { icon: Headphones, title: 'Audio System Repair', desc: 'Fixing home theaters, soundbars, amplifiers and bluetooth speakers.' },
-  { icon: Monitor, title: 'Smart Projector Repair', desc: 'Optical engines, DMD chips and alignment of high-end projectors.' },
-  { icon: Zap, title: 'Power Board / SMPS Repair', desc: 'Component level diagnostics of power cards, circuit board burns and SMPS.' },
-  { icon: Tv, title: 'Accessory Refurbishment', desc: 'Bulk smart remote controls, casting keys, adapters testing and packaging.' },
+  { icon: Tv, title: 'LED TV Panel Repair', desc: 'Repairing up to 110 inch panels with Class 100K clean room.', active: true },
+  { icon: Speaker, title: 'Speaker Manufacturing', desc: 'Portable speakers, Home theater, Tower speakers.', active: false },
+  { icon: Wrench, title: 'Component Level Repair', desc: 'PCB, AC, Washing machine boards, and other electronics.', active: false },
+  { icon: Shield, title: 'DOA Management', desc: 'Check, repair, and refurbish DOA stocks for redeployment.', active: false },
+  { icon: Sparkles, title: 'Refurbishment (ETN)', desc: 'Equal to New product refurbishment.', active: false },
+  { icon: Clock, title: 'Parts Cannibalization', desc: 'Efficient parts swap and sorting services.', active: false },
+  { icon: Lightbulb, title: 'Recycling Support', desc: 'Recycling Beyond Economic Repair products appropriately.', active: false },
+  { icon: Headphones, title: 'Audio System Repair', desc: 'Fixing home theaters, soundbars, amplifiers and bluetooth speakers.', active: false },
+  { icon: Monitor, title: 'Smart Projector Repair', desc: 'Optical engines, DMD chips and alignment of high-end projectors.', active: false },
+  { icon: Zap, title: 'Power Board / SMPS Repair', desc: 'Component level diagnostics of power cards, circuit board burns and SMPS.', active: false },
+  { icon: Tv, title: 'Accessory Refurbishment', desc: 'Bulk smart remote controls, casting keys, adapters testing and packaging.', active: false },
 ];
 
 const stats = [
@@ -170,7 +170,7 @@ export default function HomePage() {
                 </div>
                 <div>
                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Warranty</p>
-                  <p className="text-[11px] sm:text-xs font-extrabold text-slate-800 mt-0.5 sm:mt-1 leading-tight">30-Day Guarantee</p>
+                  <p className="text-[11px] sm:text-xs font-extrabold text-slate-800 mt-0.5 sm:mt-1 leading-tight">45 Days Same Fault Warranty</p>
                 </div>
               </div>
             </div>
@@ -209,26 +209,55 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {services.map((svc, i) => (
-              <Link
-                key={svc.title}
-                href="/book"
-                data-aos="fade-up"
-                data-aos-delay={i * 50}
-                className="group flex flex-col gap-2.5 sm:gap-3 p-3.5 sm:p-5 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-primary-200 transition-all"
-              >
-                <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-slate-50 text-slate-600 group-hover:bg-primary-50 group-hover:text-primary-600 flex items-center justify-center transition-colors border border-slate-100 shrink-0">
-                  <svc.icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2} />
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm font-bold text-slate-900 mb-1 leading-snug">{svc.title}</p>
-                  <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed">{svc.desc}</p>
-                </div>
-                <div className="mt-auto pt-2.5 sm:pt-3 border-t border-slate-50">
-                  <span className="inline-flex items-center text-[10px] sm:text-[11px] font-bold text-primary-600 uppercase tracking-wider">
-                    Book Service <ArrowRight className="ml-1 sm:ml-1.5 h-3 w-3 transition-transform group-hover:translate-x-1" />
+              svc.active ? (
+                <Link
+                  key={svc.title}
+                  href="/book"
+                  data-aos="fade-up"
+                  data-aos-delay={i * 50}
+                  className="group relative flex flex-col gap-2.5 sm:gap-3 p-3.5 sm:p-5 bg-white rounded-xl border-2 border-primary-500/50 shadow-sm hover:shadow-md hover:border-primary-600 transition-all ring-2 ring-primary-500/10"
+                >
+                  <span className="absolute top-3 right-3 text-[9px] font-extrabold uppercase tracking-wider bg-primary-600 text-white px-2 py-0.5 rounded-full">
+                    Active
                   </span>
+                  <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-primary-50 text-primary-600 group-hover:bg-primary-600 group-hover:text-white flex items-center justify-center transition-colors border border-primary-100 shrink-0">
+                    <svc.icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <p className="text-xs sm:text-sm font-bold text-slate-900 mb-1 leading-snug">{svc.title}</p>
+                    <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed">{svc.desc}</p>
+                  </div>
+                  <div className="mt-auto pt-2.5 sm:pt-3 border-t border-slate-50">
+                    <span className="inline-flex items-center text-[10px] sm:text-[11px] font-bold text-primary-600 uppercase tracking-wider">
+                      Book Service <ArrowRight className="ml-1 sm:ml-1.5 h-3 w-3 transition-transform group-hover:translate-x-1" />
+                    </span>
+                  </div>
+                </Link>
+              ) : (
+                <div
+                  key={svc.title}
+                  data-aos="fade-up"
+                  data-aos-delay={i * 50}
+                  className="relative flex flex-col gap-2.5 sm:gap-3 p-3.5 sm:p-5 bg-slate-50/50 rounded-xl border border-dashed border-slate-200/90 opacity-40 cursor-not-allowed select-none transition-all"
+                  title="Coming Soon - Not available for booking"
+                >
+                  <span className="absolute top-3 right-3 text-[9px] font-bold uppercase tracking-wider bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded-full">
+                    Coming Soon
+                  </span>
+                  <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-slate-100 text-slate-400 flex items-center justify-center border border-slate-200 shrink-0">
+                    <svc.icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <p className="text-xs sm:text-sm font-semibold text-slate-500 mb-1 leading-snug">{svc.title}</p>
+                    <p className="text-[11px] sm:text-xs text-slate-400 leading-relaxed">{svc.desc}</p>
+                  </div>
+                  <div className="mt-auto pt-2.5 sm:pt-3 border-t border-slate-100">
+                    <span className="inline-flex items-center text-[10px] sm:text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                      Unavailable
+                    </span>
+                  </div>
                 </div>
-              </Link>
+              )
             ))}
           </div>
           <div className="mt-10 text-center" data-aos="fade-up" data-aos-delay="200">
@@ -374,7 +403,7 @@ export default function HomePage() {
               { step: '05', title: 'Safe Packaging', desc: 'TV is packaged securely in custom thick transit boxes.', img: '/realimages/ASSEMBLY/DSC05247.webp' },
               { step: '06', title: 'Precision Repair', desc: 'Laser COF panel bonding and board level repair in clean lab.', img: '/realimages/BONDING/DSC05309.webp' },
               { step: '07', title: 'Stress Testing', desc: 'Rigorous 12-hour color, resolution & heat checking.', img: '/realimages/QC/DSC05431.webp' },
-              { step: '08', title: 'Warranty Delivery', desc: 'TV returned securely with standard 30-day warranty.', img: '/realimages/BUILDING/DSC05424.webp' },
+              { step: '08', title: 'Warranty Delivery', desc: 'TV returned securely with standard 45-day same fault warranty.', img: '/realimages/BUILDING/DSC05424.webp' },
             ].map((item, i) => (
               <div key={item.step} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-300" data-aos="fade-up" data-aos-delay={i * 50}>
                 <div className="relative h-36 bg-slate-100 overflow-hidden">

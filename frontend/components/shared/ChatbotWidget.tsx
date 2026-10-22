@@ -56,7 +56,7 @@ function getBotResponse(input: string): Message {
     return {
       id: Date.now().toString(),
       from: 'bot',
-      text: 'We offer 30-day warranty on all repairs and onsite warranty on new speakers.',
+      text: 'We offer a 45-day same fault warranty on all TV repairs and onsite warranty on new speakers.',
     };
   }
 

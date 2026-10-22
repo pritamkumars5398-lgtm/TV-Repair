@@ -22,7 +22,7 @@ const HOME_FAQS = [
   },
   {
     q: "Do you provide a warranty on repairs?",
-    a: "Yes, we offer a 30-day service warranty on labor and up to 90 days of warranty on genuine spare parts replaced by our technicians."
+    a: "Yes, we offer a 45-day same fault warranty on our repair services and up to 90 days warranty on genuine spare parts replaced by our technicians."
   },
   {
     q: "How is the pricing decided? Are there hidden charges?",

@@ -99,7 +99,7 @@ export function PriceEstimator() {
           <div className="space-y-1.5 text-left max-w-xs mx-auto text-[11px] text-slate-600 font-medium">
             <div className="flex items-center gap-1.5">
               <CheckCircle className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-              <span>Includes 30-Day service warranty</span>
+              <span>Includes 45-Day same fault warranty</span>
             </div>
             <div className="flex items-center gap-1.5">
               <CheckCircle className="h-3.5 w-3.5 text-emerald-500 shrink-0" />

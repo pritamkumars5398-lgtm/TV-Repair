@@ -215,7 +215,7 @@ function TrackContent() {
           
           {/* Floating Search Bar */}
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200/80 p-6 sm:p-8">
-            <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">Ticket ID</label>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Ticket ID</label>
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
@@ -459,7 +459,7 @@ function TrackContent() {
       {/* CTA Section */}
       <CtaSection
         title="Need Another TV or Appliance Serviced?"
-        description="Book online in under 2 minutes. Enjoy doorstep pickup, transparent estimates, certified lab repair, and a 30-day warranty."
+        description="Book online in under 2 minutes. Enjoy doorstep pickup, transparent estimates, certified lab repair, and a 45-day same fault warranty."
         primaryBtnText="Book a Repair"
         primaryBtnHref="/book"
         secondaryBtnText="Explore Services"
