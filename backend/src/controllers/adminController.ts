@@ -443,14 +443,16 @@ export const assignTechnician = async (req: Request, res: Response): Promise<voi
 
     // Send SMS to customer via MSG91 Flow: repaircart-technician-assigned
     if (ticket.customerPhone) {
-      sendTechnicianAssigned(ticket.customerPhone, {
-        name: ticket.customerName,
-        tech_name: technician.name,
-        tech_phone: technician.phone,
-        ticket: ticket.ticketId,
-      }).catch((err) => {
+      try {
+        await sendTechnicianAssigned(ticket.customerPhone, {
+          name: ticket.customerName,
+          tech_name: technician.name,
+          tech_phone: technician.phone,
+          ticket: ticket.ticketId,
+        });
+      } catch (err: any) {
         console.error(`Failed to send technician assignment SMS to ${ticket.customerPhone}:`, err.message);
-      });
+      }
     }
 
     res.json({
@@ -492,14 +494,16 @@ export const sendEstimateToCustomer = async (req: Request, res: Response): Promi
 
     // Send SMS to customer via MSG91 Flow: repaircart-estimate-quotation
     if (ticket.customerPhone) {
-      sendEstimateQuotation(ticket.customerPhone, {
-        name: ticket.customerName,
-        ticket: ticket.ticketId,
-        cost: amount,
-        details: breakdown || 'Inspection & Repair',
-      }).catch((err) => {
+      try {
+        await sendEstimateQuotation(ticket.customerPhone, {
+          name: ticket.customerName,
+          ticket: ticket.ticketId,
+          cost: amount,
+          details: breakdown || 'Inspection & Repair',
+        });
+      } catch (err: any) {
         console.error(`Failed to send estimate SMS to ${ticket.customerPhone}:`, err.message);
-      });
+      }
     }
 
     res.json({
@@ -535,30 +539,30 @@ export const sendMessageToCustomer = async (req: Request, res: Response): Promis
     await ticket.save();
 
     if (ticket.customerPhone) {
-      if (date) {
-        // Send SMS via MSG91 Flow: repaircart-delivery-date-update
-        const formattedDate = new Date(date).toLocaleDateString('en-IN', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric',
-        });
-        sendDeliveryDateUpdate(ticket.customerPhone, {
-          name: ticket.customerName,
-          ticket: ticket.ticketId,
-          date: formattedDate,
-        }).catch((err) => {
-          console.error(`Failed to send delivery date SMS to ${ticket.customerPhone}:`, err.message);
-        });
-      } else {
-        // Send status update SMS via MSG91 Flow: repaircart-ticket-status-update
-        sendTicketStatusUpdate(ticket.customerPhone, {
-          name: ticket.customerName,
-          ticket: ticket.ticketId,
-          status: ticket.status,
-          note: message || 'Repair update from admin.',
-        }).catch((err) => {
-          console.error(`Failed to send status update SMS to ${ticket.customerPhone}:`, err.message);
-        });
+      try {
+        if (date) {
+          // Send SMS via MSG91 Flow: repaircart-delivery-date-update
+          const formattedDate = new Date(date).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+          });
+          await sendDeliveryDateUpdate(ticket.customerPhone, {
+            name: ticket.customerName,
+            ticket: ticket.ticketId,
+            date: formattedDate,
+          });
+        } else {
+          // Send status update SMS via MSG91 Flow: repaircart-ticket-status-update
+          await sendTicketStatusUpdate(ticket.customerPhone, {
+            name: ticket.customerName,
+            ticket: ticket.ticketId,
+            status: ticket.status,
+            note: message || 'Repair update from admin.',
+          });
+        }
+      } catch (err: any) {
+        console.error(`Failed to send message/update SMS to ${ticket.customerPhone}:`, err.message);
       }
     }
 

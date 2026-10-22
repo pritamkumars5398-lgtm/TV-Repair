@@ -101,14 +101,16 @@ export const markOnTheWay = async (req: Request, res: Response): Promise<void> =
 
     // Send OTP via SMS (MSG91 Flow: repaircart-pickup-otp)
     if (ticket.customerPhone) {
-      sendPickupOTP(ticket.customerPhone, {
-        name: ticket.customerName,
-        tech_name: ticket.technicianName || 'Our Technician',
-        otp,
-        contact: ticket.technicianPhone || 'Support',
-      }).catch((err) => {
+      try {
+        await sendPickupOTP(ticket.customerPhone, {
+          name: ticket.customerName,
+          tech_name: ticket.technicianName || 'Our Technician',
+          otp,
+          contact: ticket.technicianPhone || 'Support',
+        });
+      } catch (err: any) {
         console.error(`Failed to send OTP SMS to ${ticket.customerPhone}:`, err.message);
-      });
+      }
     }
 
     res.json({
@@ -161,13 +163,15 @@ export const verifyPickupOtp = async (req: Request, res: Response): Promise<void
 
     // 2. Send SMS to Admin (MSG91 Flow: repaircart-admin-pickup-alert)
     const adminPhone = process.env.ADMIN_PHONE || '9999999999';
-    sendAdminPickupAlert(adminPhone, {
-      ticket: ticket.ticketId,
-      tech_name: ticket.technicianName || 'Technician',
-      customer_name: ticket.customerName,
-    }).catch((err) => {
+    try {
+      await sendAdminPickupAlert(adminPhone, {
+        ticket: ticket.ticketId,
+        tech_name: ticket.technicianName || 'Technician',
+        customer_name: ticket.customerName,
+      });
+    } catch (err: any) {
       console.error('Failed to send pickup notification to admin:', err.message);
-    });
+    }
 
     res.json({
       success: true,

@@ -86,14 +86,16 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
         const statusLabel = STATUS_LABELS[newStatus] || newStatus;
         const note = req.body.notes || 'Status updated.';
         
-        sendTicketStatusUpdate(updatedTicket.customerPhone, {
-          name: updatedTicket.customerName,
-          ticket: ticketId,
-          status: statusLabel,
-          note: note,
-        }).catch((err) => {
+        try {
+          await sendTicketStatusUpdate(updatedTicket.customerPhone, {
+            name: updatedTicket.customerName,
+            ticket: ticketId,
+            status: statusLabel,
+            note: note,
+          });
+        } catch (err: any) {
           console.error(`Failed to send status update SMS to ${updatedTicket.customerPhone}:`, err.message);
-        });
+        }
       }
 
       res.json({

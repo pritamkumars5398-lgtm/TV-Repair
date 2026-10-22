@@ -41,6 +41,11 @@ export const publicApi = {
       .post<ApiResponse<any>>(`/public/track/${ticketId}/estimate-response`, { status })
       .then((r) => r.data),
 
+  resendBookingConfirmation: (ticketId: string) =>
+    apiClient
+      .post<ApiResponse<any>>(`/public/bookings/${ticketId}/resend-confirmation`)
+      .then((r) => r.data),
+
   submitRating: (data: { ticketId: string; rating: number; comment?: string }) =>
     apiClient.post<ApiResponse<{ ratingId: string }>>('/public/ratings', data).then((r) => r.data),
 

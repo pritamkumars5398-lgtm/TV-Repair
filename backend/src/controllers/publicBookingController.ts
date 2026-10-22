@@ -78,13 +78,15 @@ export const createBooking = async (req: Request, res: Response): Promise<void> 
     // Send SMS Notification via MSG91 Flow: repaircart-booking-received
     if (phone) {
       const itemDescription = [ticket.tvBrand, ticket.tvSize, ticket.serviceType].filter(Boolean).join(' ') || ticket.serviceType;
-      sendBookingReceived(phone, {
-        name: name || 'Customer',
-        ticket: ticket.ticketId,
-        item: itemDescription,
-      }).catch((err) => {
+      try {
+        await sendBookingReceived(phone, {
+          name: name || 'Customer',
+          ticket: ticket.ticketId,
+          item: itemDescription,
+        });
+      } catch (err: any) {
         console.error(`Failed to send booking SMS to ${phone}:`, err.message);
-      });
+      }
     }
 
     res.status(201).json({
@@ -139,12 +141,14 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
 
     // Send Confirmation SMS via MSG91 Flow: repaircart-booking-payment-confirm
     if (ticket.customerPhone) {
-      sendBookingPaymentConfirm(ticket.customerPhone, {
-        name: ticket.customerName,
-        ticket: ticket.ticketId,
-      }).catch((err) => {
+      try {
+        await sendBookingPaymentConfirm(ticket.customerPhone, {
+          name: ticket.customerName,
+          ticket: ticket.ticketId,
+        });
+      } catch (err: any) {
         console.error(`Failed to send booking confirmation SMS to ${ticket.customerPhone}:`, err.message);
-      });
+      }
     }
 
     res.json({
@@ -153,6 +157,38 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
     });
   } catch (error: any) {
     res.status(500).json({ message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Resend Booking Confirmation SMS
+// @route   POST /api/v1/public/bookings/:ticketId/resend-confirmation
+// @access  Public
+export const resendConfirmationSMS = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { ticketId } = req.params;
+    const ticket = await Ticket.findOne({ ticketId });
+    if (!ticket) {
+      res.status(404).json({ success: false, message: 'Booking ticket not found' });
+      return;
+    }
+
+    if (!ticket.customerPhone) {
+      res.status(400).json({ success: false, message: 'No phone number attached to this ticket' });
+      return;
+    }
+
+    const sent = await sendBookingPaymentConfirm(ticket.customerPhone, {
+      name: ticket.customerName || 'Customer',
+      ticket: ticket.ticketId,
+    });
+
+    res.json({
+      success: true,
+      message: 'Confirmation SMS dispatched successfully to ' + ticket.customerPhone,
+      sent,
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
   }
 };
 

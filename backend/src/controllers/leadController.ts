@@ -22,12 +22,14 @@ export const createPublicInquiry = async (req: Request, res: Response): Promise<
 
     // Send SMS via MSG91 Flow: repaircart-lead-inquiry-received
     if (phone) {
-      sendLeadInquiryReceived(phone, {
-        name: name || 'Customer',
-        inquiry: productInterest || serviceType || 'TV Repair Service',
-      }).catch((err) => {
+      try {
+        await sendLeadInquiryReceived(phone, {
+          name: name || 'Customer',
+          inquiry: productInterest || serviceType || 'TV Repair Service',
+        });
+      } catch (err: any) {
         console.error(`Failed to send inquiry SMS to ${phone}:`, err.message);
-      });
+      }
     }
 
     res.status(201).json(lead);
