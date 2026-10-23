@@ -11,6 +11,7 @@ import { FaqAccordion } from '@/components/website/FaqAccordion';
 import { TestimonialsSlider } from '@/components/website/TestimonialsSlider';
 import { GallerySection } from '@/components/website/GallerySection';
 import { CtaSection } from '@/components/website/CtaSection';
+import { getWhatsAppUrl } from '@/lib/constants/whatsapp';
 
 export const metadata: Metadata = {
   title: 'RC RepairCart — Electronics Repair & Manufacturing',
@@ -467,7 +468,7 @@ export default function HomePage() {
 
               <div className="mt-8 pt-6 border-t border-slate-50">
                 <a
-                  href={`https://wa.me/918586887887?text=Hi, I am interested in the Smart TV AMC Plan (₹1,499/year).`}
+                  href={getWhatsAppUrl('Hi, I am interested in the Smart TV AMC Plan (₹1,499/year).')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white text-center font-extrabold text-xs rounded-xl shadow-sm transition-all active:scale-[0.98] block"
@@ -511,7 +512,7 @@ export default function HomePage() {
 
               <div className="mt-8 pt-6 border-t border-slate-50">
                 <a
-                  href={`https://wa.me/918586887887?text=Hi, I am interested in the Dual TV Combo AMC Plan (₹2,499/year).`}
+                  href={getWhatsAppUrl('Hi, I am interested in the Dual TV Combo AMC Plan (₹2,499/year).')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-3 bg-gradient-to-r from-primary-600 to-cyan-600 hover:from-primary-500 hover:to-cyan-500 text-white text-center font-extrabold text-xs rounded-xl shadow-sm transition-all active:scale-[0.98] block"
@@ -552,7 +553,7 @@ export default function HomePage() {
 
               <div className="mt-8 pt-6 border-t border-slate-50">
                 <a
-                  href={`https://wa.me/918586887887?text=Hi, I am interested in the Full Home Electronics AMC Plan (₹3,999/year).`}
+                  href={getWhatsAppUrl('Hi, I am interested in the Full Home Electronics AMC Plan (₹3,999/year).')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white text-center font-extrabold text-xs rounded-xl shadow-sm transition-all active:scale-[0.98] block"

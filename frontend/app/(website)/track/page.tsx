@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { Search, CheckCircle2, Circle, Loader2, AlertCircle, ArrowRight, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { publicApi } from '@/lib/api/public';
+import { getWhatsAppUrl } from '@/lib/constants/whatsapp';
 import type { TrackTicketResponse, TicketStatus } from '@/types';
 import { toast } from 'sonner';
 import { CtaSection } from '@/components/website/CtaSection';
@@ -388,7 +389,7 @@ function TrackContent() {
               <div className="mt-8 pt-6 border-t border-slate-100 text-center">
                 <p className="text-xs font-semibold text-slate-500 mb-3">Need help with your repair?</p>
                 <a
-                  href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '918586887887'}?text=Hi, my ticket ID is ${trackData.ticketId}. I need help.`}
+                  href={getWhatsAppUrl(`Hi RepairCart, my ticket ID is ${trackData.ticketId}. I need help.`)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#25D366] text-white text-xs font-bold rounded-md hover:bg-[#20bd5a] transition-colors"

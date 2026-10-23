@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Phone, Mail, MapPin, Clock, MessageCircle, CheckCircle2, ArrowRight, ShieldCheck, Star, Truck, Award, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import { publicApi } from '@/lib/api/public';
+import { getWhatsAppUrl } from '@/lib/constants/whatsapp';
 import { contactSchema, type ContactInput } from '@/lib/validations/booking';
 
 const GOOGLE_MAPS_LOCATION_URL = "https://www.google.com/maps/place/28%C2%B035'26.0%22N+77%C2%B019'14.6%22E/@28.5905644,77.3181377,17z/data=!3m1!4b1!4m4!3m3!8m2!3d28.5905644!4d77.3207126";
@@ -25,7 +26,6 @@ export default function ContactPage() {
     }
   };
 
-  const wa = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '8586887887';
 
   const jsonLdSchema = {
     '@context': 'https://schema.org',
@@ -124,7 +124,7 @@ export default function ContactPage() {
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <a
-                  href={`https://wa.me/${wa}`}
+                  href={getWhatsAppUrl('Hi RepairCart, I need help with my TV / speaker.')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-6 py-3 text-xs font-extrabold text-white hover:bg-emerald-500 transition-all active:scale-[0.98]"

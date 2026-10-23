@@ -1,5 +1,7 @@
 'use client';
 
+import { getWhatsAppUrl } from '@/lib/constants/whatsapp';
+
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg 
     xmlns="http://www.w3.org/2000/svg" 
@@ -12,12 +14,9 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
 );
 
 export function WhatsAppButton() {
-  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '918586887887';
-  const message = encodeURIComponent('Hi! I need help with TV repair / speaker service.');
-
   return (
     <a
-      href={`https://wa.me/${number}?text=${message}`}
+      href={getWhatsAppUrl('Hi RepairCart! I need help with TV repair / speaker service.')}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"

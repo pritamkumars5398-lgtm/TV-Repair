@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { CheckCircle2, ArrowRight, MessageSquare, Send, Copy, Check, Loader2, Sparkles, PhoneCall } from 'lucide-react';
 import { toast } from 'sonner';
 import { publicApi } from '@/lib/api/public';
+import { getWhatsAppUrl } from '@/lib/constants/whatsapp';
 
 interface Props {
   ticketId: string;
@@ -14,10 +15,9 @@ export default function BookingSuccessClient({ ticketId }: Props) {
   const [resending, setResending] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const whatsappMessage = encodeURIComponent(
+  const whatsappUrl = getWhatsAppUrl(
     `Hi RepairCart, I have booked a TV repair service. My Ticket ID is ${ticketId}. Please confirm my appointment & technician visit.`
   );
-  const whatsappUrl = `https://wa.me/918586887887?text=${whatsappMessage}`;
 
   const handleCopyTicket = () => {
     navigator.clipboard.writeText(ticketId);
