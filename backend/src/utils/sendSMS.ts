@@ -35,6 +35,16 @@ export const normalizePhone = (phone: string): string => {
 };
 
 /**
+ * DLT {#numeric#} variables accept digits only — a "+91", space or text like "Support" makes the SMS get rejected.
+ * Returns a 10-digit mobile number, falling back to the RepairCart support number.
+ */
+const SUPPORT_PHONE_DIGITS = '8586887887';
+const toNumericPhone = (phone: string | undefined | null): string => {
+  const digits = (phone || '').toString().replace(/\D/g, '');
+  return digits.length >= 10 ? digits.slice(-10) : SUPPORT_PHONE_DIGITS;
+};
+
+/**
  * Generates tracking URL for customer ticket
  */
 export const getTrackUrl = (ticketId: string): string => {
@@ -173,7 +183,7 @@ export const sendTechnicianAssigned = async (
   const result = await sendMSG91Flow('repaircart-technician-assigned', phone, {
     name: data.name,
     tech_name: data.tech_name,
-    tech_phone: data.tech_phone,
+    tech_phone: toNumericPhone(data.tech_phone),
     ticket: data.ticket,
   });
   return result.success;
@@ -191,7 +201,7 @@ export const sendPickupOTP = async (
     name: data.name,
     tech_name: data.tech_name,
     otp: data.otp,
-    contact: data.contact,
+    contact: toNumericPhone(data.contact),
   });
   return result.success;
 };
@@ -243,7 +253,7 @@ export const sendEstimateQuotation = async (
   const result = await sendMSG91Flow('repaircart-estimate-quotation', phone, {
     name: data.name,
     ticket: data.ticket,
-    cost: String(data.cost),
+    cost: String(Math.round(Number(String(data.cost).replace(/[^\d.]/g, '')) || 0)),
     details: data.details,
     url,
   });
