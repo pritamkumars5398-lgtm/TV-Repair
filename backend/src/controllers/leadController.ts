@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { escapeRegex } from '../utils/escapeRegex';
 import Lead from '../models/Lead';
 import { sendLeadInquiryReceived } from '../utils/sendSMS';
 
@@ -62,7 +63,7 @@ export const getLeads = async (req: Request, res: Response): Promise<void> => {
     }
     
     if (req.query.search) {
-      const searchRegex = new RegExp(req.query.search as string, 'i');
+      const searchRegex = new RegExp(escapeRegex(String(req.query.search)), 'i');
       query.$or = [{ name: searchRegex }, { phone: searchRegex }, { email: searchRegex }];
     }
 

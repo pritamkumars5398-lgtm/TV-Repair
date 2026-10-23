@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { escapeRegex } from '../utils/escapeRegex';
 import Ticket from '../models/Ticket';
 import { sendTicketStatusUpdate } from '../utils/sendSMS';
 
@@ -28,7 +29,7 @@ export const getTickets = async (req: Request, res: Response): Promise<void> => 
     }
     
     if (req.query.search) {
-      const searchRegex = new RegExp(req.query.search as string, 'i');
+      const searchRegex = new RegExp(escapeRegex(String(req.query.search)), 'i');
       query.$or = [
         { ticketId: searchRegex },
         { customerName: searchRegex },

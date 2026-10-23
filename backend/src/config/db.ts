@@ -7,6 +7,9 @@ import Product from '../models/Product';
 
 const seedProducts = async () => {
   try {
+    // Never touch products that already exist — admins manage them from the panel
+    if ((await Product.countDocuments()) > 0) return;
+
     console.log('--- SEEDING REAL PRODUCTS AND COPYING IMAGES ---');
     
     const srcDir = path.join(process.cwd(), '..', 'frontend', 'assets', 'images');
@@ -35,10 +38,6 @@ const seedProducts = async () => {
         console.warn(`Source image not found in assets/images: ${imgName}`);
       }
     });
-    
-    // Clear and insert products
-    await Product.deleteMany({});
-    console.log('Cleared existing products.');
     
     await Product.create([
       {

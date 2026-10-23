@@ -252,6 +252,19 @@ export interface AdminDashboardStats {
   revenueThisMonth: number;
   pendingPayments: number;
   completedJobsToday: number;
+  weekly: { day: string; leads: number; completed: number }[];
+  serviceBreakdown: { name: string; count: number; percentage: number }[];
+}
+
+export interface TechnicianReportRow {
+  id: string;
+  name: string;
+  specialization: string;
+  isActive: boolean;
+  assigned: number;
+  completed: number;
+  cancelled: number;
+  inProgress: number;
 }
 
 export interface RevenueDataPoint {
@@ -273,6 +286,7 @@ export interface Technician {
   photo?: string;
   isActive: boolean;
   jobsCompleted: number;
+  activeJobs?: number;
   rating?: number;
   createdAt: string;
 }

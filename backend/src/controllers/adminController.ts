@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { escapeRegex } from '../utils/escapeRegex';
 import Lead from '../models/Lead';
 import Ticket from '../models/Ticket';
 import Technician from '../models/Technician';
@@ -12,6 +13,34 @@ import {
   sendDeliveryDateUpdate,
   sendTicketStatusUpdate,
 } from '../utils/sendSMS';
+
+// Business runs in India — bucket dates by IST so "today" matches the admin's calendar
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
+const istDayKey = (date: Date): string => new Date(date.getTime() + IST_OFFSET_MS).toISOString().split('T')[0];
+const istStartOfDay = (date: Date = new Date()): Date => {
+  const d = new Date(date.getTime() + IST_OFFSET_MS);
+  d.setUTCHours(0, 0, 0, 0);
+  return new Date(d.getTime() - IST_OFFSET_MS);
+};
+const istStartOfMonth = (): Date => {
+  const d = new Date(Date.now() + IST_OFFSET_MS);
+  d.setUTCDate(1);
+  d.setUTCHours(0, 0, 0, 0);
+  return new Date(d.getTime() - IST_OFFSET_MS);
+};
+
+// Parses ?from=YYYY-MM-DD&to=YYYY-MM-DD (IST calendar days, inclusive), else the last `days` days
+const parseDateRange = (query: any, defaultDays = 30): { start: Date; end: Date } => {
+  const days = Number(query.days) || defaultDays;
+  const start = query.from
+    ? new Date(`${query.from}T00:00:00+05:30`)
+    : istStartOfDay(new Date(Date.now() - (days - 1) * DAY_MS));
+  const end = query.to ? new Date(new Date(`${query.to}T00:00:00+05:30`).getTime() + DAY_MS - 1) : new Date();
+  return { start, end };
+};
+
+const FINISHED_STATUSES = ['delivered', 'cancelled'];
 
 // @desc    Get Admin Notifications
 // @route   GET /api/v1/admin/notifications
@@ -50,45 +79,56 @@ export const markNotificationRead = async (req: Request, res: Response): Promise
 // @access  Private/Admin
 export const getDashboard = async (req: Request, res: Response): Promise<void> => {
   try {
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+    const startOfDay = istStartOfDay();
+    const startOfMonth = istStartOfMonth();
+    const startOfWeek = new Date(startOfDay.getTime() - 6 * DAY_MS);
 
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0);
+    const [
+      newLeadsToday,
+      activeTickets,
+      techniciansOnField,
+      paymentsThisMonth,
+      pendingPayments,
+      completedJobsToday,
+      weekLeads,
+      weekCompleted,
+      serviceAgg,
+    ] = await Promise.all([
+      Lead.countDocuments({ createdAt: { $gte: startOfDay } }),
+      // Cancelled tickets are finished too, so they don't count as active
+      Ticket.countDocuments({ status: { $nin: FINISHED_STATUSES } }),
+      Technician.countDocuments({ isActive: true }),
+      Payment.find({ status: 'CAPTURED', createdAt: { $gte: startOfMonth } }).select('amount'),
+      Payment.countDocuments({ status: 'PENDING' }),
+      Ticket.countDocuments({ status: 'delivered', updatedAt: { $gte: startOfDay } }),
+      Lead.find({ createdAt: { $gte: startOfWeek } }).select('createdAt'),
+      Ticket.find({ status: 'delivered', updatedAt: { $gte: startOfWeek } }).select('updatedAt'),
+      Ticket.aggregate([
+        { $match: { status: { $ne: 'cancelled' } } },
+        { $group: { _id: '$serviceType', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 5 },
+      ]),
+    ]);
 
-    // 1. New Leads Today
-    const newLeadsToday = await Lead.countDocuments({
-      createdAt: { $gte: startOfDay },
-    });
-
-    // 2. Active Tickets
-    const activeTickets = await Ticket.countDocuments({
-      status: { $ne: 'delivered' },
-    });
-
-    // 3. Technicians on Field
-    const techniciansOnField = await Technician.countDocuments({
-      isActive: true,
-    });
-
-    // 4. Revenue This Month
-    const paymentsThisMonth = await Payment.find({
-      status: 'CAPTURED',
-      createdAt: { $gte: startOfMonth },
-    });
     const revenueThisMonth = paymentsThisMonth.reduce((sum, p) => sum + p.amount, 0);
 
-    // 5. Pending Payments
-    const pendingPayments = await Payment.countDocuments({
-      status: 'PENDING',
+    // Last 7 days: new leads vs delivered jobs per day
+    const weekly = Array.from({ length: 7 }, (_, i) => {
+      const key = istDayKey(new Date(startOfWeek.getTime() + i * DAY_MS));
+      return {
+        day: new Date(`${key}T00:00:00Z`).toLocaleDateString('en-IN', { weekday: 'short', timeZone: 'UTC' }),
+        leads: weekLeads.filter((l: any) => istDayKey(l.createdAt) === key).length,
+        completed: weekCompleted.filter((t: any) => istDayKey(t.updatedAt) === key).length,
+      };
     });
 
-    // 6. Completed Jobs Today
-    const completedJobsToday = await Ticket.countDocuments({
-      status: 'delivered',
-      updatedAt: { $gte: startOfDay },
-    });
+    const totalServices = serviceAgg.reduce((sum, s) => sum + s.count, 0);
+    const serviceBreakdown = serviceAgg.map((s) => ({
+      name: s._id || 'Other',
+      count: s.count,
+      percentage: totalServices ? Math.round((s.count / totalServices) * 100) : 0,
+    }));
 
     res.json({
       success: true,
@@ -99,6 +139,8 @@ export const getDashboard = async (req: Request, res: Response): Promise<void> =
         revenueThisMonth,
         pendingPayments,
         completedJobsToday,
+        weekly,
+        serviceBreakdown,
       },
     });
   } catch (error: any) {
@@ -111,27 +153,21 @@ export const getDashboard = async (req: Request, res: Response): Promise<void> =
 // @access  Private/Admin
 export const getRevenueChart = async (req: Request, res: Response): Promise<void> => {
   try {
-    const days = Number(req.query.days) || 30;
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
-    startDate.setHours(0, 0, 0, 0);
+    const { start, end } = parseDateRange(req.query, 30);
 
     const payments = await Payment.find({
       status: 'CAPTURED',
-      createdAt: { $gte: startDate },
-    });
+      createdAt: { $gte: start, $lte: end },
+    }).select('amount createdAt');
 
     // Initialize map with all dates in the range to avoid gaps
     const revenueMap: Record<string, number> = {};
-    for (let i = 0; i < days; i++) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dateStr = d.toISOString().split('T')[0];
-      revenueMap[dateStr] = 0;
+    for (let t = start.getTime(); t <= end.getTime(); t += DAY_MS) {
+      revenueMap[istDayKey(new Date(t))] = 0;
     }
 
     payments.forEach((p) => {
-      const dateStr = p.createdAt.toISOString().split('T')[0];
+      const dateStr = istDayKey(p.createdAt);
       if (revenueMap[dateStr] !== undefined) {
         revenueMap[dateStr] += p.amount;
       }
@@ -155,8 +191,16 @@ export const getRevenueChart = async (req: Request, res: Response): Promise<void
 // @access  Private/Admin
 export const getLeadSourceChart = async (req: Request, res: Response): Promise<void> => {
   try {
+    const match: any = {};
+    if (req.query.from || req.query.to) {
+      const { start, end } = parseDateRange(req.query);
+      match.createdAt = { $gte: start, $lte: end };
+    }
+
     const sourcesAgg = await Lead.aggregate([
+      { $match: match },
       { $group: { _id: '$source', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
     ]);
 
     const data = sourcesAgg.map((s) => ({
@@ -184,7 +228,7 @@ export const getCustomers = async (req: Request, res: Response): Promise<void> =
 
     const query: any = {};
     if (req.query.search) {
-      const searchRegex = new RegExp(req.query.search as string, 'i');
+      const searchRegex = new RegExp(escapeRegex(String(req.query.search)), 'i');
       query.$or = [{ name: searchRegex }, { email: searchRegex }, { phone: searchRegex }];
     }
 
@@ -248,16 +292,88 @@ export const getTechnicians = async (req: Request, res: Response): Promise<void>
       .limit(limit);
 
     const total = await Technician.countDocuments();
+    const activeTotal = await Technician.countDocuments({ isActive: true });
+
+    // Live job counts from tickets instead of the static counters stored on the technician
+    const jobStats = await Ticket.aggregate([
+      { $match: { technicianId: { $in: technicians.map((t) => t._id) } } },
+      {
+        $group: {
+          _id: '$technicianId',
+          jobsCompleted: { $sum: { $cond: [{ $eq: ['$status', 'delivered'] }, 1, 0] } },
+          activeJobs: { $sum: { $cond: [{ $in: ['$status', FINISHED_STATUSES] }, 0, 1] } },
+        },
+      },
+    ]);
+    const statsById = new Map(jobStats.map((s) => [String(s._id), s]));
+
+    const items = technicians.map((t) => {
+      const stats = statsById.get(String(t._id));
+      return {
+        ...t.toJSON(),
+        jobsCompleted: stats?.jobsCompleted ?? 0,
+        activeJobs: stats?.activeJobs ?? 0,
+      };
+    });
 
     res.json({
       success: true,
       data: {
-        items: technicians,
+        items,
         total,
+        activeTotal,
         page,
         totalPages: Math.ceil(total / limit),
       },
     });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Technician performance for a date range (tickets created in the range)
+// @route   GET /api/v1/admin/reports/technicians
+// @access  Private/Admin
+export const getTechnicianReport = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { start, end } = parseDateRange(req.query, 30);
+
+    const [technicians, stats] = await Promise.all([
+      Technician.find().select('name specialization isActive'),
+      Ticket.aggregate([
+        { $match: { technicianId: { $ne: null }, createdAt: { $gte: start, $lte: end } } },
+        {
+          $group: {
+            _id: '$technicianId',
+            assigned: { $sum: 1 },
+            completed: { $sum: { $cond: [{ $eq: ['$status', 'delivered'] }, 1, 0] } },
+            cancelled: { $sum: { $cond: [{ $eq: ['$status', 'cancelled'] }, 1, 0] } },
+          },
+        },
+      ]),
+    ]);
+    const statsById = new Map(stats.map((s) => [String(s._id), s]));
+
+    const data = technicians
+      .map((t) => {
+        const s = statsById.get(String(t._id));
+        const assigned = s?.assigned ?? 0;
+        const completed = s?.completed ?? 0;
+        const cancelled = s?.cancelled ?? 0;
+        return {
+          id: String(t._id),
+          name: t.name,
+          specialization: t.specialization,
+          isActive: t.isActive,
+          assigned,
+          completed,
+          cancelled,
+          inProgress: assigned - completed - cancelled,
+        };
+      })
+      .sort((a, b) => b.completed - a.completed || b.assigned - a.assigned);
+
+    res.json({ success: true, data });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message || 'Server Error' });
   }
@@ -313,7 +429,7 @@ export const getInventory = async (req: Request, res: Response): Promise<void> =
 
     const query: any = {};
     if (req.query.search) {
-      const searchRegex = new RegExp(req.query.search as string, 'i');
+      const searchRegex = new RegExp(escapeRegex(String(req.query.search)), 'i');
       query.$or = [
         { name: searchRegex },
         { sku: searchRegex },
@@ -586,7 +702,7 @@ export const globalSearch = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    const searchRegex = new RegExp(q, 'i');
+    const searchRegex = new RegExp(escapeRegex(q), 'i');
 
     const tickets = await Ticket.find({
       $or: [

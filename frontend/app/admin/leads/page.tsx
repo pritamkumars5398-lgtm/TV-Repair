@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Search, Plus, Loader2, ChevronLeft, ChevronRight, X, Users } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -34,6 +35,12 @@ const STATUSES: LeadStatus[] = ['NEW','CONTACTED','INSPECTION_SCHEDULED','TV_REC
 export default function AdminLeadsPage() {
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
+
+  // Global header search links here as /admin/leads?search=<phone>
+  const searchFromUrl = useSearchParams().get('search');
+  useEffect(() => {
+    if (searchFromUrl) setSearch(searchFromUrl);
+  }, [searchFromUrl]);
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);

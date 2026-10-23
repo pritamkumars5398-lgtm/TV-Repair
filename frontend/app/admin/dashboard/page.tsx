@@ -14,22 +14,11 @@ const KPI_CONFIG: Array<{ key: string; label: string; icon: LucideIcon; color: s
 
 const PIE_COLORS = ['#06b6d4', '#8b5cf6', '#f59e0b', '#10b981', '#f43f5e', '#64748b'];
 
-const WEEKLY_DATA = [
-  { day: 'Mon', leads: 24, completed: 18 },
-  { day: 'Tue', leads: 35, completed: 25 },
-  { day: 'Wed', leads: 18, completed: 20 },
-  { day: 'Thu', leads: 42, completed: 35 },
-  { day: 'Fri', leads: 30, completed: 28 },
-  { day: 'Sat', leads: 15, completed: 12 },
-  { day: 'Sun', leads: 10, completed: 8 },
-];
+const SERVICE_BAR_COLORS = ['bg-cyan-500', 'bg-indigo-500', 'bg-amber-500', 'bg-rose-500', 'bg-emerald-500'];
 
-const PRODUCT_STATS = [
-  { name: 'LED TV Panel Repair', count: 145, percentage: 85, color: 'bg-cyan-500' },
-  { name: 'Mobile Touch Repair', count: 98, percentage: 65, color: 'bg-indigo-500' },
-  { name: 'Speaker Manufacturing', count: 52, percentage: 35, color: 'bg-amber-500' },
-  { name: 'Motherboard Service', count: 35, percentage: 20, color: 'bg-rose-500' },
-];
+// serviceType is stored as e.g. "TV_REPAIR" — show it as "Tv Repair"
+const formatServiceName = (name: string) =>
+  name.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 
 export default function AdminDashboardPage() {
   const { data: stats } = useQuery({
@@ -40,7 +29,7 @@ export default function AdminDashboardPage() {
 
   const { data: revenue } = useQuery({
     queryKey: ['revenue-chart'],
-    queryFn: () => adminApi.getRevenueChart(30).then((r) => r.data),
+    queryFn: () => adminApi.getRevenueChart({ days: 30 }).then((r) => r.data),
   });
 
   const { data: leadSources } = useQuery({
@@ -170,12 +159,13 @@ export default function AdminDashboardPage() {
             </div>
           </div>
           
+          {stats?.weekly?.length ? (
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={WEEKLY_DATA} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+            <BarChart data={stats.weekly} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
               <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 500 }} dy={5} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
-              <Tooltip 
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} allowDecimals={false} />
+              <Tooltip
                 contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '11px', fontWeight: 'bold' }}
                 cursor={{ fill: '#f8fafc' }}
               />
@@ -184,6 +174,9 @@ export default function AdminDashboardPage() {
               <Bar dataKey="completed" name="Completed Jobs" fill="#8b5cf6" radius={[3, 3, 0, 0]} barSize={12} />
             </BarChart>
           </ResponsiveContainer>
+          ) : (
+            <div className="h-[200px] flex items-center justify-center text-xs text-slate-400 font-medium">{stats ? 'No data yet' : 'Loading…'}</div>
+          )}
         </div>
 
         {/* Products breakdown */}
@@ -194,22 +187,26 @@ export default function AdminDashboardPage() {
             </div>
             <div>
               <h2 className="font-bold text-slate-800 text-sm">Product Services</h2>
-              <p className="text-[10px] text-slate-400 font-medium">Top serviced categories</p>
+              <p className="text-[10px] text-slate-400 font-medium">Top serviced categories (all bookings)</p>
             </div>
           </div>
-          
+
           <div className="space-y-4 flex-1 justify-center flex flex-col">
-            {PRODUCT_STATS.map((item, i) => (
-              <div key={i}>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="font-semibold text-slate-700">{item.name}</span>
-                  <span className="font-bold text-slate-500">{item.count} units</span>
+            {stats?.serviceBreakdown?.length ? (
+              stats.serviceBreakdown.map((item, i) => (
+                <div key={item.name}>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="font-semibold text-slate-700">{formatServiceName(item.name)}</span>
+                    <span className="font-bold text-slate-500">{item.count} {item.count === 1 ? 'booking' : 'bookings'}</span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                    <div className={`h-2 rounded-full ${SERVICE_BAR_COLORS[i % SERVICE_BAR_COLORS.length]}`} style={{ width: `${item.percentage}%` }}></div>
+                  </div>
                 </div>
-                <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                  <div className={`h-2 rounded-full ${item.color}`} style={{ width: `${item.percentage}%` }}></div>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-center text-xs text-slate-400 font-medium">{stats ? 'No bookings yet' : 'Loading…'}</p>
+            )}
           </div>
         </div>
       </div>

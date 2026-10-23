@@ -54,6 +54,15 @@ export default function AdminTicketsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  // Global header search links here as /admin/tickets?search=<ticketId>
+  const searchFromUrl = searchParams.get('search');
+  useEffect(() => {
+    if (searchFromUrl) {
+      setSearch(searchFromUrl);
+      setPage(1);
+    }
+  }, [searchFromUrl]);
+
   const { data, isLoading } = useQuery({
     queryKey: ['admin-tickets', search, statusFilter, page],
     queryFn: () => adminApi.getTickets({ search: search || undefined, status: statusFilter || undefined, page, limit: 20 }),

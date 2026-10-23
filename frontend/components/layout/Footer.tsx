@@ -117,9 +117,11 @@ export function Footer() {
 
         <div className="mt-12 border-t border-slate-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
           <p>© {currentYear} RepairCart. All rights reserved.</p>
-          <div className="flex gap-4">
-            <Link href="/privacy" className="hover:text-primary-600 transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-primary-600 transition-colors">Terms of Service</Link>
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <Link href="/terms" className="hover:text-primary-600 transition-colors">Terms & Conditions</Link>
+            <Link href="/privacy-policy" className="hover:text-primary-600 transition-colors">Privacy Policy</Link>
+            <Link href="/refund-policy" className="hover:text-primary-600 transition-colors">Refund & Cancellation Policy</Link>
+            <Link href="/contact" className="hover:text-primary-600 transition-colors">Contact Us</Link>
           </div>
         </div>
       </div>

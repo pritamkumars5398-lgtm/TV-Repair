@@ -292,6 +292,36 @@ export const sendLeadInquiryReceived = async (
 };
 
 /**
+ * 11. repaircart-estimate-approved
+ * Template: "Dear {#name#}, thank you for approving the estimate for ticket {#ticket#}. Repair work has commenced. Your product will be ready and delivered within 2-3 business days. - RC RepairCart"
+ */
+export const sendEstimateApproved = async (
+  phone: string,
+  data: { name: string; ticket: string }
+): Promise<boolean> => {
+  const result = await sendMSG91Flow('repaircart-estimate-approved', phone, {
+    name: data.name,
+    ticket: data.ticket,
+  });
+  return result.success;
+};
+
+/**
+ * 12. repaircart-estimate-cancelled
+ * Template: "Dear {#name#}, as per your request, repair for ticket {#ticket#} has been cancelled. Our team will coordinate the safe return of your product shortly. - RC RepairCart"
+ */
+export const sendEstimateCancelled = async (
+  phone: string,
+  data: { name: string; ticket: string }
+): Promise<boolean> => {
+  const result = await sendMSG91Flow('repaircart-estimate-cancelled', phone, {
+    name: data.name,
+    ticket: data.ticket,
+  });
+  return result.success;
+};
+
+/**
  * Backward compatibility wrapper for generic sendSMS calls
  */
 export const sendSMS = async (options: SMSOptions): Promise<void> => {

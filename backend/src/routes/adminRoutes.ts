@@ -5,6 +5,7 @@ import {
   getLeadSourceChart,
   getCustomers,
   getTechnicians,
+  getTechnicianReport,
   createTechnician,
   updateTechnician,
   getInventory,
@@ -34,6 +35,7 @@ router.put('/notifications/:id/read', markNotificationRead);
 router.get('/dashboard', getDashboard);
 router.get('/reports/revenue', getRevenueChart);
 router.get('/reports/lead-sources', getLeadSourceChart);
+router.get('/reports/technicians', getTechnicianReport);
 router.get('/customers', getCustomers);
 router.route('/technicians')
   .get(getTechnicians)

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, X, Loader2, Star, CheckCircle2, XCircle, Wrench } from 'lucide-react';
+import { Plus, X, Loader2, CheckCircle2, XCircle, Wrench } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { adminApi } from '@/lib/api/admin';
@@ -36,6 +36,7 @@ export default function AdminTechniciansPage() {
   });
 
   const technicians: Technician[] = data?.items ?? [];
+  const activeCount = data?.activeTotal ?? technicians.filter((t) => t.isActive).length;
 
   return (
     <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-7xl mx-auto">
@@ -48,7 +49,7 @@ export default function AdminTechniciansPage() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-slate-800 tracking-tight">Technicians</h1>
-            <p className="text-xs text-slate-400 font-semibold">{technicians.length} active technicians on the field</p>
+            <p className="text-xs text-slate-400 font-semibold">{activeCount} active of {data?.total ?? technicians.length} technicians</p>
           </div>
         </div>
         <button onClick={() => setShowModal(true)}
@@ -92,16 +93,12 @@ export default function AdminTechniciansPage() {
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
                 <div className="flex flex-col">
                   <span className="font-bold text-slate-700 text-xs">{tech.jobsCompleted}</span>
-                  <span className="text-[9px] uppercase tracking-wider font-bold text-slate-400">Jobs</span>
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-slate-400">Completed</span>
                 </div>
-                {tech.rating && (
-                  <div className="flex flex-col items-center">
-                    <span className="flex items-center gap-0.5 font-bold text-amber-500">
-                      {tech.rating.toFixed(1)} <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                    </span>
-                    <span className="text-[9px] uppercase tracking-wider font-bold text-slate-400">Rating</span>
-                  </div>
-                )}
+                <div className="flex flex-col items-center">
+                  <span className="font-bold text-cyan-600 text-xs">{tech.activeJobs ?? 0}</span>
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-slate-400">Active</span>
+                </div>
                 <span className={`text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${tech.isActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-50 text-slate-500 border border-slate-200'}`}>
                   {tech.isActive ? 'Active' : 'Inactive'}
                 </span>

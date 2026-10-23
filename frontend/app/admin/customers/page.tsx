@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Search, Loader2, UserCheck, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { adminApi } from '@/lib/api/admin';
@@ -8,6 +9,12 @@ import type { Customer } from '@/types';
 
 export default function AdminCustomersPage() {
   const [search, setSearch] = useState('');
+
+  // Global header search links here as /admin/customers?search=<phone>
+  const searchFromUrl = useSearchParams().get('search');
+  useEffect(() => {
+    if (searchFromUrl) setSearch(searchFromUrl);
+  }, [searchFromUrl]);
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useQuery({

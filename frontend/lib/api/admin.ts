@@ -11,6 +11,7 @@ import type {
   Payment,
   RevenueDataPoint,
   LeadSourceDataPoint,
+  TechnicianReportRow,
 } from '@/types';
 
 export const adminApi = {
@@ -18,11 +19,14 @@ export const adminApi = {
   getDashboard: () =>
     apiClient.get<ApiResponse<AdminDashboardStats>>('/admin/dashboard').then((r) => r.data),
 
-  getRevenueChart: (days = 30) =>
-    apiClient.get<ApiResponse<RevenueDataPoint[]>>('/admin/reports/revenue', { params: { days } }).then((r) => r.data),
+  getRevenueChart: (range: { days?: number; from?: string; to?: string } = { days: 30 }) =>
+    apiClient.get<ApiResponse<RevenueDataPoint[]>>('/admin/reports/revenue', { params: range }).then((r) => r.data),
 
-  getLeadSourceChart: () =>
-    apiClient.get<ApiResponse<LeadSourceDataPoint[]>>('/admin/reports/lead-sources').then((r) => r.data),
+  getLeadSourceChart: (range?: { from?: string; to?: string }) =>
+    apiClient.get<ApiResponse<LeadSourceDataPoint[]>>('/admin/reports/lead-sources', { params: range }).then((r) => r.data),
+
+  getTechnicianReport: (range: { from?: string; to?: string }) =>
+    apiClient.get<ApiResponse<TechnicianReportRow[]>>('/admin/reports/technicians', { params: range }).then((r) => r.data),
 
   // Leads
   getLeads: (params?: { page?: number; limit?: number; status?: string; source?: string; search?: string; serviceType?: string; excludeServiceType?: string }) =>
@@ -59,7 +63,9 @@ export const adminApi = {
 
   // Technicians
   getTechnicians: (params?: { page?: number; limit?: number }) =>
-    apiClient.get<ApiResponse<PaginatedResponse<Technician>>>('/admin/technicians', { params }).then((r) => r.data),
+    apiClient
+      .get<ApiResponse<PaginatedResponse<Technician> & { activeTotal?: number }>>('/admin/technicians', { params })
+      .then((r) => r.data),
 
   createTechnician: (data: Partial<Technician>) =>
     apiClient.post<ApiResponse<Technician>>('/admin/technicians', data).then((r) => r.data),

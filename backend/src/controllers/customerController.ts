@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { escapeRegex } from '../utils/escapeRegex';
 import Customer from '../models/Customer';
 import Ticket from '../models/Ticket';
 import Lead from '../models/Lead';
@@ -14,7 +15,7 @@ export const getCustomers = async (req: Request, res: Response): Promise<void> =
 
     const query: any = {};
     if (req.query.search) {
-      const searchRegex = new RegExp(req.query.search as string, 'i');
+      const searchRegex = new RegExp(escapeRegex(String(req.query.search)), 'i');
       query.$or = [{ name: searchRegex }, { email: searchRegex }, { phone: searchRegex }];
     }
 

@@ -10,8 +10,9 @@ import type { RevenueDataPoint } from '@/types';
 const TABS = ['Revenue', 'Leads', 'Technicians'] as const;
 type Tab = typeof TABS[number];
 
+// Local calendar date (YYYY-MM-DD) — toISOString() would give yesterday's date before 5:30 AM IST
 function toISO(date: Date) {
-  return date.toISOString().split('T')[0];
+  return date.toLocaleDateString('en-CA');
 }
 
 export default function AdminReportsPage() {
@@ -19,14 +20,24 @@ export default function AdminReportsPage() {
   const [from, setFrom] = useState(toISO(new Date(Date.now() - 30 * 86400000)));
   const [to, setTo] = useState(toISO(new Date()));
 
+  const rangeValid = Boolean(from && to && from <= to);
+
   const { data: revenue } = useQuery({
     queryKey: ['revenue-report', from, to],
-    queryFn: () => adminApi.getRevenueChart(30).then((r) => r.data),
+    queryFn: () => adminApi.getRevenueChart({ from, to }).then((r) => r.data),
+    enabled: rangeValid,
   });
 
   const { data: leadSources } = useQuery({
-    queryKey: ['lead-sources-report'],
-    queryFn: () => adminApi.getLeadSourceChart().then((r) => r.data),
+    queryKey: ['lead-sources-report', from, to],
+    queryFn: () => adminApi.getLeadSourceChart({ from, to }).then((r) => r.data),
+    enabled: rangeValid,
+  });
+
+  const { data: techReport, isLoading: techLoading } = useQuery({
+    queryKey: ['technician-report', from, to],
+    queryFn: () => adminApi.getTechnicianReport({ from, to }).then((r) => r.data),
+    enabled: rangeValid && tab === 'Technicians',
   });
 
   return (
@@ -59,12 +70,13 @@ export default function AdminReportsPage() {
           {[
             { label: '7d', days: 7 }, { label: '30d', days: 30 }, { label: '90d', days: 90 },
           ].map((p) => (
-            <button key={p.label} onClick={() => { setFrom(toISO(new Date(Date.now() - p.days * 86400000))); setTo(toISO(new Date())); }}
+            <button key={p.label} onClick={() => { setFrom(toISO(new Date(Date.now() - (p.days - 1) * 86400000))); setTo(toISO(new Date())); }}
               className="px-3 py-1.5 text-[10px] font-bold border border-slate-200 bg-slate-50 text-slate-600 rounded-lg hover:bg-cyan-50 hover:text-cyan-700 hover:border-cyan-200 transition-colors">
               Last {p.label}
             </button>
           ))}
         </div>
+        {!rangeValid && <p className="text-[11px] font-semibold text-rose-500">"From" date must be before "To" date</p>}
       </div>
 
       {/* Tab navigation */}
@@ -147,9 +159,46 @@ export default function AdminReportsPage() {
 
       {/* Technicians tab */}
       {tab === 'Technicians' && (
-        <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-6 text-center animate-in fade-in duration-300">
-          <h2 className="text-sm font-bold text-slate-800 mb-2">Technician Performance</h2>
-          <p className="text-xs font-medium text-slate-400">Coming soon — advanced technician analytics and performance metrics.</p>
+        <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-4 animate-in fade-in duration-300">
+          <h2 className="text-sm font-bold text-slate-850 mb-1">Technician Performance</h2>
+          <p className="text-[11px] font-medium text-slate-400 mb-4">Jobs booked in the selected date range, by assigned technician</p>
+          {techLoading ? (
+            <div className="h-[120px] flex items-center justify-center text-xs font-semibold text-slate-400">Loading…</div>
+          ) : techReport?.length ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="text-left text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                    <th className="py-2 pr-3 font-bold">Technician</th>
+                    <th className="py-2 px-3 font-bold text-right">Assigned</th>
+                    <th className="py-2 px-3 font-bold text-right">Completed</th>
+                    <th className="py-2 px-3 font-bold text-right">In Progress</th>
+                    <th className="py-2 px-3 font-bold text-right">Cancelled</th>
+                    <th className="py-2 pl-3 font-bold text-right">Completion</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {techReport.map((t) => (
+                    <tr key={t.id} className="border-b border-slate-50 last:border-0">
+                      <td className="py-2.5 pr-3">
+                        <p className="font-bold text-slate-800">{t.name}{!t.isActive && <span className="ml-1.5 text-[9px] font-bold uppercase text-slate-400">(inactive)</span>}</p>
+                        <p className="text-[10px] font-semibold text-slate-400">{t.specialization}</p>
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-bold text-slate-700">{t.assigned}</td>
+                      <td className="py-2.5 px-3 text-right font-bold text-emerald-600">{t.completed}</td>
+                      <td className="py-2.5 px-3 text-right font-bold text-cyan-600">{t.inProgress}</td>
+                      <td className="py-2.5 px-3 text-right font-bold text-rose-500">{t.cancelled}</td>
+                      <td className="py-2.5 pl-3 text-right font-bold text-slate-700">
+                        {t.assigned ? `${Math.round((t.completed / t.assigned) * 100)}%` : '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="h-[120px] flex items-center justify-center text-xs font-semibold text-slate-400 bg-slate-50/50 rounded-lg border border-dashed border-slate-200">No technicians found</div>
+          )}
         </div>
       )}
     </div>

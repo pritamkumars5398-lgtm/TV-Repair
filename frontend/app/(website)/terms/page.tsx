@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { Scale, FileSpreadsheet, ShieldAlert, Award, ChevronRight } from 'lucide-react';
+import { Scale, FileSpreadsheet, ShieldAlert, Award, ChevronRight, Mail, Phone, MapPin } from 'lucide-react';
 
 export const metadata = {
-  title: 'Terms of Service - Inchell Corparation',
-  description: 'Read the terms and conditions for TV repairs and electronics manufacturing services at Inchell Corparation.',
+  title: 'Terms of Service - RepairCart',
+  description: 'Read the terms and conditions for LED TV repairs, diagnostic visits, and warranty services at RepairCart.',
 };
 
 export default function TermsPage() {
@@ -18,15 +18,15 @@ export default function TermsPage() {
             <Scale className="w-8 h-8 text-blue-400" />
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
-            Terms of Service
+            Terms & Conditions
           </h1>
           <p className="text-slate-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-            Welcome to Inchell Corparation. Please read these terms and conditions carefully before booking any repair services or placing manufacturing orders.
+            Welcome to RepairCart. Please review these terms of service carefully before scheduling diagnostic visits or approving television repairs.
           </p>
           <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-500">
-            <span>Last Updated: July 4, 2026</span>
+            <span>Last Updated: October 2026</span>
             <span>•</span>
-            <span>Version 1.0</span>
+            <span>Version 2.0</span>
           </div>
         </div>
       </section>
@@ -43,10 +43,11 @@ export default function TermsPage() {
             {[
               { label: 'Agreement to Terms', href: '#agreement' },
               { label: 'Booking & Repair Services', href: '#repairs' },
-              { label: 'Pricing & Online Payment', href: '#payments' },
-              { label: 'Warranty Policy', href: '#warranty' },
+              { label: 'Diagnostic Fees & Payment', href: '#payments' },
+              { label: 'Service & Parts Warranty', href: '#warranty' },
               { label: 'Limitation of Liability', href: '#liability' },
               { label: 'Governing Law', href: '#law' },
+              { label: 'Contact Us', href: '#contact' },
             ].map((item, idx) => (
               <a
                 key={idx}
@@ -68,52 +69,52 @@ export default function TermsPage() {
                 <FileSpreadsheet className="w-5 h-5 text-blue-600" /> 1. Agreement to Terms
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                By accessing our website (<Link href="/" className="text-blue-600 font-semibold hover:underline">inchell.in</Link>), accessing the Customer Portal, or submitting a service booking, you agree to comply with and be bound by these Terms of Service. If you do not agree with any part of these terms, you should not access our services.
+                By accessing our website (<Link href="/" className="text-blue-600 font-semibold hover:underline">repaircart.co.in</Link>), using the customer portal, or booking an LED TV repair, you agree to be bound by these Terms and Conditions and our Privacy and Refund policies. If you do not agree, please do not use our services.
               </p>
             </div>
 
             {/* Section 2 */}
             <div id="repairs" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <Scale className="w-5 h-5 text-blue-600" /> 2. Booking & Repair Services
+                <Scale className="w-5 h-5 text-blue-600" /> 2. Booking & Doorstep Service
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                When booking a service, you must provide accurate, complete information regarding your contact details and the device details (brand, model, description of faults).
+                When scheduling a repair, you agree to provide complete and accurate details regarding your contact address, TV brand, screen size, and observable issues.
               </p>
               <ul className="list-disc pl-5 text-xs text-slate-600 space-y-2">
-                <li><strong>Home Visit Booking:</strong> A home visit inspection will be scheduled depending on availability. A technician will assess the TV or electronics device.</li>
-                <li><strong>Pickup & Drop Facility:</strong> If you select our pick & drop option, our team will pick up your TV, transport it to our Bangalore facility for diagnosis/repair, and return it. While we take maximum care during transport, we are not liable for pre-existing physical damage.</li>
-                <li><strong>Diagnosis & Repair Estimates:</strong> Once the device is inspected, we will generate a repair estimate. You can approve or reject the estimate from the Customer Portal. We will only proceed with the repair upon your approval.</li>
+                <li><strong>Doorstep Diagnosis:</strong> A certified technician will visit your location to inspect the television and perform on-site diagnosis.</li>
+                <li><strong>Lab Pickup & Safe Transport:</strong> If complex bonding or panel laser repair is required, the television is securely transported to our Noida facility. We perform a physical condition audit at the time of pickup using an OTP verification system.</li>
+                <li><strong>Transparent Estimates:</strong> We will provide a transparent estimate before replacing any components. Repairs are executed only after your explicit approval.</li>
               </ul>
             </div>
 
             {/* Section 3 */}
             <div id="payments" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <FileSpreadsheet className="w-5 h-5 text-blue-600" /> 3. Service Visit Fee & Payments
+                <FileSpreadsheet className="w-5 h-5 text-blue-600" /> 3. Inspection Fee & Payment Gateway
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                The booking request requires a non-refundable **₹250 service visit / diagnostic fee** which will be deducted from your final repair invoice.
+                A standard doorstep diagnostic fee of <strong>₹250</strong> applies. When you approve the repair, this ₹250 inspection fee is completely waived and deducted from your final repair invoice.
               </p>
               <p className="text-xs text-slate-600 leading-relaxed">
-                All payments must be made online via our payment page. We integrate with <strong>Razorpay</strong> to process payments securely using UPI, credit/debit cards, and Net Banking. Payment confirmation must be verified before our technicians deliver the repaired device.
+                <strong>Razorpay Online Processing:</strong> All online payments are handled securely through <strong>Razorpay</strong> via UPI, Credit/Debit Cards, Net Banking, and authorized digital wallets. Invoices are generated upon payment confirmation.
               </p>
             </div>
 
             {/* Section 4 */}
             <div id="warranty" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <Award className="w-5 h-5 text-blue-600" /> 4. Limited Warranty Policy
+                <Award className="w-5 h-5 text-blue-600" /> 4. Service & Parts Warranty Policy
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Inchell Corparation provides a warranty of **up to 90 days** on spare parts replaced during our repair service, unless specified otherwise in your invoice.
+                RepairCart provides a warranty of up to <strong>45 to 90 days</strong> on repaired hardware components and replaced genuine spare parts (such as LED backlights, motherboards, power boards, and COF bonding).
               </p>
               <p className="text-xs text-slate-600 leading-relaxed font-semibold text-slate-900">
-                What is NOT covered under warranty:
+                Warranty exclusions include:
               </p>
               <ul className="list-disc pl-5 text-xs text-slate-600 space-y-2">
-                <li>Physical damage, liquid logs (water damage), electrical surges, or tampering/repair by anyone outside of Inchell Corparation.</li>
-                <li>Issues unrelated to the specific spare parts replaced during the original repair.</li>
+                <li>Accidental physical drops, impact breaks, liquid ingress, or cracked screens occurring after delivery.</li>
+                <li>Severe electrical voltage surges or unauthorized third-party repairs after our service.</li>
               </ul>
             </div>
 
@@ -123,23 +124,42 @@ export default function TermsPage() {
                 <ShieldAlert className="w-5 h-5 text-blue-600" /> 5. Limitation of Liability
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                To the maximum extent permitted by law, Inchell Corparation and its directors, employees, or partners shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including data loss (e.g. settings or channel configurations), loss of use, or hardware damage arising out of the inspection, diagnostic, or repair process.
+                RepairCart is committed to highest technical care. However, to the maximum extent permitted by applicable Indian law, RepairCart shall not be held liable for indirect, incidental, or secondary damages, loss of stored media/smart settings, or pre-existing internal board corrosion.
               </p>
             </div>
 
             {/* Section 6 */}
             <div id="law" className="space-y-3 scroll-mt-24">
               <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <Scale className="w-5 h-5 text-blue-600" /> 6. Governing Law
+                <Scale className="w-5 h-5 text-blue-600" /> 6. Governing Law & Jurisdiction
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                These Terms of Service and any service contract entered into with Inchell Corparation are governed by and construed in accordance with the laws of India, and any disputes shall be subject to the exclusive jurisdiction of the courts in Bangalore, Karnataka.
+                These terms are governed by the laws of India. Any disputes or claims arising shall be subject to the exclusive jurisdiction of the competent courts in Noida / Gautam Buddha Nagar, Uttar Pradesh.
               </p>
             </div>
 
-            {/* Support section */}
-            <div className="border-t border-slate-100 pt-6 text-xs text-slate-500 space-y-2">
-              <p>For inquiries regarding our Terms of Service, please contact us at <a href="mailto:support@repaircart.co.in" className="text-blue-600 hover:underline">support@repaircart.co.in</a>.</p>
+            {/* Section 7 */}
+            <div id="contact" className="space-y-4 border-t border-slate-100 pt-6 scroll-mt-24">
+              <h2 className="text-xl font-bold text-slate-900">
+                7. Contact & Support Desk
+              </h2>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                For questions regarding these Terms or your service booking, please contact our support team:
+              </p>
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3 text-xs">
+                <div className="flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-blue-600 shrink-0" />
+                  <span><strong>Email:</strong> <a href="mailto:support@repaircart.co.in" className="text-blue-600 hover:underline">support@repaircart.co.in</a></span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-blue-600 shrink-0" />
+                  <span><strong>Phone:</strong> <a href="tel:8586887887" className="hover:underline">+91 8586-887-887</a> / <a href="tel:8586807887" className="hover:underline">+91 8586-807-887</a></span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                  <span><strong>Headquarters & Service Hub:</strong> C-295, Sector-10, Noida, Uttar Pradesh - 201301</span>
+                </div>
+              </div>
             </div>
 
           </div>

@@ -3,7 +3,13 @@ import Ticket from '../models/Ticket';
 import Payment from '../models/Payment';
 import crypto from 'crypto';
 import Razorpay from 'razorpay';
-import { sendBookingReceived, sendBookingPaymentConfirm, sendTicketStatusUpdate } from '../utils/sendSMS';
+import {
+  sendBookingReceived,
+  sendBookingPaymentConfirm,
+  sendTicketStatusUpdate,
+  sendEstimateApproved,
+  sendEstimateCancelled,
+} from '../utils/sendSMS';
 import Notification from '../models/Notification';
 
 // Helper to generate a unique ticket ID
@@ -242,19 +248,25 @@ export const respondToEstimate = async (req: Request, res: Response): Promise<vo
       return;
     }
 
+    // Only an estimate the admin has sent and the customer hasn't answered yet can be approved/rejected
+    if (ticket.estimateStatus !== 'sent_to_customer') {
+      res.status(409).json({
+        message:
+          ticket.estimateStatus === 'approved' || ticket.estimateStatus === 'rejected'
+            ? `Estimate has already been ${ticket.estimateStatus}`
+            : 'No estimate is awaiting your response for this ticket',
+      });
+      return;
+    }
+
     ticket.estimateStatus = status;
-    
-    let note = '';
-    let smsMessage = '';
-    
+
     if (status === 'approved') {
       ticket.status = 'work_started';
       ticket.statusHistory.push({ status: 'work_started', note: 'Customer approved estimate.' });
-      smsMessage = `Dear ${ticket.customerName}, thank you for approving the estimate for ticket ${ticket.ticketId}. Repair work has commenced. Your product will be ready and delivered within 2-3 business days. - RC RepairCart`;
     } else if (status === 'rejected') {
       ticket.status = 'cancelled';
       ticket.statusHistory.push({ status: 'cancelled', note: 'Customer rejected estimate.' });
-      smsMessage = `Dear ${ticket.customerName}, as per your request, repair for ticket ${ticket.ticketId} has been cancelled. Our team will coordinate the safe return of your product shortly. - RC RepairCart`;
     }
 
     await ticket.save();
@@ -268,14 +280,24 @@ export const respondToEstimate = async (req: Request, res: Response): Promise<vo
     });
 
     if (ticket.customerPhone) {
-      await sendTicketStatusUpdate(ticket.customerPhone, {
-        name: ticket.customerName,
-        ticket: ticket.ticketId,
-        status: status === 'approved' ? 'Work Started' : 'Cancelled',
-        note: status === 'approved' ? 'Estimate approved by customer.' : 'Estimate declined by customer.',
-      }).catch((err) => {
-        console.error(`Failed to send status update SMS to ${ticket.customerPhone}:`, err.message);
-      });
+      try {
+        const smsData = { name: ticket.customerName, ticket: ticket.ticketId };
+        const sent =
+          status === 'approved'
+            ? await sendEstimateApproved(ticket.customerPhone, smsData)
+            : await sendEstimateCancelled(ticket.customerPhone, smsData);
+
+        // Fall back to the generic status template if the dedicated flow isn't set up on MSG91
+        if (!sent) {
+          await sendTicketStatusUpdate(ticket.customerPhone, {
+            ...smsData,
+            status: status === 'approved' ? 'Work Started' : 'Cancelled',
+            note: status === 'approved' ? 'Estimate approved by customer.' : 'Estimate declined by customer.',
+          });
+        }
+      } catch (err: any) {
+        console.error(`Failed to send estimate response SMS to ${ticket.customerPhone}:`, err.message);
+      }
     }
 
     res.json({
