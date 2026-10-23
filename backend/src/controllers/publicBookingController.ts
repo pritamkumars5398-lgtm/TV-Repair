@@ -268,7 +268,7 @@ export const respondToEstimate = async (req: Request, res: Response): Promise<vo
     });
 
     if (ticket.customerPhone) {
-      sendTicketStatusUpdate(ticket.customerPhone, {
+      await sendTicketStatusUpdate(ticket.customerPhone, {
         name: ticket.customerName,
         ticket: ticket.ticketId,
         status: status === 'approved' ? 'Work Started' : 'Cancelled',

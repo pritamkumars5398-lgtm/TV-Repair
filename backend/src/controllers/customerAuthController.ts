@@ -75,12 +75,14 @@ export const sendAuthOTP = async (req: Request, res: Response): Promise<void> =>
     customer.authOTPExpires = expiry;
     await customer.save();
 
-    console.log(`[OTP DEBUG] OTP for customer ${phone} is: ${otp}`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[OTP DEBUG] OTP for customer ${phone} is: ${otp}`);
+    }
 
-    try {
-      await sendOTP(customer.phone, otp);
-    } catch (smsError: any) {
-      console.error('Failed to dispatch OTP via MSG91:', smsError?.message || smsError);
+    const sent = await sendOTP(customer.phone, otp);
+    if (!sent) {
+      res.status(502).json({ message: 'Could not send OTP right now. Please try again in a moment.' });
+      return;
     }
 
     res.json({ message: `OTP sent successfully.` });

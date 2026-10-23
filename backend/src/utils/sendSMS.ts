@@ -50,6 +50,9 @@ export const sendMSG91Flow = async (
   phone: string,
   variables: Record<string, string | number | undefined | null>
 ): Promise<{ success: boolean; data?: any; error?: string }> => {
+  if (!process.env.MSG91_AUTH_KEY) {
+    console.warn('[MSG91] MSG91_AUTH_KEY env is not set, using built-in fallback key. Set it in the server environment.');
+  }
   const authKey = process.env.MSG91_AUTH_KEY || MSG91_DEFAULT_AUTH_KEY;
   const normalizedRecipient = normalizePhone(phone);
 
@@ -91,9 +94,10 @@ export const sendMSG91Flow = async (
       body: JSON.stringify(payload),
     });
 
-    const data: any = await response.json();
+    const data: any = await response.json().catch(() => ({}));
 
-    if (data.status === 'success' || !data.hasError) {
+    // MSG91 only confirms the request was queued; treat anything other than an explicit success as a failure.
+    if (response.ok && data?.status === 'success' && !data?.hasError) {
       console.log(
         `[MSG91 Flow Sent] Flow: ${flowId} | To: ${normalizedRecipient} | ReqID: ${
           data?.data?.request_id || 'ok'
@@ -103,9 +107,10 @@ export const sendMSG91Flow = async (
     } else {
       console.error(
         `[MSG91 Flow Error] Flow: ${flowId} | To: ${normalizedRecipient} | Errors:`,
-        data.errors || data.message
+        `HTTP ${response.status}`,
+        data?.errors || data?.message
       );
-      return { success: false, error: JSON.stringify(data.errors || data.message) };
+      return { success: false, error: JSON.stringify(data?.errors || data?.message || `HTTP ${response.status}`) };
     }
   } catch (err: any) {
     console.error(`[MSG91 Network Error] Flow: ${flowId} | To: ${normalizedRecipient}:`, err.message);

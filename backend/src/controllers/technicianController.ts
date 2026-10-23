@@ -162,7 +162,7 @@ export const verifyPickupOtp = async (req: Request, res: Response): Promise<void
     });
 
     // 2. Send SMS to Admin (MSG91 Flow: repaircart-admin-pickup-alert)
-    const adminPhone = process.env.ADMIN_PHONE || '9999999999';
+    const adminPhone = process.env.ADMIN_PHONE || '918586887887';
     try {
       await sendAdminPickupAlert(adminPhone, {
         ticket: ticket.ticketId,
@@ -310,8 +310,8 @@ export const updateJobStatus = async (req: Request, res: Response): Promise<void
         link: '/admin/tickets',
       });
 
-      const adminPhone = process.env.ADMIN_PHONE || '9999999999';
-      sendAdminPickupAlert(adminPhone, {
+      const adminPhone = process.env.ADMIN_PHONE || '918586887887';
+      await sendAdminPickupAlert(adminPhone, {
         ticket: ticket.ticketId,
         tech_name: ticket.technicianName || 'Technician',
         customer_name: ticket.customerName,

@@ -129,10 +129,16 @@ export const sendOtp = async (req: Request, res: Response): Promise<void> => {
       await customer.save();
     }
 
-    console.log(`[OTP DEBUG] Dynamic OTP for ${cleanPhone} (${role || 'user'}) is: ${otp}`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[OTP DEBUG] Dynamic OTP for ${cleanPhone} (${role || 'user'}) is: ${otp}`);
+    }
 
     // Dispatch real OTP via MSG91 Flow: repaircart-otp
-    await sendOTP(cleanPhone, otp);
+    const sent = await sendOTP(cleanPhone, otp);
+    if (!sent) {
+      res.status(502).json({ success: false, message: 'Could not send OTP right now. Please try again in a moment.' });
+      return;
+    }
 
     res.json({ success: true, message: 'OTP sent successfully' });
   } catch (error: any) {
