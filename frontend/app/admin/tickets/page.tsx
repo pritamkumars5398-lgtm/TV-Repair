@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Search, Loader2, ChevronLeft, ChevronRight, ChevronDown, Ticket as TicketIcon, MessageSquare } from 'lucide-react';
+import { Search, Loader2, ChevronLeft, ChevronRight, ChevronDown, Ticket as TicketIcon, MessageSquare, FileText, Camera } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { adminApi } from '@/lib/api/admin';
@@ -50,6 +50,9 @@ export default function AdminTicketsPage() {
   const [selectedTicketForMessage, setSelectedTicketForMessage] = useState<Ticket | null>(null);
   const [customMessage, setCustomMessage] = useState('');
   const [expectedDate, setExpectedDate] = useState('');
+
+  // Details & Notes Modal State
+  const [selectedTicketForDetails, setSelectedTicketForDetails] = useState<Ticket | null>(null);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -284,6 +287,13 @@ export default function AdminTicketsPage() {
                       >
                         <MessageSquare className="h-3 w-3" /> Message
                       </button>
+                      <button
+                        onClick={() => setSelectedTicketForDetails(ticket)}
+                        className="flex items-center gap-1 text-[10px] font-bold bg-slate-100 text-slate-700 px-2 py-1 rounded hover:bg-slate-200 transition-colors mt-0.5"
+                        title="View Technician Notes & Photos"
+                      >
+                        <FileText className="h-3 w-3" /> Notes & Photos
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -375,6 +385,79 @@ export default function AdminTicketsPage() {
                 {sendMessageMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 Send Message
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Details / Notes & Photos Modal */}
+      {selectedTicketForDetails && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+              <div>
+                <h2 className="font-bold text-slate-800">Ticket: {selectedTicketForDetails.ticketId}</h2>
+                <p className="text-xs text-slate-400 font-medium">{selectedTicketForDetails.customerName} ({selectedTicketForDetails.customerPhone})</p>
+              </div>
+              <button onClick={() => setSelectedTicketForDetails(null)} className="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none">
+                &times;
+              </button>
+            </div>
+            
+            <div className="p-5 space-y-4">
+              {/* Technician & Status */}
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/60 flex justify-between items-center text-xs">
+                <div>
+                  <span className="text-slate-400 font-medium">Technician: </span>
+                  <span className="font-bold text-slate-700">{selectedTicketForDetails.technicianName || 'Not Assigned'}</span>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${STATUS_COLORS[selectedTicketForDetails.status]}`}>
+                  {STATUS_LABELS[selectedTicketForDetails.status] || selectedTicketForDetails.status}
+                </span>
+              </div>
+
+              {/* Technician Notes */}
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5 flex items-center gap-1.5">
+                  <FileText className="h-3.5 w-3.5 text-blue-600" /> Technician Notes
+                </h3>
+                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60 min-h-[60px] text-xs text-slate-700 whitespace-pre-wrap leading-relaxed">
+                  {(selectedTicketForDetails as any).notes ? (selectedTicketForDetails as any).notes : (
+                    <span className="text-slate-400 italic">No notes added yet.</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Assessment Breakdown */}
+              {((selectedTicketForDetails as any).techAssessmentBreakdown || (selectedTicketForDetails as any).adminEstimateBreakdown) && (
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+                    Repair Assessment / Breakdown
+                  </h3>
+                  <div className="bg-amber-50/70 p-3.5 rounded-xl border border-amber-200/60 text-xs text-amber-900 whitespace-pre-wrap leading-relaxed">
+                    {(selectedTicketForDetails as any).techAssessmentBreakdown || (selectedTicketForDetails as any).adminEstimateBreakdown}
+                  </div>
+                </div>
+              )}
+
+              {/* Uploaded Photos */}
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5 flex items-center gap-1.5">
+                  <Camera className="h-3.5 w-3.5 text-blue-600" /> Uploaded Photos
+                </h3>
+                {(selectedTicketForDetails as any).photos && (selectedTicketForDetails as any).photos.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {(selectedTicketForDetails as any).photos.map((url: string, i: number) => (
+                      <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="aspect-square rounded-lg overflow-hidden border border-slate-200 hover:opacity-90 transition-opacity block relative group">
+                        <img src={url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                        <span className="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded">View Full</span>
+                      </a>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-400 italic bg-slate-50 p-3 rounded-xl border border-slate-200/60">No photos uploaded yet.</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
