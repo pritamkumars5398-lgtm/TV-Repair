@@ -56,7 +56,7 @@ function getBotResponse(input: string): Message {
     return bot('We offer a 45-day same-fault warranty on all TV repairs and onsite warranty on new speakers.');
   }
   if (/address|location|where|kaha|noida|shop|office/.test(text)) {
-    return bot('Our address: C-295, Sector-10, Noida, UP-201301. We also provide doorstep service.', {
+    return bot('Our address: B-115, Sector-5, Noida, UP-201301. We also provide doorstep service.', {
       label: 'Contact Us →',
       href: '/contact',
     });

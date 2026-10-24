@@ -9,7 +9,7 @@ import { publicApi } from '@/lib/api/public';
 import { getWhatsAppUrl } from '@/lib/constants/whatsapp';
 import { contactSchema, type ContactInput } from '@/lib/validations/booking';
 
-const GOOGLE_MAPS_LOCATION_URL = "https://www.google.com/maps/place/28%C2%B035'26.0%22N+77%C2%B019'14.6%22E/@28.5905644,77.3181377,17z/data=!3m1!4b1!4m4!3m3!8m2!3d28.5905644!4d77.3207126";
+const GOOGLE_MAPS_LOCATION_URL = "https://www.google.com/maps/search/?api=1&query=B-115,+Sector-5,+Noida,+UP-201301";
 
 export default function ContactPage() {
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ContactInput>({
@@ -35,14 +35,9 @@ export default function ContactPage() {
     telephone: '+918586887887',
     email: 'support@repaircart.co.in',
     hasMap: GOOGLE_MAPS_LOCATION_URL,
-    geo: {
-      '@type': 'GeoCoordinates',
-      latitude: 28.5905644,
-      longitude: 77.3207126,
-    },
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'C-295 Sector 10',
+      streetAddress: 'B-115 Sector 5',
       addressLocality: 'Noida',
       addressRegion: 'Uttar Pradesh',
       postalCode: '201301',
@@ -81,8 +76,7 @@ export default function ContactPage() {
     href?: string;
     values?: Array<{ text: string; href: string }>;
   }> = [
-      { icon: MapPin, label: 'Head Office', value: 'C-295, Sector-10, Noida, UP-201301', href: GOOGLE_MAPS_LOCATION_URL },
-      { icon: MapPin, label: 'Branch Office', value: 'B-115, Sector-5, Noida, UP-201301' },
+      { icon: MapPin, label: 'Head Office', value: 'B-115, Sector-5, Noida, UP-201301', href: GOOGLE_MAPS_LOCATION_URL },
       {
         icon: Phone, label: 'Phone Support', values: [
           { text: '+91 8586887887', href: 'tel:8586887887' },
@@ -259,14 +253,14 @@ export default function ContactPage() {
               {/* Simple Clean Map Container */}
               <div className="overflow-hidden rounded-xl border border-slate-200/80 bg-white h-52 relative group shadow-sm">
                 <iframe
-                  src="https://maps.google.com/maps?q=28.5905644,77.3207126&hl=en&z=16&output=embed"
+                  src="https://maps.google.com/maps?q=B-115,+Sector+5,+Noida,+Uttar+Pradesh+201301&hl=en&z=16&output=embed"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="RC RepairCart Head Office Location - Sector 10 Noida"
+                  title="RC RepairCart Office Location - Sector 5 Noida"
                   className="w-full h-full"
                 />
                 <a

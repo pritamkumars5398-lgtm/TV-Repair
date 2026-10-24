@@ -165,7 +165,7 @@ export default function PrivacyPage() {
                 </div>
                 <div className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                  <span><strong>Registered Office:</strong> C-295, Sector-10, Noida, Uttar Pradesh - 201301</span>
+                  <span><strong>Registered Office:</strong> B-115, Sector-5, Noida, Uttar Pradesh - 201301</span>
                 </div>
               </div>
             </div>
