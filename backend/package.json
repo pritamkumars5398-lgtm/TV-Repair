@@ -22,6 +22,7 @@
     "mongoose": "^9.7.3",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.3",
+    "plivo": "^4.79.0",
     "razorpay": "^2.9.6",
     "tv-repair-root": "file:.."
   },

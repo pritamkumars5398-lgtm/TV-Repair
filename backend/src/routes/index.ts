@@ -12,6 +12,7 @@ import customerRoutes from './customerRoutes';
 import customerPortalRoutes from './customerPortalRoutes';
 import adminRoutes from './adminRoutes';
 import technicianRoutes from './technicianRoutes';
+import ivrRoutes from './ivrRoutes';
 import { protectAdmin } from '../middlewares/authMiddleware';
 
 const router = express.Router();
@@ -28,6 +29,7 @@ router.use('/payments', paymentRoutes);
 router.use('/blogs', blogRoutes);
 router.use('/feedbacks', feedbackRoutes);
 router.use('/technician', technicianRoutes);
+router.use('/ivr', ivrRoutes);
 router.use('/admin', protectAdmin, adminRoutes);
 
 export default router;
