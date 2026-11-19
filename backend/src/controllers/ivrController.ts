@@ -1,9 +1,54 @@
 import { Request, Response } from 'express';
 import { sendBookingReceived } from '../utils/sendSMS';
+import Lead from '../models/Lead';
 
 // Support escalation phone number for RepairCart (Imran Khan / Operations)
 const SUPPORT_FORWARD_NUMBER = process.env.SUPPORT_FORWARD_NUMBER || '+918586887887';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://repaircart.co.in';
+
+/**
+ * Helper to record or update an inbound caller as a Lead in MongoDB
+ * Non-blocking async execution to ensure <150ms IVR response time
+ */
+const recordInboundCallLead = async (rawPhone: string, note: string) => {
+  try {
+    if (!rawPhone) return;
+    const cleanPhone = rawPhone.replace(/\D/g, '').slice(-10);
+    if (!cleanPhone || cleanPhone.length < 10) return;
+
+    // Check if a Lead exists from today to avoid duplicate spam
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const existingLead = await Lead.findOne({
+      phone: cleanPhone,
+      createdAt: { $gte: startOfDay },
+    }).sort({ createdAt: -1 });
+
+    const timestamp = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    if (existingLead) {
+      existingLead.message = `${note} (Last update: ${timestamp})`;
+      if (existingLead.source !== 'PHONE_CALL') {
+        existingLead.source = 'PHONE_CALL';
+      }
+      await existingLead.save();
+      console.log(`[IVR] Updated existing Lead for phone caller: ${cleanPhone}`);
+    } else {
+      await Lead.create({
+        name: `Caller ${cleanPhone}`,
+        phone: cleanPhone,
+        source: 'PHONE_CALL',
+        serviceType: 'TV_REPAIR',
+        status: 'NEW',
+        message: `${note} (${timestamp})`,
+      });
+      console.log(`[IVR] Created new Lead for phone caller: ${cleanPhone}`);
+    }
+  } catch (err: any) {
+    console.error('[IVR] Failed to record inbound caller Lead:', err.message);
+  }
+};
 
 /**
  * Handle incoming call from Plivo
@@ -13,6 +58,11 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const callerNumber = req.body?.From || req.query?.From || 'Customer';
   const callUUID = req.body?.CallUUID || req.query?.CallUUID;
   console.log(`[IVR] Inbound call received from: ${callerNumber} (CallUUID: ${callUUID})`);
+
+  // Record caller as a Lead in the CRM non-blockingly
+  recordInboundCallLead(callerNumber, 'Inbound call received on helpline (+91 80 3177 5263)').catch((e) =>
+    console.error('[IVR] Lead recording error:', e)
+  );
 
   // Build the action callback URL dynamically or fallback to relative/absolute
   const host = req.get('host') || 'tv-repair-lac.vercel.app';
@@ -51,11 +101,13 @@ export const handleMenuSelection = async (req: Request, res: Response) => {
   console.log(`[IVR] Menu Selection: Digit '${digits}' pressed by caller ${callerNumber}`);
 
   let responseXml = '';
+  let actionNote = `IVR Menu: Digit '${digits}' selected`;
 
   switch (digits) {
     case '1': {
       // Option 1: Book Doorstep TV Repair
       // Send direct booking link SMS via MSG91
+      actionNote = 'Helpline caller selected 1 (Sent SMS Booking Link)';
       try {
         if (callerNumber) {
           const cleanPhone = callerNumber.replace(/\D/g, '');
@@ -85,6 +137,7 @@ export const handleMenuSelection = async (req: Request, res: Response) => {
 
     case '2': {
       // Option 2: Live Call Forwarding to Real Person (Service Manager)
+      actionNote = `Helpline caller selected 2 (Connected to Service Manager: ${SUPPORT_FORWARD_NUMBER})`;
       responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Speak voice="Polly.Aditi" language="en-IN">
@@ -99,6 +152,7 @@ export const handleMenuSelection = async (req: Request, res: Response) => {
 
     case '3': {
       // Option 3: Track Repair Status
+      actionNote = 'Helpline caller selected 3 (Tracking Status)';
       const trackUrl = `${FRONTEND_URL}/track`;
       responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
@@ -112,6 +166,7 @@ export const handleMenuSelection = async (req: Request, res: Response) => {
 
     default: {
       // Invalid input or timeout fallback -> offer transfer to manager
+      actionNote = `Helpline caller forwarded to Service Manager (${SUPPORT_FORWARD_NUMBER}) on timeout/fallback`;
       responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Speak voice="Polly.Aditi" language="en-IN">
@@ -125,6 +180,9 @@ export const handleMenuSelection = async (req: Request, res: Response) => {
     }
   }
 
+  // Update lead with user menu choice
+  recordInboundCallLead(callerNumber, actionNote).catch((e) => console.error('[IVR] Lead update error:', e));
+
   res.set('Content-Type', 'application/xml');
   return res.status(200).send(responseXml);
 };
@@ -135,5 +193,10 @@ export const handleMenuSelection = async (req: Request, res: Response) => {
 export const handleCallStatus = (req: Request, res: Response) => {
   const { CallUUID, From, To, CallStatus, Duration, BillRate } = req.body;
   console.log(`[IVR CDR] Call ${CallUUID}: ${From} -> ${To} | Status: ${CallStatus} | Duration: ${Duration}s | Bill: ${BillRate}`);
+  if (From && Duration) {
+    recordInboundCallLead(From, `Call completed (${Duration}s, status: ${CallStatus})`).catch((e) =>
+      console.error('[IVR] Lead status update error:', e)
+    );
+  }
   return res.status(200).json({ status: 'ok', logged: true });
 };
