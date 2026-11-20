@@ -76,16 +76,12 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" language="en-IN">
-    <Speak voice="Polly.Kajal-Neural" language="en-IN">
-      Namaste, and welcome to RepairCart! I am Priya, your doorstep TV repair assistant. How can I help you with your television today?
-    </Speak>
+    <Speak voice="Polly.Aditi" language="en-IN">Namaste, and welcome to RepairCart! I am Priya, your doorstep TV repair assistant. How can I help you with your television today?</Speak>
   </GetInput>
-  <Speak voice="Polly.Kajal-Neural" language="en-IN">
-    I didn't hear your response. You can visit repaircart.co.in anytime for instant doorstep TV booking. Thank you for calling RepairCart!
-  </Speak>
+  <Speak voice="Polly.Aditi" language="en-IN">I didn't hear your response. You can visit repaircart.co.in anytime for instant doorstep TV booking. Thank you for calling RepairCart!</Speak>
 </Response>`;
 
-  res.set('Content-Type', 'application/xml');
+  res.set('Content-Type', 'text/xml');
   return res.status(200).send(responseXml);
 };
 
@@ -111,14 +107,12 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
     recordInboundCallLead(callerNumber, `Caller pressed 2 (Forwarded to Manager: ${SUPPORT_FORWARD_NUMBER})`).catch(console.error);
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Kajal-Neural" language="en-IN">
-    Please hold while I connect your call directly to our senior service manager.
-  </Speak>
+  <Speak voice="Polly.Aditi" language="en-IN">Please hold while I connect your call directly to our senior service manager.</Speak>
   <Dial callerId="${toPlivoNumber}">
     <Number>${SUPPORT_FORWARD_NUMBER}</Number>
   </Dial>
 </Response>`;
-    res.set('Content-Type', 'application/xml');
+    res.set('Content-Type', 'text/xml');
     return res.status(200).send(responseXml);
   }
 
@@ -127,15 +121,11 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" language="en-IN">
-    <Speak voice="Polly.Kajal-Neural" language="en-IN">
-      I'm still here. Please tell me your TV brand and the issue you're facing, or ask for pricing.
-    </Speak>
+    <Speak voice="Polly.Aditi" language="en-IN">I'm still here. Please tell me your TV brand and the issue you're facing, or ask for pricing.</Speak>
   </GetInput>
-  <Speak voice="Polly.Kajal-Neural" language="en-IN">
-    Thank you for calling RepairCart. Visit repaircart.co.in for doorstep service. Goodbye!
-  </Speak>
+  <Speak voice="Polly.Aditi" language="en-IN">Thank you for calling RepairCart. Visit repaircart.co.in for doorstep service. Goodbye!</Speak>
 </Response>`;
-    res.set('Content-Type', 'application/xml');
+    res.set('Content-Type', 'text/xml');
     return res.status(200).send(responseXml);
   }
 
@@ -154,14 +144,12 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   if (geminiResult.action === 'TRANSFER_MANAGER') {
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Kajal-Neural" language="en-IN">
-    ${replyText}
-  </Speak>
+  <Speak voice="Polly.Aditi" language="en-IN">${replyText}</Speak>
   <Dial callerId="${toPlivoNumber}">
     <Number>${SUPPORT_FORWARD_NUMBER}</Number>
   </Dial>
 </Response>`;
-    res.set('Content-Type', 'application/xml');
+    res.set('Content-Type', 'text/xml');
     return res.status(200).send(responseXml);
   }
 
@@ -181,12 +169,10 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   if (geminiResult.action === 'END_CALL') {
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Kajal-Neural" language="en-IN">
-    ${replyText}
-  </Speak>
+  <Speak voice="Polly.Aditi" language="en-IN">${replyText}</Speak>
   <Hangup/>
 </Response>`;
-    res.set('Content-Type', 'application/xml');
+    res.set('Content-Type', 'text/xml');
     return res.status(200).send(responseXml);
   }
 
@@ -194,16 +180,12 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" language="en-IN">
-    <Speak voice="Polly.Kajal-Neural" language="en-IN">
-      ${replyText}
-    </Speak>
+    <Speak voice="Polly.Aditi" language="en-IN">${replyText}</Speak>
   </GetInput>
-  <Speak voice="Polly.Kajal-Neural" language="en-IN">
-    If you need any further help, visit repaircart.co.in or call us back anytime. Thank you for choosing RepairCart!
-  </Speak>
+  <Speak voice="Polly.Aditi" language="en-IN">If you need any further help, visit repaircart.co.in or call us back anytime. Thank you for choosing RepairCart!</Speak>
 </Response>`;
 
-  res.set('Content-Type', 'application/xml');
+  res.set('Content-Type', 'text/xml');
   return res.status(200).send(responseXml);
 };
 
