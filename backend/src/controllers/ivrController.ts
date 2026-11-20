@@ -75,7 +75,7 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   // Plivo XML Response using GetInput with Speech & DTMF support
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech,dtmf" executionTimeout="7" speechEndTimeout="1.5" language="en-IN">
+  <GetInput action="${actionUrl}" method="POST" inputType="speech,dtmf" executionTimeout="15" speechEndTimeout="2" speechModel="phone_call" hints="Sony,Samsung,LG,Mi,OnePlus,TCL,display,panel,screen,sound,repair,technician,booking,price,cost" language="en-IN">
     <Speak voice="Polly.Kajal-Neural" language="en-IN">
       Namaste, and welcome to RepairCart! I am Priya, your doorstep TV repair assistant. How can I help you with your television today?
     </Speak>
@@ -126,7 +126,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   if (!speech && !digits) {
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech,dtmf" executionTimeout="7" speechEndTimeout="1.5" language="en-IN">
+  <GetInput action="${actionUrl}" method="POST" inputType="speech,dtmf" executionTimeout="15" speechEndTimeout="2" speechModel="phone_call" hints="Sony,Samsung,LG,Mi,OnePlus,TCL,display,panel,screen,sound,repair,technician,booking,price,cost" language="en-IN">
     <Speak voice="Polly.Kajal-Neural" language="en-IN">
       I'm still here. Please tell me your TV brand and the issue you're facing, or ask for pricing.
     </Speak>
@@ -193,7 +193,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   // Default: Speak reply and continue conversational listening loop
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech,dtmf" executionTimeout="7" speechEndTimeout="1.5" language="en-IN">
+  <GetInput action="${actionUrl}" method="POST" inputType="speech,dtmf" executionTimeout="15" speechEndTimeout="2" speechModel="phone_call" hints="Sony,Samsung,LG,Mi,OnePlus,TCL,display,panel,screen,sound,repair,technician,booking,price,cost" language="en-IN">
     <Speak voice="Polly.Kajal-Neural" language="en-IN">
       ${replyText}
     </Speak>
