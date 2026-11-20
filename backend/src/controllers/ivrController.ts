@@ -1,10 +1,14 @@
 import { Request, Response } from 'express';
 import { sendBookingReceived } from '../utils/sendSMS';
 import Lead from '../models/Lead';
+import { converseWithGemini, endCallSession } from '../utils/geminiVoiceAgent';
 
 // Support escalation phone number for RepairCart (Imran Khan / Operations)
 const SUPPORT_FORWARD_NUMBER = process.env.SUPPORT_FORWARD_NUMBER || '+918586887887';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://repaircart.co.in';
+const PLIVO_AUTH_ID = process.env.PLIVO_AUTH_ID || 'MAZDI5ZMM4YTYTMJG4NY';
+const PLIVO_AUTH_TOKEN = process.env.PLIVO_AUTH_TOKEN || 'YjljYWY2NjctNWQwZC00MDJlLTc5MWMtMzA5MTMy';
+const PLIVO_FROM_NUMBER = process.env.PLIVO_FROM_NUMBER || '+918031775263';
 
 /**
  * Helper to record or update an inbound caller as a Lead in MongoDB
@@ -51,38 +55,33 @@ const recordInboundCallLead = async (rawPhone: string, note: string) => {
 };
 
 /**
- * Handle incoming call from Plivo
- * Returns Plivo XML (IVR Welcome Menu)
+ * Handle incoming or answered call from Plivo
+ * Starts the Gemini Real-Time Voice Assistant session
  */
 export const handleIncomingCall = (req: Request, res: Response) => {
   const callerNumber = req.body?.From || req.query?.From || 'Customer';
-  const callUUID = req.body?.CallUUID || req.query?.CallUUID;
-  console.log(`[IVR] Inbound call received from: ${callerNumber} (CallUUID: ${callUUID})`);
+  const callUUID = req.body?.CallUUID || req.query?.CallUUID || 'unknown_call';
+  console.log(`[IVR Voice AI] Call started from: ${callerNumber} (CallUUID: ${callUUID})`);
 
   // Record caller as a Lead in the CRM non-blockingly
-  recordInboundCallLead(callerNumber, 'Inbound call received on helpline (+91 80 3177 5263)').catch((e) =>
+  recordInboundCallLead(callerNumber, 'AI Voice Call connected with Priya (Gemini Assistant)').catch((e) =>
     console.error('[IVR] Lead recording error:', e)
   );
 
-  // Build the action callback URL dynamically or fallback to relative/absolute
   const host = req.get('host') || 'tv-repair-lac.vercel.app';
   const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
-  const actionUrl = `${protocol}://${host}/api/v1/ivr/menu`;
+  const actionUrl = `${protocol}://${host}/api/v1/ivr/gemini-converse`;
 
-  // Plivo XML Response
+  // Plivo XML Response using GetInput with Speech & DTMF support
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetDigits action="${actionUrl}" method="POST" numDigits="1" timeout="7" retries="1">
-    <Speak voice="Polly.Aditi" language="en-IN">
-      Welcome to RepairCart, your trusted doorstep Smart, LED, and LCD TV repair specialists. 
-      We provide genuine spare parts, transparent pricing, and doorstep warranty.
-      Press 1 to receive a direct booking link on your mobile for doorstep inspection.
-      Press 2 to speak directly with our service manager.
-      Press 3 to track your existing repair ticket status.
+  <GetInput action="${actionUrl}" method="POST" inputType="speech,dtmf" executionTimeout="7" speechEndTimeout="1.5" language="en-IN">
+    <Speak voice="Polly.Kajal-Neural" language="en-IN">
+      Namaste, and welcome to RepairCart! I am Priya, your doorstep TV repair assistant. How can I help you with your television today?
     </Speak>
-  </GetDigits>
-  <Speak voice="Polly.Aditi" language="en-IN">
-    We did not receive any input. For online bookings, visit repaircart.co.in. Thank you for calling RepairCart. Goodbye!
+  </GetInput>
+  <Speak voice="Polly.Kajal-Neural" language="en-IN">
+    I didn't hear your response. You can visit repaircart.co.in anytime for instant doorstep TV booking. Thank you for calling RepairCart!
   </Speak>
 </Response>`;
 
@@ -91,97 +90,118 @@ export const handleIncomingCall = (req: Request, res: Response) => {
 };
 
 /**
- * Handle user's keypad (DTMF) selection from the IVR menu
+ * Handle Gemini Conversational Turn
+ * Receives caller's speech from Plivo, queries Gemini, and replies with neural voice
  */
-export const handleMenuSelection = async (req: Request, res: Response) => {
+export const handleGeminiConverse = async (req: Request, res: Response) => {
+  const speech = (req.body?.Speech || req.query?.Speech || '').toString().trim();
   const digits = (req.body?.Digits || req.query?.Digits || '').toString().trim();
   const callerNumber = (req.body?.From || req.query?.From || '').toString().trim();
-  const toPlivoNumber = req.body?.To || req.query?.To || '';
+  const callUUID = req.body?.CallUUID || req.query?.CallUUID || 'unknown_call';
+  const toPlivoNumber = req.body?.To || req.query?.To || PLIVO_FROM_NUMBER;
 
-  console.log(`[IVR] Menu Selection: Digit '${digits}' pressed by caller ${callerNumber}`);
+  const host = req.get('host') || 'tv-repair-lac.vercel.app';
+  const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
+  const actionUrl = `${protocol}://${host}/api/v1/ivr/gemini-converse`;
 
-  let responseXml = '';
-  let actionNote = `IVR Menu: Digit '${digits}' selected`;
+  console.log(`[IVR Voice AI] Turn for ${callUUID} | Speech: "${speech}" | Digits: "${digits}"`);
 
-  switch (digits) {
-    case '1': {
-      // Option 1: Book Doorstep TV Repair
-      // Send direct booking link SMS via MSG91
-      actionNote = 'Helpline caller selected 1 (Sent SMS Booking Link)';
-      try {
-        if (callerNumber) {
-          const cleanPhone = callerNumber.replace(/\D/g, '');
-          const bookingUrl = `${FRONTEND_URL}/book`;
-          console.log(`[IVR] Sending booking link SMS to: ${cleanPhone}`);
-          await sendBookingReceived(cleanPhone, {
-            name: 'Valued Customer',
-            ticket: 'RC-NEW',
-            item: 'TV Repair Inspection',
-            url: bookingUrl,
-          });
-        }
-      } catch (smsErr: any) {
-        console.error('[IVR] Failed to send booking SMS:', smsErr.message);
-      }
-
-      responseXml = `<?xml version="1.0" encoding="UTF-8"?>
+  // Fallback if caller pressed keypad digit 2 -> connect to human manager
+  if (digits === '2') {
+    recordInboundCallLead(callerNumber, `Caller pressed 2 (Forwarded to Manager: ${SUPPORT_FORWARD_NUMBER})`).catch(console.error);
+    const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi" language="en-IN">
-    Thank you! We have sent a direct booking link to your mobile number via SMS. 
-    Please tap the link to confirm your TV brand and doorstep address. 
-    Our certified technician will contact you shortly. Goodbye!
-  </Speak>
-</Response>`;
-      break;
-    }
-
-    case '2': {
-      // Option 2: Live Call Forwarding to Real Person (Service Manager)
-      actionNote = `Helpline caller selected 2 (Connected to Service Manager: ${SUPPORT_FORWARD_NUMBER})`;
-      responseXml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Speak voice="Polly.Aditi" language="en-IN">
-    Please hold while we connect your call to our service manager.
+  <Speak voice="Polly.Kajal-Neural" language="en-IN">
+    Please hold while I connect your call directly to our senior service manager.
   </Speak>
   <Dial callerId="${toPlivoNumber}">
     <Number>${SUPPORT_FORWARD_NUMBER}</Number>
   </Dial>
 </Response>`;
-      break;
-    }
+    res.set('Content-Type', 'application/xml');
+    return res.status(200).send(responseXml);
+  }
 
-    case '3': {
-      // Option 3: Track Repair Status
-      actionNote = 'Helpline caller selected 3 (Tracking Status)';
-      const trackUrl = `${FRONTEND_URL}/track`;
-      responseXml = `<?xml version="1.0" encoding="UTF-8"?>
+  // If no speech captured (silence/background noise)
+  if (!speech && !digits) {
+    const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi" language="en-IN">
-    You can track your real-time TV repair status and estimate online anytime at repaircart.co.in slash track. 
-    A link has also been sent to your phone. Thank you for calling RepairCart!
+  <GetInput action="${actionUrl}" method="POST" inputType="speech,dtmf" executionTimeout="7" speechEndTimeout="1.5" language="en-IN">
+    <Speak voice="Polly.Kajal-Neural" language="en-IN">
+      I'm still here. Please tell me your TV brand and the issue you're facing, or ask for pricing.
+    </Speak>
+  </GetInput>
+  <Speak voice="Polly.Kajal-Neural" language="en-IN">
+    Thank you for calling RepairCart. Visit repaircart.co.in for doorstep service. Goodbye!
   </Speak>
 </Response>`;
-      break;
-    }
+    res.set('Content-Type', 'application/xml');
+    return res.status(200).send(responseXml);
+  }
 
-    default: {
-      // Invalid input or timeout fallback -> offer transfer to manager
-      actionNote = `Helpline caller forwarded to Service Manager (${SUPPORT_FORWARD_NUMBER}) on timeout/fallback`;
-      responseXml = `<?xml version="1.0" encoding="UTF-8"?>
+  // Query Gemini Conversational Voice AI
+  const userText = speech || `Keypad pressed: ${digits}`;
+  const geminiResult = await converseWithGemini(callUUID, userText, callerNumber);
+  const replyText = geminiResult.replyText;
+
+  // Log conversation in CRM Lead non-blockingly
+  recordInboundCallLead(
+    callerNumber,
+    `AI Voice: Customer said "${userText}" -> Priya replied "${replyText}"`
+  ).catch(console.error);
+
+  // Check actions from Gemini response
+  if (geminiResult.action === 'TRANSFER_MANAGER') {
+    const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi" language="en-IN">
-    Invalid option selected. Let us connect you directly with our service manager.
+  <Speak voice="Polly.Kajal-Neural" language="en-IN">
+    ${replyText}
   </Speak>
   <Dial callerId="${toPlivoNumber}">
     <Number>${SUPPORT_FORWARD_NUMBER}</Number>
   </Dial>
 </Response>`;
-      break;
+    res.set('Content-Type', 'application/xml');
+    return res.status(200).send(responseXml);
+  }
+
+  if (geminiResult.action === 'SEND_BOOKING_SMS') {
+    // Send SMS with booking link via MSG91
+    if (callerNumber) {
+      const cleanPhone = callerNumber.replace(/\D/g, '');
+      sendBookingReceived(cleanPhone, {
+        name: 'Valued Customer',
+        ticket: 'RC-AI-BOOK',
+        item: 'Doorstep TV Inspection',
+        url: `${FRONTEND_URL}/book`,
+      }).catch((e) => console.error('[IVR SMS error]:', e));
     }
   }
 
-  // Update lead with user menu choice
-  recordInboundCallLead(callerNumber, actionNote).catch((e) => console.error('[IVR] Lead update error:', e));
+  if (geminiResult.action === 'END_CALL') {
+    const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Speak voice="Polly.Kajal-Neural" language="en-IN">
+    ${replyText}
+  </Speak>
+  <Hangup/>
+</Response>`;
+    res.set('Content-Type', 'application/xml');
+    return res.status(200).send(responseXml);
+  }
+
+  // Default: Speak reply and continue conversational listening loop
+  const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <GetInput action="${actionUrl}" method="POST" inputType="speech,dtmf" executionTimeout="7" speechEndTimeout="1.5" language="en-IN">
+    <Speak voice="Polly.Kajal-Neural" language="en-IN">
+      ${replyText}
+    </Speak>
+  </GetInput>
+  <Speak voice="Polly.Kajal-Neural" language="en-IN">
+    If you need any further help, visit repaircart.co.in or call us back anytime. Thank you for choosing RepairCart!
+  </Speak>
+</Response>`;
 
   res.set('Content-Type', 'application/xml');
   return res.status(200).send(responseXml);
@@ -193,10 +213,73 @@ export const handleMenuSelection = async (req: Request, res: Response) => {
 export const handleCallStatus = (req: Request, res: Response) => {
   const { CallUUID, From, To, CallStatus, Duration, BillRate } = req.body;
   console.log(`[IVR CDR] Call ${CallUUID}: ${From} -> ${To} | Status: ${CallStatus} | Duration: ${Duration}s | Bill: ${BillRate}`);
+  if (CallUUID) {
+    endCallSession(CallUUID);
+  }
   if (From && Duration) {
     recordInboundCallLead(From, `Call completed (${Duration}s, status: ${CallStatus})`).catch((e) =>
       console.error('[IVR] Lead status update error:', e)
     );
   }
   return res.status(200).json({ status: 'ok', logged: true });
+};
+
+/**
+ * Trigger an outbound test call to a customer's phone
+ * Dialed from Plivo Virtual Number (+91 80 3177 5263)
+ */
+export const triggerOutboundCall = async (req: Request, res: Response) => {
+  const rawTo = req.body?.to || req.query?.to;
+  if (!rawTo) {
+    return res.status(400).json({ error: 'Missing destination phone number in request body: { to: "+91XXXXXXXXXX" }' });
+  }
+
+  let cleanTo = String(rawTo).replace(/[\s()-]/g, '');
+  if (/^[6-9]\d{9}$/.test(cleanTo)) {
+    cleanTo = `+91${cleanTo}`;
+  } else if (!cleanTo.startsWith('+')) {
+    cleanTo = `+${cleanTo}`;
+  }
+
+  const host = req.get('host') || 'tv-repair-lac.vercel.app';
+  const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
+  const answerUrl = `${protocol}://${host}/api/v1/ivr/incoming`;
+
+  try {
+    const plivoUrl = `https://api.plivo.com/v1/Account/${PLIVO_AUTH_ID}/Call/`;
+    const authHeader = 'Basic ' + Buffer.from(`${PLIVO_AUTH_ID}:${PLIVO_AUTH_TOKEN}`).toString('base64');
+
+    const plivoPayload = {
+      from: PLIVO_FROM_NUMBER,
+      to: cleanTo,
+      answer_url: answerUrl,
+      answer_method: 'POST',
+    };
+
+    const plivoRes = await fetch(plivoUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(plivoPayload),
+    });
+
+    const data: any = await plivoRes.json();
+    if (plivoRes.status === 201) {
+      console.log(`[IVR Outbound] Call queued for ${cleanTo}:`, data);
+      return res.status(200).json({
+        success: true,
+        message: `Outbound AI Voice Call initiated to ${cleanTo}`,
+        callUUID: data.request_uuid || data.api_id,
+        from: PLIVO_FROM_NUMBER,
+      });
+    } else {
+      console.error(`[IVR Outbound Error]:`, data);
+      return res.status(plivoRes.status).json({ success: false, error: data });
+    }
+  } catch (err: any) {
+    console.error(`[IVR Outbound Exception]:`, err.message);
+    return res.status(500).json({ success: false, error: err.message });
+  }
 };
