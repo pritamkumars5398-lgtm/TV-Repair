@@ -72,12 +72,11 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
   const actionUrl = `${protocol}://${host}/api/v1/ivr/gemini-converse`;
 
-  // Plivo XML Response using GetInput with Speech & DTMF support
+  // Plivo XML Response: Speak greeting completely first, then collect input (prevents barge-in cut-off)
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" language="en-IN">
-    <Speak voice="Polly.Aditi" language="en-IN">Namaste, and welcome to RepairCart! I am Priya, your doorstep TV repair assistant. How can I help you with your television today?</Speak>
-  </GetInput>
+  <Speak voice="Polly.Aditi" language="en-IN">Namaste, and welcome to RepairCart! I am Priya, your doorstep TV repair assistant. How can I help you with your television today?</Speak>
+  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" executionTimeout="15" speechEndTimeout="2" language="en-IN"/>
   <Speak voice="Polly.Aditi" language="en-IN">I didn't hear your response. You can visit repaircart.co.in anytime for instant doorstep TV booking. Thank you for calling RepairCart!</Speak>
 </Response>`;
 
@@ -120,9 +119,8 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   if (!speech && !digits) {
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" language="en-IN">
-    <Speak voice="Polly.Aditi" language="en-IN">I'm still here. Please tell me your TV brand and the issue you're facing, or ask for pricing.</Speak>
-  </GetInput>
+  <Speak voice="Polly.Aditi" language="en-IN">I'm still here. Please tell me your TV brand and the issue you're facing, or ask for pricing.</Speak>
+  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" executionTimeout="15" speechEndTimeout="2" language="en-IN"/>
   <Speak voice="Polly.Aditi" language="en-IN">Thank you for calling RepairCart. Visit repaircart.co.in for doorstep service. Goodbye!</Speak>
 </Response>`;
     res.set('Content-Type', 'text/xml');
@@ -179,9 +177,8 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   // Default: Speak reply and continue conversational listening loop
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" language="en-IN">
-    <Speak voice="Polly.Aditi" language="en-IN">${replyText}</Speak>
-  </GetInput>
+  <Speak voice="Polly.Aditi" language="en-IN">${replyText}</Speak>
+  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" executionTimeout="15" speechEndTimeout="2" language="en-IN"/>
   <Speak voice="Polly.Aditi" language="en-IN">If you need any further help, visit repaircart.co.in or call us back anytime. Thank you for choosing RepairCart!</Speak>
 </Response>`;
 
