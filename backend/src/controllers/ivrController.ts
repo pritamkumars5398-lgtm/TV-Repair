@@ -104,10 +104,10 @@ export const handleIncomingCall = (req: Request, res: Response) => {
 
   // Start in Hindi with Gemini Native Voice TTS.
   // Note: Plivo ASR requires language="en-IN" (India model which natively understands Hindi & Hinglish).
-  // Optimized for telephony phone audio with speechModel="phone_call", 30s timeout, and TV domain hints.
+  // timeout="15" gives caller 15 seconds AFTER the prompt finishes playing to speak.
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" executionTimeout="30" speechEndTimeout="2" language="en-IN" speechModel="phone_call" hints="${COMMON_SPEECH_HINTS}">
+  <GetInput action="${actionUrl}" method="POST" inputType="speech" timeout="15" speechEndTimeout="2" language="en-IN">
     <Play>${audioUrl}</Play>
   </GetInput>
   <Speak voice="Polly.Aditi" language="hi-IN">माफ़ कीजिए सर, आपकी आवाज़ सुनाई नहीं दी। आप कभी भी repaircart.co.in पर जाकर टीवी रिपेयर बुक कर सकते हैं। धन्यवाद।</Speak>
@@ -155,7 +155,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
 
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" executionTimeout="25" speechEndTimeout="2" language="en-IN" speechModel="phone_call" hints="${COMMON_SPEECH_HINTS}">
+  <GetInput action="${actionUrl}" method="POST" inputType="speech" timeout="15" speechEndTimeout="2" language="en-IN">
     <Play>${silenceUrl}</Play>
   </GetInput>
   <Speak voice="Polly.Aditi" language="hi-IN">धन्यवाद सर, आप कभी भी repaircart.co.in पर टीवी रिपेयर बुक कर सकते हैं।</Speak>
@@ -244,7 +244,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   // Default: Play realistic voice and continue conversational listening loop with language="en-IN"
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" executionTimeout="30" speechEndTimeout="2" language="en-IN" speechModel="phone_call" hints="${COMMON_SPEECH_HINTS}">
+  <GetInput action="${actionUrl}" method="POST" inputType="speech" timeout="15" speechEndTimeout="2" language="en-IN">
     ${promptSnippet}
   </GetInput>
   <Speak voice="Polly.Aditi" language="hi-IN">धन्यवाद सर, आप repaircart.co.in पर कभी भी विजिट कर सकते हैं। आपका दिन शुभ हो।</Speak>
