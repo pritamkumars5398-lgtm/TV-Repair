@@ -20,6 +20,19 @@ const PLIVO_AUTH_TOKEN = process.env.PLIVO_AUTH_TOKEN || 'YjljYWY2NjctNWQwZC00MD
 const PLIVO_FROM_NUMBER = process.env.PLIVO_FROM_NUMBER || '+918031775263';
 
 /**
+ * Utility to safely escape XML special characters to prevent Plivo 8011 parse errors
+ */
+function escapeXml(unsafe: string): string {
+  if (!unsafe) return '';
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+/**
  * Helper to record or update an inbound caller as a Lead in MongoDB
  * Non-blocking async execution to ensure <150ms IVR response time
  */
@@ -86,16 +99,14 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const timeoutUrl = `${protocol}://${host}/api/v1/ivr/audio/timeout_goodbye.wav`;
 
   // Start in Hindi with Gemini Native Voice TTS.
-  // Use language="hi-IN" for accurate Hindi/Hinglish speech recognition.
-  // Two-tier listening: If prompt 1 times out, plays silence prompt in Hindi before goodbye
+  // Note: Plivo ASR requires language="en-IN" (India model which natively understands Hindi & Hinglish).
+  // Plivo strictly permits only ONE <GetInput> verb per <Response>.
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech" executionTimeout="15" speechEndTimeout="2" language="hi-IN">
+  <GetInput action="${actionUrl}" method="POST" inputType="speech" executionTimeout="15" speechEndTimeout="2" language="en-IN">
     <Play>${audioUrl}</Play>
   </GetInput>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech" executionTimeout="15" speechEndTimeout="2" language="hi-IN">
-    <Play>${silenceUrl}</Play>
-  </GetInput>
+  <Play>${silenceUrl}</Play>
   <Play>${timeoutUrl}</Play>
 </Response>`;
 
@@ -141,7 +152,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
 
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech" executionTimeout="15" speechEndTimeout="2" language="hi-IN">
+  <GetInput action="${actionUrl}" method="POST" inputType="speech" executionTimeout="15" speechEndTimeout="2" language="en-IN">
     <Play>${silenceUrl}</Play>
   </GetInput>
   <Play>${timeoutUrl}</Play>
@@ -165,7 +176,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   if (geminiResult.action === 'TRANSFER_MANAGER') {
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi" language="hi-IN">${replyText}</Speak>
+  <Speak voice="Polly.Aditi" language="hi-IN">${escapeXml(replyText)}</Speak>
   <Dial callerId="${toPlivoNumber}">
     <Number>${SUPPORT_FORWARD_NUMBER}</Number>
   </Dial>
@@ -199,7 +210,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
 
     const promptSnippet = byeAudioUrl
       ? `<Play>${byeAudioUrl}</Play>`
-      : `<Speak voice="Polly.Aditi" language="hi-IN">${replyText}</Speak>`;
+      : `<Speak voice="Polly.Aditi" language="hi-IN">${escapeXml(replyText)}</Speak>`;
 
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
@@ -224,12 +235,12 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
 
   const promptSnippet = replyAudioUrl
     ? `<Play>${replyAudioUrl}</Play>`
-    : `<Speak voice="Polly.Aditi" language="hi-IN">${replyText}</Speak>`;
+    : `<Speak voice="Polly.Aditi" language="hi-IN">${escapeXml(replyText)}</Speak>`;
 
-  // Default: Play realistic voice and continue conversational listening loop with language="hi-IN"
+  // Default: Play realistic voice and continue conversational listening loop with language="en-IN"
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech" executionTimeout="15" speechEndTimeout="2" language="hi-IN">
+  <GetInput action="${actionUrl}" method="POST" inputType="speech" executionTimeout="15" speechEndTimeout="2" language="en-IN">
     ${promptSnippet}
   </GetInput>
   <Speak voice="Polly.Aditi" language="hi-IN">धन्यवाद सर, आप repaircart.co.in पर कभी भी विजिट कर सकते हैं।</Speak>
