@@ -9,8 +9,10 @@ import {
   synthesizeGeminiSpeech,
   storeAudio,
   getAudioBuffer,
+  getAudioAsync,
+  synthesizeElevenLabsSpeech,
 } from '../utils/geminiVoiceAgent';
-import { getPrebuiltAudioBuffer } from '../utils/prebuiltAudio';
+import { getPrebuiltAudioBuffer, getPrebuiltAudioInfo } from '../utils/prebuiltAudio';
 
 // Support escalation phone number for RepairCart (Imran Khan / Operations)
 const SUPPORT_FORWARD_NUMBER = process.env.SUPPORT_FORWARD_NUMBER || '+918586887887';
@@ -98,15 +100,10 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
   const actionUrl = `${protocol}://${host}/api/v1/ivr/gemini-converse`;
 
-  const welcomeText =
-    'हाँ जी नमस्ते! रिपेयरकार्ट में आपका स्वागत है, मैं प्रिया बात कर रही हूँ। बताइए, आपकी टीवी में क्या परेशानी आ रही है?';
-
-  // Use Plivo <Record> with SSML prosody, timeout="2", playBeep="false" for natural, seamless, human-to-human flow
+  // Play ElevenLabs ultra-realistic human voice greeting (0ms in-memory serverless playback)
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi">
-    <prosody rate="103%" pitch="+1st">${welcomeText}</prosody>
-  </Speak>
+  <Play>${protocol}://${host}/api/v1/ivr/audio/welcome_elevenlabs.mp3</Play>
   <Record action="${actionUrl}" method="POST" maxLength="12" timeout="2" playBeep="false" redirect="true"/>
 </Response>`;
 
@@ -165,14 +162,9 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
 
   // If no audio, speech, or digits (complete silence)
   if (!speech && !digits && (!callerAudioBuffer || callerAudioBuffer.length < 500)) {
-    const silencePrompt =
-      'हाँ जी सर, क्या आप मुझे सुन पा रहे हैं? अपनी टीवी की कंपनी बता दीजिए, हम बिल्कुल ठीक करवा देंगे।';
-
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi">
-    <prosody rate="103%" pitch="+1st">${silencePrompt}</prosody>
-  </Speak>
+  <Play>${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3</Play>
   <Record action="${actionUrl}" method="POST" maxLength="12" timeout="2" playBeep="false" redirect="true"/>
 </Response>`;
     res.set('Content-Type', 'text/xml');
@@ -219,19 +211,33 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   if (geminiResult.action === 'END_CALL') {
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi" language="hi-IN">${escapeXml(replyText)}</Speak>
+  <Play>${protocol}://${host}/api/v1/ivr/audio/goodbye_elevenlabs.mp3</Play>
   <Hangup/>
 </Response>`;
     res.set('Content-Type', 'text/xml');
     return res.status(200).send(responseXml);
   }
 
-  // Next conversational turn: Speak reply in natural human voice and record user's next response
+  // Synthesize dynamic ElevenLabs human speech in real-time (~350ms turnaround)
+  let voicePlayXml = '';
+  try {
+    const elevenMp3 = await synthesizeElevenLabsSpeech(replyText);
+    if (elevenMp3) {
+      const audioId = storeAudio(elevenMp3, undefined, 'audio/mpeg');
+      voicePlayXml = `<Play>${protocol}://${host}/api/v1/ivr/audio/${audioId}.mp3</Play>`;
+    }
+  } catch (err: any) {
+    console.warn('[IVR Voice AI] ElevenLabs dynamic synthesis failed:', err.message);
+  }
+
+  if (!voicePlayXml) {
+    voicePlayXml = `<Speak voice="Polly.Aditi"><prosody rate="103%" pitch="+1st">${escapeXml(replyText)}</prosody></Speak>`;
+  }
+
+  // Next conversational turn: Play ElevenLabs human voice and record user's next response
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi">
-    <prosody rate="103%" pitch="+1st">${escapeXml(replyText)}</prosody>
-  </Speak>
+  ${voicePlayXml}
   <Record action="${actionUrl}" method="POST" maxLength="12" timeout="2" playBeep="false" redirect="true"/>
 </Response>`;
 
@@ -240,38 +246,58 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
 };
 
 /**
- * Endpoint to serve dynamically synthesized Gemini audio WAV files to Plivo
+ * Endpoint to serve dynamically synthesized ElevenLabs and Gemini audio files to Plivo
  */
-export const handleAudioPlayback = (req: Request, res: Response) => {
+export const handleAudioPlayback = async (req: Request, res: Response) => {
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || '';
-  const cleanId = rawId.replace(/\.wav$/i, '');
+  const cleanId = rawId.replace(/\.(wav|mp3)$/i, '');
 
-  // 1. Check pre-compiled Gemini TTS audio (0ms serverless guaranteed)
-  let audioBuffer = getPrebuiltAudioBuffer(cleanId);
+  // 1. Check pre-compiled ElevenLabs & Gemini audio (0ms serverless in-memory)
+  const prebuilt = getPrebuiltAudioInfo(cleanId);
+  if (prebuilt) {
+    res.set({
+      'Content-Type': prebuilt.contentType,
+      'Content-Length': prebuilt.buffer.length.toString(),
+      'Cache-Control': 'public, max-age=86400',
+    });
+    return res.status(200).send(prebuilt.buffer);
+  }
 
-  // 2. Fallback to dynamic session cache
-  if (!audioBuffer) {
-    audioBuffer = getAudioBuffer(cleanId);
+  // 2. Dynamic session cache & cross-serverless MongoDB persistence
+  const dynamicAudio = await getAudioAsync(cleanId);
+  if (dynamicAudio) {
+    res.set({
+      'Content-Type': dynamicAudio.contentType,
+      'Content-Length': dynamicAudio.buffer.length.toString(),
+      'Cache-Control': 'public, max-age=86400',
+    });
+    return res.status(200).send(dynamicAudio.buffer);
   }
 
   // 3. Fallback to disk if running in persistent environment
-  if (!audioBuffer) {
-    const diskPath = path.join(process.cwd(), 'public', `${cleanId}.wav`);
-    if (fs.existsSync(diskPath)) {
-      audioBuffer = fs.readFileSync(diskPath);
-    }
+  const diskMp3 = path.join(process.cwd(), 'public', `${cleanId}.mp3`);
+  if (fs.existsSync(diskMp3)) {
+    const buf = fs.readFileSync(diskMp3);
+    res.set({
+      'Content-Type': 'audio/mpeg',
+      'Content-Length': buf.length.toString(),
+      'Cache-Control': 'public, max-age=86400',
+    });
+    return res.status(200).send(buf);
   }
 
-  if (!audioBuffer) {
-    return res.status(404).send('Audio not found or expired');
+  const diskWav = path.join(process.cwd(), 'public', `${cleanId}.wav`);
+  if (fs.existsSync(diskWav)) {
+    const buf = fs.readFileSync(diskWav);
+    res.set({
+      'Content-Type': 'audio/wav',
+      'Content-Length': buf.length.toString(),
+      'Cache-Control': 'public, max-age=86400',
+    });
+    return res.status(200).send(buf);
   }
 
-  res.set({
-    'Content-Type': 'audio/wav',
-    'Content-Length': audioBuffer.length.toString(),
-    'Cache-Control': 'public, max-age=86400',
-  });
-  return res.status(200).send(audioBuffer);
+  return res.status(404).send('Audio not found or expired');
 };
 
 /**

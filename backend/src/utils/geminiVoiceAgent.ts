@@ -3,6 +3,8 @@
  * Powers real-time, human-like voice conversations for inbound & outbound phone calls via Plivo
  */
 
+import AudioCache from '../models/AudioCache';
+
 // Base64-obfuscated default fallback to ensure cloud serverless functions always have AI key
 const DEFAULT_GEMINI_KEY = Buffer.from(
   'QVEuQWI4Uk42TDd4VWNGRVJXY0pQd2FQYlNmRTNOUGswT1lVaE9VYXF1aHp5RUNSdmhWOWc=',
@@ -13,8 +15,20 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY || DEFAULT_GEMINI_KEY;
 const MODEL_NAME = 'gemini-2.5-flash';
 const TTS_MODEL_NAME = 'gemini-2.5-flash-preview-tts';
 
-// In-memory audio cache for synthesized speech WAV buffers (keyed by audioId)
-const audioCache = new Map<string, { buffer: Buffer; createdAt: number }>();
+// ElevenLabs Configuration for Ultra-Realistic Human Voice
+const ELEVENLABS_PRIMARY_KEY = process.env.ELEVENLABS_API_KEY || 'sk_b7adcd52e5ff481a6fc1323e0c90aebbd5c17af62bd7b0b4';
+const ELEVENLABS_BACKUP_KEY = 'sk_df291ae54b8593fa9707045304e6e141c689f5042accbe5b';
+const ELEVENLABS_VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; // Sarah - Premade, warm, conversational, 100% human-grade
+const ELEVENLABS_MODEL_ID = 'eleven_turbo_v2_5';
+
+// In-memory audio cache for synthesized speech audio buffers (keyed by audioId)
+interface AudioEntry {
+  buffer: Buffer;
+  createdAt: number;
+  contentType: string;
+}
+
+const audioCache = new Map<string, AudioEntry>();
 
 // Garbage collect audio files older than 10 minutes
 setInterval(() => {
@@ -26,15 +40,89 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000);
 
-export function storeAudio(buffer: Buffer, customId?: string): string {
+export function storeAudio(buffer: Buffer, customId?: string, contentType = 'audio/mpeg'): string {
   const id = customId || `audio_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-  audioCache.set(id, { buffer, createdAt: Date.now() });
+  audioCache.set(id, { buffer, createdAt: Date.now(), contentType });
+
+  // Asynchronously persist to MongoDB for cross-serverless container availability on Vercel
+  AudioCache.create({
+    audioId: id,
+    dataBase64: buffer.toString('base64'),
+    contentType,
+  }).catch(() => {
+    // Non-fatal if DB not yet ready
+  });
+
   return id;
 }
 
 export function getAudioBuffer(id: string): Buffer | undefined {
-  const cleanId = id.replace(/\.wav$/i, '');
+  const cleanId = id.replace(/\.(wav|mp3)$/i, '');
   return audioCache.get(cleanId)?.buffer;
+}
+
+export async function getAudioAsync(id: string): Promise<{ buffer: Buffer; contentType: string } | undefined> {
+  const cleanId = id.replace(/\.(wav|mp3)$/i, '');
+  const mem = audioCache.get(cleanId);
+  if (mem) {
+    return { buffer: mem.buffer, contentType: mem.contentType };
+  }
+  try {
+    const doc = await AudioCache.findOne({ audioId: cleanId });
+    if (doc && doc.dataBase64) {
+      const buffer = Buffer.from(doc.dataBase64, 'base64');
+      const contentType = doc.contentType || (cleanId.includes('.wav') ? 'audio/wav' : 'audio/mpeg');
+      audioCache.set(cleanId, { buffer, createdAt: Date.now(), contentType });
+      return { buffer, contentType };
+    }
+  } catch (err: any) {
+    // DB error fallback
+  }
+  return undefined;
+}
+
+/**
+ * Synthesize ultra-human speech using ElevenLabs Turbo v2.5 (~350ms turnaround)
+ */
+export async function synthesizeElevenLabsSpeech(text: string): Promise<Buffer | null> {
+  const cleanText = text.replace(/[*#_~`]/g, '').trim();
+  if (!cleanText) return null;
+
+  const url = `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}?output_format=mp3_44100_128`;
+  const keys = [ELEVENLABS_PRIMARY_KEY, ELEVENLABS_BACKUP_KEY];
+
+  for (const key of keys) {
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': key,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: cleanText,
+          model_id: ELEVENLABS_MODEL_ID,
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.75,
+            style: 0.0,
+            use_speaker_boost: true,
+          },
+        }),
+      });
+
+      if (res.ok) {
+        const arrayBuf = await res.arrayBuffer();
+        return Buffer.from(arrayBuf);
+      } else {
+        const err = await res.text();
+        console.warn(`[ElevenLabs TTS] Key failed with status ${res.status}:`, err);
+      }
+    } catch (err: any) {
+      console.error('[ElevenLabs TTS Network Error]:', err.message);
+    }
+  }
+  return null;
 }
 
 /**
