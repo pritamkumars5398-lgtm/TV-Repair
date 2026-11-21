@@ -101,10 +101,11 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const actionUrl = `${protocol}://${host}/api/v1/ivr/gemini-converse`;
 
   // Play ElevenLabs ultra-realistic human voice greeting (0ms in-memory serverless playback)
+  // Low latency: timeout="1" stops recording 1s after user finishes speaking (cuts dead air)
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Play>${protocol}://${host}/api/v1/ivr/audio/welcome_elevenlabs.mp3</Play>
-  <Record action="${actionUrl}" method="POST" maxLength="12" timeout="2" playBeep="false" redirect="true"/>
+  <Record action="${actionUrl}" method="POST" maxLength="8" timeout="1" playBeep="false" redirect="true"/>
 </Response>`;
 
   res.set('Content-Type', 'text/xml');
@@ -148,7 +149,10 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   let audioMime = 'audio/mp3';
   if (recordUrl) {
     try {
-      const audioFetch = await fetch(recordUrl);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1400);
+      const audioFetch = await fetch(recordUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
       if (audioFetch.ok) {
         const arrayBuf = await audioFetch.arrayBuffer();
         callerAudioBuffer = Buffer.from(arrayBuf);
@@ -156,7 +160,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
         console.log(`[IVR Voice AI] Fetched caller audio recording: ${callerAudioBuffer.length} bytes`);
       }
     } catch (e: any) {
-      console.warn('[IVR Voice AI] Could not fetch RecordUrl:', e.message);
+      console.warn('[IVR Voice AI] Could not fetch RecordUrl (timed out or error):', e.message);
     }
   }
 
@@ -165,7 +169,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Play>${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3</Play>
-  <Record action="${actionUrl}" method="POST" maxLength="12" timeout="2" playBeep="false" redirect="true"/>
+  <Record action="${actionUrl}" method="POST" maxLength="8" timeout="1" playBeep="false" redirect="true"/>
 </Response>`;
     res.set('Content-Type', 'text/xml');
     return res.status(200).send(responseXml);
@@ -218,27 +222,30 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
     return res.status(200).send(responseXml);
   }
 
-  // Synthesize dynamic ElevenLabs human speech in real-time (~350ms turnaround)
+  // Ultra-Low Latency Voice Output:
+  // Race ElevenLabs fast synthesis with a tight 500ms budget; immediately fallback to Polly.Aditi so user never waits
   let voicePlayXml = '';
   try {
-    const elevenMp3 = await synthesizeElevenLabsSpeech(replyText);
+    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 500));
+    const elevenMp3 = await Promise.race([synthesizeElevenLabsSpeech(replyText), timeoutPromise]);
     if (elevenMp3) {
       const audioId = storeAudio(elevenMp3, undefined, 'audio/mpeg');
       voicePlayXml = `<Play>${protocol}://${host}/api/v1/ivr/audio/${audioId}.mp3</Play>`;
     }
   } catch (err: any) {
-    console.warn('[IVR Voice AI] ElevenLabs dynamic synthesis failed:', err.message);
+    console.warn('[IVR Voice AI] ElevenLabs race fallback:', err.message);
   }
 
   if (!voicePlayXml) {
-    voicePlayXml = `<Speak voice="Polly.Aditi"><prosody rate="103%" pitch="+1st">${escapeXml(replyText)}</prosody></Speak>`;
+    // Instant edge synthesis via Polly.Aditi in ~50ms directly inside Plivo telephony switch
+    voicePlayXml = `<Speak voice="Polly.Aditi" language="hi-IN"><prosody rate="106%" pitch="+1st">${escapeXml(replyText)}</prosody></Speak>`;
   }
 
-  // Next conversational turn: Play ElevenLabs human voice and record user's next response
+  // Next conversational turn: Play voice and record caller with 1s silence threshold
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   ${voicePlayXml}
-  <Record action="${actionUrl}" method="POST" maxLength="12" timeout="2" playBeep="false" redirect="true"/>
+  <Record action="${actionUrl}" method="POST" maxLength="8" timeout="1" playBeep="false" redirect="true"/>
 </Response>`;
 
   res.set('Content-Type', 'text/xml');

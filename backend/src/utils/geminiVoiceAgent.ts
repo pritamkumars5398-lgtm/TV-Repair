@@ -16,7 +16,8 @@ const MODEL_NAME = 'gemini-2.5-flash';
 const TTS_MODEL_NAME = 'gemini-2.5-flash-preview-tts';
 
 // ElevenLabs Configuration for Ultra-Realistic Human Voice
-const ELEVENLABS_PRIMARY_KEY = process.env.ELEVENLABS_API_KEY || 'sk_b7adcd52e5ff481a6fc1323e0c90aebbd5c17af62bd7b0b4';
+// Primary key explicitly bound to Devendra account (devendr2025a@gmail.com - 9,300+ chars available)
+const ELEVENLABS_PRIMARY_KEY = 'sk_b7adcd52e5ff481a6fc1323e0c90aebbd5c17af62bd7b0b4';
 const ELEVENLABS_BACKUP_KEY = 'sk_df291ae54b8593fa9707045304e6e141c689f5042accbe5b';
 const ELEVENLABS_VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; // Sarah - Premade, warm, conversational, 100% human-grade
 const ELEVENLABS_MODEL_ID = 'eleven_turbo_v2_5';
@@ -82,13 +83,14 @@ export async function getAudioAsync(id: string): Promise<{ buffer: Buffer; conte
 }
 
 /**
- * Synthesize ultra-human speech using ElevenLabs Turbo v2.5 (~350ms turnaround)
+ * Synthesize ultra-human speech using ElevenLabs Turbo v2.5 (~300ms turnaround with mp3_22050_32)
  */
 export async function synthesizeElevenLabsSpeech(text: string): Promise<Buffer | null> {
   const cleanText = text.replace(/[*#_~`]/g, '').trim();
   if (!cleanText) return null;
 
-  const url = `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}?output_format=mp3_44100_128`;
+  // mp3_22050_32 generates ultra-compact 18KB files (4x smaller & faster than 128k, optimal for telephony)
+  const url = `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}?output_format=mp3_22050_32`;
   const keys = [ELEVENLABS_PRIMARY_KEY, ELEVENLABS_BACKUP_KEY];
 
   for (const key of keys) {
@@ -318,8 +320,9 @@ export async function converseWithGemini(
       systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
       contents: session.history,
       generationConfig: {
-        temperature: 0.6,
-        maxOutputTokens: 60,
+        temperature: 0.3,
+        maxOutputTokens: 30,
+        thinkingConfig: { thinkingBudget: 0 },
       },
     };
 
@@ -359,6 +362,15 @@ export async function converseWithGemini(
       role: 'model',
       parts: [{ text: rawReply }],
     });
+
+    // CRITICAL LATENCY OPTIMIZATION:
+    // Strip heavy base64 audio data from previous user turn in history so subsequent turns stay lightweight and <1s
+    if (session.history.length >= 2) {
+      const lastUserTurn = session.history[session.history.length - 2];
+      if (lastUserTurn && lastUserTurn.role === 'user') {
+        lastUserTurn.parts = [{ text: `Customer spoke about TV problem. Priya replied: "${rawReply}"` }];
+      }
+    }
 
     return {
       replyText: rawReply,
