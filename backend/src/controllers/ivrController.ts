@@ -99,13 +99,15 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const actionUrl = `${protocol}://${host}/api/v1/ivr/gemini-converse`;
 
   const welcomeText =
-    'नमस्ते! रिपेयरकार्ट में आपका स्वागत है। मैं प्रिया बोल रही हूँ। बीप के बाद अपनी टीवी की कंपनी और खराबी बताइए।';
+    'हाँ जी नमस्ते! रिपेयरकार्ट में आपका स्वागत है, मैं प्रिया बात कर रही हूँ। बताइए, आपकी टीवी में क्या परेशानी आ रही है?';
 
-  // Use Plivo <Record> to capture the caller's actual voice audio and pass directly to Gemini 2.5 Flash
+  // Use Plivo <Record> with SSML prosody, timeout="2", playBeep="false" for natural, seamless, human-to-human flow
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi" language="hi-IN">${welcomeText}</Speak>
-  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="3" playBeep="true" redirect="true"/>
+  <Speak voice="Polly.Aditi">
+    <prosody rate="103%" pitch="+1st">${welcomeText}</prosody>
+  </Speak>
+  <Record action="${actionUrl}" method="POST" maxLength="12" timeout="2" playBeep="false" redirect="true"/>
 </Response>`;
 
   res.set('Content-Type', 'text/xml');
@@ -164,12 +166,14 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   // If no audio, speech, or digits (complete silence)
   if (!speech && !digits && (!callerAudioBuffer || callerAudioBuffer.length < 500)) {
     const silencePrompt =
-      'सर, क्या आप मुझे सुन पा रहे हैं? कृपया बीप के बाद अपनी टीवी का ब्रांड जैसे सोनी, सैमसंग या एलजी बताइए।';
+      'हाँ जी सर, क्या आप मुझे सुन पा रहे हैं? अपनी टीवी की कंपनी बता दीजिए, हम बिल्कुल ठीक करवा देंगे।';
 
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi" language="hi-IN">${silencePrompt}</Speak>
-  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="3" playBeep="true" redirect="true"/>
+  <Speak voice="Polly.Aditi">
+    <prosody rate="103%" pitch="+1st">${silencePrompt}</prosody>
+  </Speak>
+  <Record action="${actionUrl}" method="POST" maxLength="12" timeout="2" playBeep="false" redirect="true"/>
 </Response>`;
     res.set('Content-Type', 'text/xml');
     return res.status(200).send(responseXml);
@@ -222,11 +226,13 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
     return res.status(200).send(responseXml);
   }
 
-  // Next conversational turn: Speak reply in Hindi and record user's next response
+  // Next conversational turn: Speak reply in natural human voice and record user's next response
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi" language="hi-IN">${escapeXml(replyText)}</Speak>
-  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="3" playBeep="true" redirect="true"/>
+  <Speak voice="Polly.Aditi">
+    <prosody rate="103%" pitch="+1st">${escapeXml(replyText)}</prosody>
+  </Speak>
+  <Record action="${actionUrl}" method="POST" maxLength="12" timeout="2" playBeep="false" redirect="true"/>
 </Response>`;
 
   res.set('Content-Type', 'text/xml');
