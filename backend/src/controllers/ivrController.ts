@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { Request, Response } from 'express';
 import { sendBookingReceived } from '../utils/sendSMS';
 import Lead from '../models/Lead';
@@ -259,8 +261,18 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
  * Endpoint to serve dynamically synthesized Gemini audio WAV files to Plivo
  */
 export const handleAudioPlayback = (req: Request, res: Response) => {
-  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || '';
-  const audioBuffer = getAudioBuffer(id);
+  const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || '';
+  const cleanId = rawId.replace(/\.wav$/i, '');
+  let audioBuffer = getAudioBuffer(cleanId);
+
+  // Fallback to disk if pre-synthesized audio in public directory
+  if (!audioBuffer) {
+    const diskPath = path.join(process.cwd(), 'public', `${cleanId}.wav`);
+    if (fs.existsSync(diskPath)) {
+      audioBuffer = fs.readFileSync(diskPath);
+    }
+  }
+
   if (!audioBuffer) {
     return res.status(404).send('Audio not found or expired');
   }
@@ -268,7 +280,7 @@ export const handleAudioPlayback = (req: Request, res: Response) => {
   res.set({
     'Content-Type': 'audio/wav',
     'Content-Length': audioBuffer.length.toString(),
-    'Cache-Control': 'public, max-age=3600',
+    'Cache-Control': 'public, max-age=86400',
   });
   return res.status(200).send(audioBuffer);
 };

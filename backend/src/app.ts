@@ -14,8 +14,9 @@ connectDB();
 
 const app = express();
 
-// Ensure uploads directory exists and serve uploaded files
+// Ensure uploads and public directories exist and serve static files
 const uploadsDir = path.join(process.cwd(), 'uploads');
+const publicDir = path.join(process.cwd(), 'public');
 try {
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
@@ -24,6 +25,8 @@ try {
   console.warn('Could not create uploads directory (expected in read-only environments like Vercel):', error);
 }
 app.use('/uploads', express.static(uploadsDir));
+app.use('/public', express.static(publicDir));
+app.use('/audio', express.static(publicDir));
 
 // Middlewares
 app.use(cors());
