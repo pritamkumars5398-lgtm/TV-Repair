@@ -19,6 +19,10 @@ const PLIVO_AUTH_ID = process.env.PLIVO_AUTH_ID || 'MAZDI5ZMM4YTYTMJG4NY';
 const PLIVO_AUTH_TOKEN = process.env.PLIVO_AUTH_TOKEN || 'YjljYWY2NjctNWQwZC00MDJlLTc5MWMtMzA5MTMy';
 const PLIVO_FROM_NUMBER = process.env.PLIVO_FROM_NUMBER || '+918031775263';
 
+// Telephony ASR hints to maximize recognition of Indian speech, TV brands and issues
+const COMMON_SPEECH_HINTS =
+  'Sony, Samsung, LG, Mi, Xiaomi, OnePlus, TCL, Panasonic, Vu, Realme, TV, television, repair, screen, display, panel, booking, technician, sound, audio, speaker, power, light, black screen, line, restart, remote, problem, kharab, ho gaya, kaam nahi kar raha, bilkul';
+
 /**
  * Utility to safely escape XML special characters to prevent Plivo 8011 parse errors
  */
@@ -100,14 +104,14 @@ export const handleIncomingCall = (req: Request, res: Response) => {
 
   // Start in Hindi with Gemini Native Voice TTS.
   // Note: Plivo ASR requires language="en-IN" (India model which natively understands Hindi & Hinglish).
-  // Plivo strictly permits only ONE <GetInput> verb per <Response>.
+  // Optimized for telephony phone audio with speechModel="phone_call", 30s timeout, and TV domain hints.
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech" executionTimeout="15" speechEndTimeout="2" language="en-IN">
+  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" executionTimeout="30" speechEndTimeout="2" language="en-IN" speechModel="phone_call" hints="${COMMON_SPEECH_HINTS}">
     <Play>${audioUrl}</Play>
   </GetInput>
-  <Play>${silenceUrl}</Play>
-  <Play>${timeoutUrl}</Play>
+  <Speak voice="Polly.Aditi" language="hi-IN">माफ़ कीजिए सर, आपकी आवाज़ सुनाई नहीं दी। आप कभी भी repaircart.co.in पर जाकर टीवी रिपेयर बुक कर सकते हैं। धन्यवाद।</Speak>
+  <Hangup/>
 </Response>`;
 
   res.set('Content-Type', 'text/xml');
@@ -148,14 +152,14 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   // If no speech captured (silence/background noise)
   if (!speech && !digits) {
     const silenceUrl = `${protocol}://${host}/api/v1/ivr/audio/silence_prompt.wav`;
-    const timeoutUrl = `${protocol}://${host}/api/v1/ivr/audio/timeout_goodbye.wav`;
 
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech" executionTimeout="15" speechEndTimeout="2" language="en-IN">
+  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" executionTimeout="25" speechEndTimeout="2" language="en-IN" speechModel="phone_call" hints="${COMMON_SPEECH_HINTS}">
     <Play>${silenceUrl}</Play>
   </GetInput>
-  <Play>${timeoutUrl}</Play>
+  <Speak voice="Polly.Aditi" language="hi-IN">धन्यवाद सर, आप कभी भी repaircart.co.in पर टीवी रिपेयर बुक कर सकते हैं।</Speak>
+  <Hangup/>
 </Response>`;
     res.set('Content-Type', 'text/xml');
     return res.status(200).send(responseXml);
@@ -240,10 +244,11 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   // Default: Play realistic voice and continue conversational listening loop with language="en-IN"
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech" executionTimeout="15" speechEndTimeout="2" language="en-IN">
+  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" executionTimeout="30" speechEndTimeout="2" language="en-IN" speechModel="phone_call" hints="${COMMON_SPEECH_HINTS}">
     ${promptSnippet}
   </GetInput>
-  <Speak voice="Polly.Aditi" language="hi-IN">धन्यवाद सर, आप repaircart.co.in पर कभी भी विजिट कर सकते हैं।</Speak>
+  <Speak voice="Polly.Aditi" language="hi-IN">धन्यवाद सर, आप repaircart.co.in पर कभी भी विजिट कर सकते हैं। आपका दिन शुभ हो।</Speak>
+  <Hangup/>
 </Response>`;
 
   res.set('Content-Type', 'text/xml');
