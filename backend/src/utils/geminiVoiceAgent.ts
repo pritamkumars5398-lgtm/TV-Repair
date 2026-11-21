@@ -127,7 +127,7 @@ export async function synthesizeGeminiSpeech(text: string): Promise<Buffer | nul
 // Session memory cache for multi-turn phone calls (keyed by CallUUID)
 interface CallTurn {
   role: 'user' | 'model';
-  parts: Array<{ text: string }>;
+  parts: Array<any>;
 }
 
 interface CallSession {
@@ -182,11 +182,14 @@ export interface GeminiVoiceResponse {
 
 /**
  * Handle a conversation turn with Gemini for a given call session
+ * Accepts text utterance and/or customer audio recording buffer for native Hindi multimodal listening
  */
 export async function converseWithGemini(
   callUUID: string,
   userUtterance: string,
-  customerPhone?: string
+  customerPhone?: string,
+  audioBuffer?: Buffer,
+  audioMimeType?: string
 ): Promise<GeminiVoiceResponse> {
   let session = sessions.get(callUUID);
   if (!session) {
@@ -201,15 +204,33 @@ export async function converseWithGemini(
   session.lastUpdated = Date.now();
   if (customerPhone) session.customerPhone = customerPhone;
 
+  // Build turn parts: if caller audio recording is provided, pass directly to Gemini multimodal audio engine
+  const userParts: any[] = [];
+  if (audioBuffer && audioBuffer.length > 0) {
+    userParts.push({
+      inlineData: {
+        mimeType: audioMimeType || 'audio/mp3',
+        data: audioBuffer.toString('base64'),
+      },
+    });
+    userParts.push({
+      text: userUtterance
+        ? `Customer audio recording attached. (Notes: ${userUtterance}). Listen carefully to what the customer speaks in Hindi or English, understand their TV issue, and reply in warm, polite Hindi (1 to 2 short sentences).`
+        : 'Customer audio recording attached. Listen to the customer speaking in Hindi/Hinglish, understand their TV issue or question, and reply in warm, polite Hindi (1 to 2 short sentences).',
+    });
+  } else {
+    userParts.push({ text: userUtterance });
+  }
+
   // Append user's turn
   session.history.push({
     role: 'user',
-    parts: [{ text: userUtterance }],
+    parts: userParts,
   });
 
-  // Limit conversation history to last 10 turns to keep latency under 500ms
-  if (session.history.length > 10) {
-    session.history = session.history.slice(-10);
+  // Limit conversation history to last 6 turns to keep latency under 1s and avoid payload limits
+  if (session.history.length > 6) {
+    session.history = session.history.slice(-6);
   }
 
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
