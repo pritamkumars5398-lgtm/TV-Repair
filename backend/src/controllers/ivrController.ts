@@ -1,7 +1,13 @@
 import { Request, Response } from 'express';
 import { sendBookingReceived } from '../utils/sendSMS';
 import Lead from '../models/Lead';
-import { converseWithGemini, endCallSession } from '../utils/geminiVoiceAgent';
+import {
+  converseWithGemini,
+  endCallSession,
+  synthesizeGeminiSpeech,
+  storeAudio,
+  getAudioBuffer,
+} from '../utils/geminiVoiceAgent';
 
 // Support escalation phone number for RepairCart (Imran Khan / Operations)
 const SUPPORT_FORWARD_NUMBER = process.env.SUPPORT_FORWARD_NUMBER || '+918586887887';
@@ -58,7 +64,7 @@ const recordInboundCallLead = async (rawPhone: string, note: string) => {
  * Handle incoming or answered call from Plivo
  * Starts the Gemini Real-Time Voice Assistant session
  */
-export const handleIncomingCall = (req: Request, res: Response) => {
+export const handleIncomingCall = async (req: Request, res: Response) => {
   const callerNumber = req.body?.From || req.query?.From || 'Customer';
   const callUUID = req.body?.CallUUID || req.query?.CallUUID || 'unknown_call';
   console.log(`[IVR Voice AI] Call started from: ${callerNumber} (CallUUID: ${callUUID})`);
@@ -72,11 +78,29 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
   const actionUrl = `${protocol}://${host}/api/v1/ivr/gemini-converse`;
 
-  // Plivo XML Response: Speak greeting completely first, then collect input (prevents barge-in cut-off)
+  // Pre-synthesize human-like greeting via Gemini Native TTS
+  const welcomeText = 'Namaste, and welcome to RepairCart! I am Priya, your doorstep TV repair assistant. How can I help you with your television today?';
+  let audioUrl = '';
+  try {
+    const audioBuf = await synthesizeGeminiSpeech(welcomeText);
+    if (audioBuf) {
+      const audioId = storeAudio(audioBuf, 'welcome_greeting');
+      audioUrl = `${protocol}://${host}/api/v1/ivr/audio/${audioId}.wav`;
+    }
+  } catch (err: any) {
+    console.warn('[Gemini TTS greeting fallback]:', err.message);
+  }
+
+  const promptSnippet = audioUrl
+    ? `<Play>${audioUrl}</Play>`
+    : `<Speak voice="Polly.Aditi" language="en-IN">${welcomeText}</Speak>`;
+
+  // In Plivo XML: Nest the prompt directly inside GetInput so Plivo plays the audio AND actively listens for caller speech
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi" language="en-IN">Namaste, and welcome to RepairCart! I am Priya, your doorstep TV repair assistant. How can I help you with your television today?</Speak>
-  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" executionTimeout="15" speechEndTimeout="2" language="en-IN"/>
+  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" executionTimeout="15" speechEndTimeout="2" language="en-IN">
+    ${promptSnippet}
+  </GetInput>
   <Speak voice="Polly.Aditi" language="en-IN">I didn't hear your response. You can visit repaircart.co.in anytime for instant doorstep TV booking. Thank you for calling RepairCart!</Speak>
 </Response>`;
 
@@ -86,7 +110,7 @@ export const handleIncomingCall = (req: Request, res: Response) => {
 
 /**
  * Handle Gemini Conversational Turn
- * Receives caller's speech from Plivo, queries Gemini, and replies with neural voice
+ * Receives caller's speech from Plivo, queries Gemini, and replies with human-like voice
  */
 export const handleGeminiConverse = async (req: Request, res: Response) => {
   const speech = (req.body?.Speech || req.query?.Speech || '').toString().trim();
@@ -117,10 +141,25 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
 
   // If no speech captured (silence/background noise)
   if (!speech && !digits) {
+    const silencePrompt = "I'm still here. Please tell me your TV brand and the issue you're facing, or ask for pricing.";
+    let silenceAudioUrl = '';
+    try {
+      const audioBuf = await synthesizeGeminiSpeech(silencePrompt);
+      if (audioBuf) {
+        const audioId = storeAudio(audioBuf);
+        silenceAudioUrl = `${protocol}://${host}/api/v1/ivr/audio/${audioId}.wav`;
+      }
+    } catch {}
+
+    const promptSnippet = silenceAudioUrl
+      ? `<Play>${silenceAudioUrl}</Play>`
+      : `<Speak voice="Polly.Aditi" language="en-IN">${silencePrompt}</Speak>`;
+
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi" language="en-IN">I'm still here. Please tell me your TV brand and the issue you're facing, or ask for pricing.</Speak>
-  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" executionTimeout="15" speechEndTimeout="2" language="en-IN"/>
+  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" executionTimeout="15" speechEndTimeout="2" language="en-IN">
+    ${promptSnippet}
+  </GetInput>
   <Speak voice="Polly.Aditi" language="en-IN">Thank you for calling RepairCart. Visit repaircart.co.in for doorstep service. Goodbye!</Speak>
 </Response>`;
     res.set('Content-Type', 'text/xml');
@@ -165,25 +204,73 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   }
 
   if (geminiResult.action === 'END_CALL') {
+    let byeAudioUrl = '';
+    try {
+      const audioBuf = await synthesizeGeminiSpeech(replyText);
+      if (audioBuf) {
+        const audioId = storeAudio(audioBuf);
+        byeAudioUrl = `${protocol}://${host}/api/v1/ivr/audio/${audioId}.wav`;
+      }
+    } catch {}
+
+    const promptSnippet = byeAudioUrl
+      ? `<Play>${byeAudioUrl}</Play>`
+      : `<Speak voice="Polly.Aditi" language="en-IN">${replyText}</Speak>`;
+
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi" language="en-IN">${replyText}</Speak>
+  ${promptSnippet}
   <Hangup/>
 </Response>`;
     res.set('Content-Type', 'text/xml');
     return res.status(200).send(responseXml);
   }
 
-  // Default: Speak reply and continue conversational listening loop
+  // Synthesize Gemini Human Voice for the conversational response
+  let replyAudioUrl = '';
+  try {
+    const audioBuf = await synthesizeGeminiSpeech(replyText);
+    if (audioBuf) {
+      const audioId = storeAudio(audioBuf);
+      replyAudioUrl = `${protocol}://${host}/api/v1/ivr/audio/${audioId}.wav`;
+    }
+  } catch (err: any) {
+    console.warn('[Gemini TTS turn error]:', err.message);
+  }
+
+  const promptSnippet = replyAudioUrl
+    ? `<Play>${replyAudioUrl}</Play>`
+    : `<Speak voice="Polly.Aditi" language="en-IN">${replyText}</Speak>`;
+
+  // Default: Play realistic voice and continue conversational listening loop
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Speak voice="Polly.Aditi" language="en-IN">${replyText}</Speak>
-  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" executionTimeout="15" speechEndTimeout="2" language="en-IN"/>
+  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" executionTimeout="15" speechEndTimeout="2" language="en-IN">
+    ${promptSnippet}
+  </GetInput>
   <Speak voice="Polly.Aditi" language="en-IN">If you need any further help, visit repaircart.co.in or call us back anytime. Thank you for choosing RepairCart!</Speak>
 </Response>`;
 
   res.set('Content-Type', 'text/xml');
   return res.status(200).send(responseXml);
+};
+
+/**
+ * Endpoint to serve dynamically synthesized Gemini audio WAV files to Plivo
+ */
+export const handleAudioPlayback = (req: Request, res: Response) => {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || '';
+  const audioBuffer = getAudioBuffer(id);
+  if (!audioBuffer) {
+    return res.status(404).send('Audio not found or expired');
+  }
+
+  res.set({
+    'Content-Type': 'audio/wav',
+    'Content-Length': audioBuffer.length.toString(),
+    'Cache-Control': 'public, max-age=3600',
+  });
+  return res.status(200).send(audioBuffer);
 };
 
 /**

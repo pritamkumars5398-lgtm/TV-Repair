@@ -11,6 +11,118 @@ const DEFAULT_GEMINI_KEY = Buffer.from(
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || DEFAULT_GEMINI_KEY;
 const MODEL_NAME = 'gemini-2.5-flash';
+const TTS_MODEL_NAME = 'gemini-2.5-flash-preview-tts';
+
+// In-memory audio cache for synthesized speech WAV buffers (keyed by audioId)
+const audioCache = new Map<string, { buffer: Buffer; createdAt: number }>();
+
+// Garbage collect audio files older than 10 minutes
+setInterval(() => {
+  const cutoff = Date.now() - 10 * 60 * 1000;
+  for (const [id, entry] of audioCache.entries()) {
+    if (entry.createdAt < cutoff) {
+      audioCache.delete(id);
+    }
+  }
+}, 5 * 60 * 1000);
+
+export function storeAudio(buffer: Buffer, customId?: string): string {
+  const id = customId || `audio_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  audioCache.set(id, { buffer, createdAt: Date.now() });
+  return id;
+}
+
+export function getAudioBuffer(id: string): Buffer | undefined {
+  const cleanId = id.replace(/\.wav$/i, '');
+  return audioCache.get(cleanId)?.buffer;
+}
+
+/**
+ * Downsample 24kHz 16-bit mono PCM to 16kHz WAV format (Plivo telephony standard)
+ */
+export function pcm24kToWav16k(pcm24k: Buffer): Buffer {
+  const samples24k = new Int16Array(pcm24k.buffer, pcm24k.byteOffset, Math.floor(pcm24k.length / 2));
+  const len16k = Math.floor((samples24k.length * 2) / 3);
+  const samples16k = new Int16Array(len16k);
+
+  let outIdx = 0;
+  for (let i = 0; i < samples24k.length - 2; i += 3) {
+    if (outIdx + 1 >= len16k) break;
+    samples16k[outIdx++] = samples24k[i];
+    samples16k[outIdx++] = Math.round((samples24k[i + 1] + samples24k[i + 2]) / 2);
+  }
+
+  const pcm16kBuffer = Buffer.from(samples16k.buffer, samples16k.byteOffset, outIdx * 2);
+  const sampleRate = 16000;
+  const channels = 1;
+  const bitsPerSample = 16;
+  const byteRate = sampleRate * channels * (bitsPerSample / 8);
+  const blockAlign = channels * (bitsPerSample / 8);
+
+  const header = Buffer.alloc(44);
+  header.write('RIFF', 0);
+  header.writeUInt32LE(pcm16kBuffer.length + 36, 4);
+  header.write('WAVE', 8);
+  header.write('fmt ', 12);
+  header.writeUInt32LE(16, 16);
+  header.writeUInt16LE(1, 20); // PCM
+  header.writeUInt16LE(channels, 22);
+  header.writeUInt32LE(sampleRate, 24);
+  header.writeUInt32LE(byteRate, 28);
+  header.writeUInt16LE(blockAlign, 32);
+  header.writeUInt16LE(bitsPerSample, 34);
+  header.write('data', 36);
+  header.writeUInt32LE(pcm16kBuffer.length, 40);
+
+  return Buffer.concat([header, pcm16kBuffer]);
+}
+
+/**
+ * Synthesize ultra-human-like voice audio using Gemini Native TTS
+ */
+export async function synthesizeGeminiSpeech(text: string): Promise<Buffer | null> {
+  const cleanText = text.replace(/[*#_~`]/g, '').trim();
+  if (!cleanText) return null;
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
+  try {
+    const payload = {
+      contents: [{ parts: [{ text: cleanText }] }],
+      generationConfig: {
+        responseModalities: ['AUDIO'],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: {
+              voiceName: 'Aoede', // Warm, expressive, human-like voice
+            },
+          },
+        },
+      },
+    };
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error('[Gemini TTS API Error]:', res.status, err);
+      return null;
+    }
+
+    const data: any = await res.json();
+    const b64Audio = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    if (!b64Audio) return null;
+
+    const rawPcm24k = Buffer.from(b64Audio, 'base64');
+    return pcm24kToWav16k(rawPcm24k);
+  } catch (err: any) {
+    console.error('[Gemini TTS Network Error]:', err.message);
+    return null;
+  }
+}
 
 // Session memory cache for multi-turn phone calls (keyed by CallUUID)
 interface CallTurn {

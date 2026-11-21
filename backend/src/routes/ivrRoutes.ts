@@ -4,9 +4,17 @@ import {
   handleGeminiConverse,
   handleCallStatus,
   triggerOutboundCall,
+  handleAudioPlayback,
 } from '../controllers/ivrController';
 
 const router = express.Router();
+
+/**
+ * @route   GET /api/v1/ivr/audio/:id
+ * @desc    Serves dynamically synthesized Gemini human voice WAV audio
+ * @access  Public
+ */
+router.get('/audio/:id', handleAudioPlayback);
 
 /**
  * @route   POST /api/v1/ivr/incoming
