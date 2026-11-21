@@ -10,6 +10,7 @@ import {
   storeAudio,
   getAudioBuffer,
 } from '../utils/geminiVoiceAgent';
+import { getPrebuiltAudioBuffer } from '../utils/prebuiltAudio';
 
 // Support escalation phone number for RepairCart (Imran Khan / Operations)
 const SUPPORT_FORWARD_NUMBER = process.env.SUPPORT_FORWARD_NUMBER || '+918586887887';
@@ -263,9 +264,16 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
 export const handleAudioPlayback = (req: Request, res: Response) => {
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || '';
   const cleanId = rawId.replace(/\.wav$/i, '');
-  let audioBuffer = getAudioBuffer(cleanId);
 
-  // Fallback to disk if pre-synthesized audio in public directory
+  // 1. Check pre-compiled Gemini TTS audio (0ms serverless guaranteed)
+  let audioBuffer = getPrebuiltAudioBuffer(cleanId);
+
+  // 2. Fallback to dynamic session cache
+  if (!audioBuffer) {
+    audioBuffer = getAudioBuffer(cleanId);
+  }
+
+  // 3. Fallback to disk if running in persistent environment
   if (!audioBuffer) {
     const diskPath = path.join(process.cwd(), 'public', `${cleanId}.wav`);
     if (fs.existsSync(diskPath)) {
