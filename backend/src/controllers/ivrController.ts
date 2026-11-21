@@ -98,17 +98,14 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
   const actionUrl = `${protocol}://${host}/api/v1/ivr/gemini-converse`;
 
-  const audioUrl = `${protocol}://${host}/api/v1/ivr/audio/welcome_greeting.wav`;
-  const silenceUrl = `${protocol}://${host}/api/v1/ivr/audio/silence_prompt.wav`;
-  const timeoutUrl = `${protocol}://${host}/api/v1/ivr/audio/timeout_goodbye.wav`;
+  const welcomeText =
+    'नमस्ते! रिपेयरकार्ट में आपका स्वागत है। मैं प्रिया बोल रही हूँ। आपकी कौन सी कंपनी की टीवी है, जैसे सोनी, सैमसंग या एलजी, और क्या प्रॉब्लम आ रही है?';
 
-  // Start in Hindi with Gemini Native Voice TTS.
-  // Note: Plivo ASR requires language="en-IN" (India model which natively understands Hindi & Hinglish).
-  // timeout="15" gives caller 15 seconds AFTER the prompt finishes playing to speak.
+  // Use Plivo native Polly.Aditi Hindi TTS inside GetInput for instant playback and synchronized barge-in
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech" timeout="15" speechEndTimeout="2" language="en-IN">
-    <Play>${audioUrl}</Play>
+  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" timeout="12" speechEndTimeout="2" language="en-IN">
+    <Speak voice="Polly.Aditi" language="hi-IN">${welcomeText}</Speak>
   </GetInput>
   <Speak voice="Polly.Aditi" language="hi-IN">माफ़ कीजिए सर, आपकी आवाज़ सुनाई नहीं दी। आप कभी भी repaircart.co.in पर जाकर टीवी रिपेयर बुक कर सकते हैं। धन्यवाद।</Speak>
   <Hangup/>
@@ -151,12 +148,13 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
 
   // If no speech captured (silence/background noise)
   if (!speech && !digits) {
-    const silenceUrl = `${protocol}://${host}/api/v1/ivr/audio/silence_prompt.wav`;
+    const silencePrompt =
+      'सर, क्या आप मुझे सुन पा रहे हैं? कृपया अपनी टीवी का ब्रांड बताइए जैसे सोनी, सैमसंग या एलजी, हम आपके घर आकर ठीक कर देंगे।';
 
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech" timeout="15" speechEndTimeout="2" language="en-IN">
-    <Play>${silenceUrl}</Play>
+  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" timeout="12" speechEndTimeout="2" language="en-IN">
+    <Speak voice="Polly.Aditi" language="hi-IN">${silencePrompt}</Speak>
   </GetInput>
   <Speak voice="Polly.Aditi" language="hi-IN">धन्यवाद सर, आप कभी भी repaircart.co.in पर टीवी रिपेयर बुक कर सकते हैं।</Speak>
   <Hangup/>
@@ -244,7 +242,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   // Default: Play realistic voice and continue conversational listening loop with language="en-IN"
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech" timeout="15" speechEndTimeout="2" language="en-IN">
+  <GetInput action="${actionUrl}" method="POST" inputType="dtmf speech" timeout="12" speechEndTimeout="2" language="en-IN">
     ${promptSnippet}
   </GetInput>
   <Speak voice="Polly.Aditi" language="hi-IN">धन्यवाद सर, आप repaircart.co.in पर कभी भी विजिट कर सकते हैं। आपका दिन शुभ हो।</Speak>
