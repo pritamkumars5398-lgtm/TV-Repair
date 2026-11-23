@@ -229,7 +229,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
     const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3200));
     const elevenMp3 = await Promise.race([synthesizeElevenLabsSpeech(replyText), timeoutPromise]);
     if (elevenMp3) {
-      const audioId = storeAudio(elevenMp3, undefined, 'audio/mpeg');
+      const audioId = await storeAudio(elevenMp3, undefined, 'audio/mpeg');
       voicePlayXml = `<Play>${protocol}://${host}/api/v1/ivr/audio/${audioId}.mp3</Play>`;
     }
   } catch (err: any) {
@@ -241,7 +241,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
     try {
       const geminiWav = await synthesizeGeminiSpeech(replyText);
       if (geminiWav) {
-        const audioId = storeAudio(geminiWav, undefined, 'audio/wav');
+        const audioId = await storeAudio(geminiWav, undefined, 'audio/wav');
         voicePlayXml = `<Play>${protocol}://${host}/api/v1/ivr/audio/${audioId}.wav</Play>`;
       }
     } catch (err: any) {

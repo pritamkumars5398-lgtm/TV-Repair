@@ -41,18 +41,20 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000);
 
-export function storeAudio(buffer: Buffer, customId?: string, contentType = 'audio/mpeg'): string {
+export async function storeAudio(buffer: Buffer, customId?: string, contentType = 'audio/mpeg'): Promise<string> {
   const id = customId || `audio_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   audioCache.set(id, { buffer, createdAt: Date.now(), contentType });
 
-  // Asynchronously persist to MongoDB for cross-serverless container availability on Vercel
-  AudioCache.create({
-    audioId: id,
-    dataBase64: buffer.toString('base64'),
-    contentType,
-  }).catch(() => {
-    // Non-fatal if DB not yet ready
-  });
+  // Await MongoDB persistence to guarantee cross-serverless availability before Plivo downloads audio
+  try {
+    await AudioCache.create({
+      audioId: id,
+      dataBase64: buffer.toString('base64'),
+      contentType,
+    });
+  } catch (err: any) {
+    console.warn('[AudioCache Persistence Warning]:', err.message);
+  }
 
   return id;
 }
