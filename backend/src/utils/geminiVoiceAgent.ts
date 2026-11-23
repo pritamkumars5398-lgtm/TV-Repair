@@ -16,9 +16,9 @@ const MODEL_NAME = 'gemini-2.5-flash';
 const TTS_MODEL_NAME = 'gemini-2.5-flash-preview-tts';
 
 // ElevenLabs Configuration for Ultra-Realistic Human Voice
-// Primary key explicitly bound to Devendra account (devendr2025a@gmail.com - 9,300+ chars available)
-const ELEVENLABS_PRIMARY_KEY = 'sk_b7adcd52e5ff481a6fc1323e0c90aebbd5c17af62bd7b0b4';
-const ELEVENLABS_BACKUP_KEY = 'sk_df291ae54b8593fa9707045304e6e141c689f5042accbe5b';
+// Primary key bound to Simran account (simran2026kumari@gmail.com - 10,000 chars 100% fresh)
+const ELEVENLABS_PRIMARY_KEY = 'sk_29118cd8a1fbd973739b2ac43dffd422ef7e2df6609c9aec';
+const ELEVENLABS_BACKUP_KEY = 'sk_9ce734ea4928a0340511f0a5893ec692685457ad388aa134';
 const ELEVENLABS_VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; // Sarah - Premade, warm, conversational, 100% human-grade
 const ELEVENLABS_MODEL_ID = 'eleven_turbo_v2_5';
 

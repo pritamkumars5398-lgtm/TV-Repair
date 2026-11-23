@@ -14,8 +14,8 @@ import {
 } from '../utils/geminiVoiceAgent';
 import { getPrebuiltAudioBuffer, getPrebuiltAudioInfo } from '../utils/prebuiltAudio';
 
-// Support escalation phone number for RepairCart (Imran Khan / Operations)
-const SUPPORT_FORWARD_NUMBER = process.env.SUPPORT_FORWARD_NUMBER || '+918586887887';
+// Support escalation phone number for RepairCart (configured for testing: +917800730968)
+const SUPPORT_FORWARD_NUMBER = process.env.SUPPORT_FORWARD_NUMBER || '+917800730968';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://repaircart.co.in';
 const PLIVO_AUTH_ID = process.env.PLIVO_AUTH_ID || 'MAZDI5ZMM4YTYTMJG4NY';
 const PLIVO_AUTH_TOKEN = process.env.PLIVO_AUTH_TOKEN || 'YjljYWY2NjctNWQwZC00MDJlLTc5MWMtMzA5MTMy';
@@ -222,23 +222,36 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
     return res.status(200).send(responseXml);
   }
 
-  // Ultra-Low Latency Voice Output:
-  // Race ElevenLabs fast synthesis with a tight 500ms budget; immediately fallback to Polly.Aditi so user never waits
+  // Ultra-Realistic Human Voice Output:
+  // 1. ElevenLabs Turbo v2.5 with Sarah voice (rich, 100% human Indian Hindi voice)
   let voicePlayXml = '';
   try {
-    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 500));
+    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3200));
     const elevenMp3 = await Promise.race([synthesizeElevenLabsSpeech(replyText), timeoutPromise]);
     if (elevenMp3) {
       const audioId = storeAudio(elevenMp3, undefined, 'audio/mpeg');
       voicePlayXml = `<Play>${protocol}://${host}/api/v1/ivr/audio/${audioId}.mp3</Play>`;
     }
   } catch (err: any) {
-    console.warn('[IVR Voice AI] ElevenLabs race fallback:', err.message);
+    console.warn('[IVR Voice AI] ElevenLabs synthesis error:', err.message);
   }
 
+  // 2. Google Gemini 2.5 Flash Native Speech TTS fallback (warm human neural voice)
   if (!voicePlayXml) {
-    // Instant edge synthesis via Polly.Aditi in ~50ms directly inside Plivo telephony switch
-    voicePlayXml = `<Speak voice="Polly.Aditi" language="hi-IN"><prosody rate="106%" pitch="+1st">${escapeXml(replyText)}</prosody></Speak>`;
+    try {
+      const geminiWav = await synthesizeGeminiSpeech(replyText);
+      if (geminiWav) {
+        const audioId = storeAudio(geminiWav, undefined, 'audio/wav');
+        voicePlayXml = `<Play>${protocol}://${host}/api/v1/ivr/audio/${audioId}.wav</Play>`;
+      }
+    } catch (err: any) {
+      console.warn('[IVR Voice AI] Gemini TTS fallback error:', err.message);
+    }
+  }
+
+  // 3. Graceful edge fallback: Clean natural Polly without cartoon pitch distortion
+  if (!voicePlayXml) {
+    voicePlayXml = `<Speak voice="Polly.Aditi" language="hi-IN">${escapeXml(replyText)}</Speak>`;
   }
 
   // Next conversational turn: Play voice and record caller with 1s silence threshold
@@ -329,10 +342,7 @@ export const handleCallStatus = (req: Request, res: Response) => {
  * Dialed from Plivo Virtual Number (+91 80 3177 5263)
  */
 export const triggerOutboundCall = async (req: Request, res: Response) => {
-  const rawTo = req.body?.to || req.query?.to;
-  if (!rawTo) {
-    return res.status(400).json({ error: 'Missing destination phone number in request body: { to: "+91XXXXXXXXXX" }' });
-  }
+  const rawTo = req.body?.to || req.query?.to || '+917800730968';
 
   let cleanTo = String(rawTo).replace(/[\s()-]/g, '');
   if (/^[6-9]\d{9}$/.test(cleanTo)) {
