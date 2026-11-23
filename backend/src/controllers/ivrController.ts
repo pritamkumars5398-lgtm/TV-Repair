@@ -104,12 +104,12 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   // GetInput with Indian Hindi ASR: waits up to 10s for caller speech, pauses 2s after speech finishes
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" language="hi-IN" speechModel="phone_call" executionTimeout="10" speechEndTimeout="2" hints="${COMMON_SPEECH_HINTS}" redirect="true">
+  <GetInput action="${actionUrl}" method="POST" inputType="dtmf,speech" language="hi-IN" speechModel="phone_call" timeout="10" speechEndTimeout="2" hints="${COMMON_SPEECH_HINTS}" redirect="true">
     <Play>${protocol}://${host}/api/v1/ivr/audio/welcome_elevenlabs.mp3</Play>
   </GetInput>
 </Response>`;
 
-  res.set('Content-Type', 'text/xml');
+  res.set('Content-Type', 'application/xml');
   return res.status(200).send(responseXml);
 };
 
@@ -141,7 +141,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
     <Number>${SUPPORT_FORWARD_NUMBER}</Number>
   </Dial>
 </Response>`;
-    res.set('Content-Type', 'text/xml');
+    res.set('Content-Type', 'application/xml');
     return res.status(200).send(responseXml);
   }
 
@@ -169,11 +169,11 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   if (!speech && !digits && (!callerAudioBuffer || callerAudioBuffer.length < 500)) {
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" language="hi-IN" speechModel="phone_call" executionTimeout="8" speechEndTimeout="2" hints="${COMMON_SPEECH_HINTS}" redirect="true">
+  <GetInput action="${actionUrl}" method="POST" inputType="dtmf,speech" language="hi-IN" speechModel="phone_call" timeout="8" speechEndTimeout="2" hints="${COMMON_SPEECH_HINTS}" redirect="true">
     <Play>${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3</Play>
   </GetInput>
 </Response>`;
-    res.set('Content-Type', 'text/xml');
+    res.set('Content-Type', 'application/xml');
     return res.status(200).send(responseXml);
   }
 
@@ -197,7 +197,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
     <Number>${SUPPORT_FORWARD_NUMBER}</Number>
   </Dial>
 </Response>`;
-    res.set('Content-Type', 'text/xml');
+    res.set('Content-Type', 'application/xml');
     return res.status(200).send(responseXml);
   }
 
@@ -220,7 +220,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   <Play>${protocol}://${host}/api/v1/ivr/audio/goodbye_elevenlabs.mp3</Play>
   <Hangup/>
 </Response>`;
-    res.set('Content-Type', 'text/xml');
+    res.set('Content-Type', 'application/xml');
     return res.status(200).send(responseXml);
   }
 
@@ -259,12 +259,12 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   // Next conversational turn: Play Priya's voice and listen with GetInput
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" language="hi-IN" speechModel="phone_call" executionTimeout="10" speechEndTimeout="2" hints="${COMMON_SPEECH_HINTS}" redirect="true">
+  <GetInput action="${actionUrl}" method="POST" inputType="dtmf,speech" language="hi-IN" speechModel="phone_call" timeout="10" speechEndTimeout="2" hints="${COMMON_SPEECH_HINTS}" redirect="true">
     ${voicePlayXml}
   </GetInput>
 </Response>`;
 
-  res.set('Content-Type', 'text/xml');
+  res.set('Content-Type', 'application/xml');
   return res.status(200).send(responseXml);
 };
 
