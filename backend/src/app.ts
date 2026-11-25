@@ -13,6 +13,7 @@ import { connectDB, getDbError } from './config/db';
 connectDB();
 
 const app = express();
+app.set('trust proxy', true);
 
 // Ensure uploads and public directories exist and serve static files
 const uploadsDir = path.join(process.cwd(), 'uploads');
