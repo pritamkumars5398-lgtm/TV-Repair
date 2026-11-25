@@ -105,7 +105,7 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Play>${protocol}://${host}/api/v1/ivr/audio/welcome_elevenlabs.mp3</Play>
-  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="2" playBeep="false" redirect="true"/>
+  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="1" playBeep="false" redirect="true"/>
 </Response>`;
 
   res.set('Content-Type', 'application/xml');
@@ -117,154 +117,157 @@ export const handleIncomingCall = (req: Request, res: Response) => {
  * Receives caller's speech from Plivo, queries Gemini, and replies with human-like voice
  */
 export const handleGeminiConverse = async (req: Request, res: Response) => {
-  const speech = (req.body?.Speech || req.query?.Speech || '').toString().trim();
-  const digits = (req.body?.Digits || req.query?.Digits || '').toString().trim();
-  const recordUrl = (req.body?.RecordUrl || req.query?.RecordUrl || '').toString().trim();
-  const callerNumber = (req.body?.From || req.query?.From || '').toString().trim();
-  const callUUID = req.body?.CallUUID || req.query?.CallUUID || 'unknown_call';
-  const toPlivoNumber = req.body?.To || req.query?.To || PLIVO_FROM_NUMBER;
-
   const host = req.get('host') || 'tv-repair-lac.vercel.app';
   const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
   const actionUrl = `${protocol}://${host}/api/v1/ivr/gemini-converse`;
 
-  console.log(`[IVR Voice AI] Turn for ${callUUID} | Speech: "${speech}" | Digits: "${digits}" | RecordUrl: "${recordUrl}"`);
+  try {
+    const speech = (req.body?.Speech || req.query?.Speech || '').toString().trim();
+    const digits = (req.body?.Digits || req.query?.Digits || '').toString().trim();
+    const recordUrl = (req.body?.RecordUrl || req.query?.RecordUrl || '').toString().trim();
+    const callerNumber = (req.body?.From || req.query?.From || '').toString().trim();
+    const callUUID = req.body?.CallUUID || req.query?.CallUUID || 'unknown_call';
+    const toPlivoNumber = req.body?.To || req.query?.To || PLIVO_FROM_NUMBER;
 
-  // Fallback if caller pressed keypad digit 2 -> connect to human manager
-  if (digits === '2') {
-    recordInboundCallLead(callerNumber, `Caller pressed 2 (Forwarded to Manager: ${SUPPORT_FORWARD_NUMBER})`).catch(console.error);
-    const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
+    console.log(`[IVR Voice AI] Turn for ${callUUID} | Speech: "${speech}" | Digits: "${digits}" | RecordUrl: "${recordUrl}"`);
+
+    // Fallback if caller pressed keypad digit 2 -> connect to human manager
+    if (digits === '2') {
+      recordInboundCallLead(callerNumber, `Caller pressed 2 (Forwarded to Manager: ${SUPPORT_FORWARD_NUMBER})`).catch(console.error);
+      const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Speak voice="Polly.Aditi" language="en-IN">Please hold while I connect your call directly to our senior service manager.</Speak>
   <Dial callerId="${toPlivoNumber}">
     <Number>${SUPPORT_FORWARD_NUMBER}</Number>
   </Dial>
 </Response>`;
-    res.set('Content-Type', 'application/xml');
-    return res.status(200).send(responseXml);
-  }
-
-  // Fetch caller audio recording if provided by Plivo <Record>
-  let callerAudioBuffer: Buffer | undefined;
-  let audioMime = 'audio/mp3';
-  if (recordUrl) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-      const audioFetch = await fetch(recordUrl, { signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (audioFetch.ok) {
-        const arrayBuf = await audioFetch.arrayBuffer();
-        callerAudioBuffer = Buffer.from(arrayBuf);
-        if (recordUrl.endsWith('.wav')) audioMime = 'audio/wav';
-        console.log(`[IVR Voice AI] Fetched caller audio recording: ${callerAudioBuffer.length} bytes`);
-      }
-    } catch (e: any) {
-      console.warn('[IVR Voice AI] Could not fetch RecordUrl (timed out or error):', e.message);
+      res.set('Content-Type', 'application/xml');
+      return res.status(200).send(responseXml);
     }
-  }
 
-  // If no speech or digits (caller remained silent for full timeout)
-  if (!speech && !digits && (!callerAudioBuffer || callerAudioBuffer.length < 500)) {
-    const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
+    // Fetch caller audio recording if provided by Plivo <Record>
+    let callerAudioBuffer: Buffer | undefined;
+    let audioMime = 'audio/mp3';
+    if (recordUrl) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const audioFetch = await fetch(recordUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (audioFetch.ok) {
+          const arrayBuf = await audioFetch.arrayBuffer();
+          callerAudioBuffer = Buffer.from(arrayBuf);
+          if (recordUrl.endsWith('.wav')) audioMime = 'audio/wav';
+          console.log(`[IVR Voice AI] Fetched caller audio recording: ${callerAudioBuffer.length} bytes`);
+        }
+      } catch (e: any) {
+        console.warn('[IVR Voice AI] Could not fetch RecordUrl (timed out or error):', e.message);
+      }
+    }
+
+    // If no speech or digits (caller remained silent for full timeout)
+    if (!speech && !digits && (!callerAudioBuffer || callerAudioBuffer.length < 500)) {
+      const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Play>${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3</Play>
-  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="2" playBeep="false" redirect="true"/>
+  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="1" playBeep="false" redirect="true"/>
 </Response>`;
-    res.set('Content-Type', 'application/xml');
-    return res.status(200).send(responseXml);
-  }
+      res.set('Content-Type', 'application/xml');
+      return res.status(200).send(responseXml);
+    }
 
-  // Query Gemini Multimodal Conversational Voice AI
-  const userText = speech || (digits ? `Keypad pressed: ${digits}` : '');
-  const geminiResult = await converseWithGemini(callUUID, userText, callerNumber, callerAudioBuffer, audioMime);
-  const replyText = geminiResult.replyText;
+    // Query Gemini Multimodal Conversational Voice AI
+    const userText = speech || (digits ? `Keypad pressed: ${digits}` : '');
+    const geminiResult = await converseWithGemini(callUUID, userText, callerNumber, callerAudioBuffer, audioMime);
+    const replyText = geminiResult.replyText;
 
-  // Log conversation in CRM Lead non-blockingly
-  recordInboundCallLead(
-    callerNumber,
-    `AI Voice Turn: Customer spoken -> Priya replied: "${replyText}"`
-  ).catch(console.error);
+    // Log conversation in CRM Lead non-blockingly
+    recordInboundCallLead(
+      callerNumber,
+      `AI Voice Turn: Customer spoken -> Priya replied: "${replyText}"`
+    ).catch(console.error);
 
-  // Check actions from Gemini response
-  if (geminiResult.action === 'TRANSFER_MANAGER') {
-    const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
+    // Check actions from Gemini response
+    if (geminiResult.action === 'TRANSFER_MANAGER') {
+      const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Speak voice="Polly.Aditi" language="hi-IN">${escapeXml(replyText)}</Speak>
   <Dial callerId="${toPlivoNumber}">
     <Number>${SUPPORT_FORWARD_NUMBER}</Number>
   </Dial>
 </Response>`;
-    res.set('Content-Type', 'application/xml');
-    return res.status(200).send(responseXml);
-  }
-
-  if (geminiResult.action === 'SEND_BOOKING_SMS') {
-    // Send SMS with booking link via MSG91
-    if (callerNumber) {
-      const cleanPhone = callerNumber.replace(/\D/g, '');
-      sendBookingReceived(cleanPhone, {
-        name: 'Valued Customer',
-        ticket: 'RC-AI-BOOK',
-        item: 'Doorstep TV Inspection',
-        url: `${FRONTEND_URL}/book`,
-      }).catch((e) => console.error('[IVR SMS error]:', e));
+      res.set('Content-Type', 'application/xml');
+      return res.status(200).send(responseXml);
     }
-  }
 
-  if (geminiResult.action === 'END_CALL') {
-    const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Play>${protocol}://${host}/api/v1/ivr/audio/goodbye_elevenlabs.mp3</Play>
-  <Hangup/>
-</Response>`;
-    res.set('Content-Type', 'application/xml');
-    return res.status(200).send(responseXml);
-  }
-
-  // Ultra-Realistic Human Voice Output:
-  // 1. ElevenLabs Turbo v2.5 with Sarah voice (rich, 100% human Indian Hindi voice)
-  let voiceAudioUrl = '';
-  try {
-    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3200));
-    const elevenMp3 = await Promise.race([synthesizeElevenLabsSpeech(replyText), timeoutPromise]);
-    if (elevenMp3) {
-      const audioId = await storeAudio(elevenMp3, undefined, 'audio/mpeg');
-      voiceAudioUrl = `${protocol}://${host}/api/v1/ivr/audio/${audioId}.mp3`;
+    if (geminiResult.action === 'SEND_BOOKING_SMS') {
+      // Send SMS with booking link via MSG91
+      if (callerNumber) {
+        const cleanPhone = callerNumber.replace(/\D/g, '');
+        sendBookingReceived(cleanPhone, {
+          name: 'Valued Customer',
+          ticket: 'RC-AI-BOOK',
+          item: 'Doorstep TV Inspection',
+          url: `${FRONTEND_URL}/book`,
+        }).catch((e) => console.error('[IVR SMS error]:', e));
+      }
     }
-  } catch (err: any) {
-    console.warn('[IVR Voice AI] ElevenLabs synthesis error:', err.message);
-  }
 
-  // 2. Google Gemini 2.5 Flash Native Speech TTS fallback (warm human neural voice)
-  if (!voiceAudioUrl) {
+    // Ultra-Realistic Human Voice Output:
+    // 1. ElevenLabs Turbo v2.5 with Sarah voice (rich, 100% human Indian Hindi voice)
+    let voiceAudioUrl = '';
     try {
-      const geminiWav = await synthesizeGeminiSpeech(replyText);
-      if (geminiWav) {
-        const audioId = await storeAudio(geminiWav, undefined, 'audio/wav');
-        voiceAudioUrl = `${protocol}://${host}/api/v1/ivr/audio/${audioId}.wav`;
+      const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3200));
+      const elevenMp3 = await Promise.race([synthesizeElevenLabsSpeech(replyText), timeoutPromise]);
+      if (elevenMp3) {
+        const audioId = await storeAudio(elevenMp3, undefined, 'audio/mpeg');
+        voiceAudioUrl = `${protocol}://${host}/api/v1/ivr/audio/${audioId}.mp3`;
       }
     } catch (err: any) {
-      console.warn('[IVR Voice AI] Gemini TTS fallback error:', err.message);
+      console.warn('[IVR Voice AI] ElevenLabs synthesis error:', err.message);
     }
-  }
 
-  let voicePlayXml = '';
-  if (voiceAudioUrl) {
-    voicePlayXml = `<Play>${voiceAudioUrl}</Play>`;
-  } else {
-    voicePlayXml = `<Speak voice="Polly.Aditi" language="hi-IN">${escapeXml(replyText)}</Speak>`;
-  }
+    // 2. Google Gemini 2.5 Flash Native Speech TTS fallback (warm human neural voice)
+    if (!voiceAudioUrl) {
+      try {
+        const geminiWav = await synthesizeGeminiSpeech(replyText);
+        if (geminiWav) {
+          const audioId = await storeAudio(geminiWav, undefined, 'audio/wav');
+          voiceAudioUrl = `${protocol}://${host}/api/v1/ivr/audio/${audioId}.wav`;
+        }
+      } catch (err: any) {
+        console.warn('[IVR Voice AI] Gemini TTS fallback error:', err.message);
+      }
+    }
 
-  // Next conversational turn: Play Priya's voice and listen with Record
-  const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
+    let voicePlayXml = '';
+    if (voiceAudioUrl) {
+      voicePlayXml = `<Play>${voiceAudioUrl}</Play>`;
+    } else {
+      voicePlayXml = `<Speak voice="Polly.Aditi" language="hi-IN">${escapeXml(replyText)}</Speak>`;
+    }
+
+    // Next conversational turn: Play Priya's voice and listen with Record
+    // Note: Do not abruptly hang up even on thank you/goodbye; allow natural closure
+    const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   ${voicePlayXml}
-  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="2" playBeep="false" redirect="true"/>
+  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="1" playBeep="false" redirect="true"/>
 </Response>`;
 
-  res.set('Content-Type', 'application/xml');
-  return res.status(200).send(responseXml);
+    res.set('Content-Type', 'application/xml');
+    return res.status(200).send(responseXml);
+  } catch (err: any) {
+    console.error('[IVR Voice AI Error in handleGeminiConverse]:', err.message);
+    // Graceful error recovery: never crash Plivo call with 500 error
+    const fallbackXml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Speak voice="Polly.Aditi" language="hi-IN">जी सर, क्या आप मुझे सुन पा रहे हैं? बताइए टीवी में क्या दिक्कत है?</Speak>
+  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="1" playBeep="false" redirect="true"/>
+</Response>`;
+    res.set('Content-Type', 'application/xml');
+    return res.status(200).send(fallbackXml);
+  }
 };
 
 /**
