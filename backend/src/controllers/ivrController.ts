@@ -150,7 +150,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   if (recordUrl) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1400);
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
       const audioFetch = await fetch(recordUrl, { signal: controller.signal });
       clearTimeout(timeoutId);
       if (audioFetch.ok) {
