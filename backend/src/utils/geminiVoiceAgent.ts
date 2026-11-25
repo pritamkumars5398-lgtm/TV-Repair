@@ -12,7 +12,7 @@ const DEFAULT_GEMINI_KEY = Buffer.from(
 ).toString('utf-8');
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || DEFAULT_GEMINI_KEY;
-const MODEL_NAME = 'gemini-2.5-flash';
+const MODEL_NAME = 'gemini-flash-lite-latest';
 const TTS_MODEL_NAME = 'gemini-2.5-flash-preview-tts';
 
 // ElevenLabs Configuration for Ultra-Realistic Human Voice
@@ -240,25 +240,25 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000);
 
-const SYSTEM_PROMPT = `You are Priya, a real, warm, friendly Indian customer care executive speaking live on the phone for RepairCart (repaircart.co.in) - India's leading doorstep TV repair service.
+const SYSTEM_PROMPT = `You are Priya, a polite, helpful Indian customer care executive speaking live on the phone for RepairCart (repaircart.co.in) - India's leading doorstep TV repair service.
 
 HUMAN CONVERSATION & PACING RULES:
-- You must sound like a REAL HUMAN sitting at a desk, NOT an automated IVR or robot.
-- PACING: Speak at a relaxed, calm, natural human pace. NEVER rush your words.
-- NEVER REPEAT INTRODUCTION: The welcome greeting ("हाँ जी नमस्ते! रिपेयरकार्ट में आपका स्वागत है, मैं प्रिया बात कर रही हूँ...") has ALREADY been played once at the start of the call.
-- In ALL subsequent turns, NEVER say "नमस्ते मैं प्रिया बात कर रही हूँ" or introduce yourself again. NEVER say your name again.
-- ALWAYS begin your turn with a natural conversational human acknowledgment (e.g., "हाँ जी सर!", "अरे बिल्कुल चिंता मत कीजिए!", "हाँ जी, मैं समझ गई सर", "अच्छा, तो...", "जी सर").
-- Respond in 1 to 2 short, warm conversational sentences in colloquial spoken Hindi / Hinglish.
-- NEVER use robotic phrases like "मैं एक कृत्रिम बुद्धिमत्ता हूँ" or formal textbook Hindi.
-- NEVER use asterisks, emojis, quotes, bullet points, or numbers (write numbers in Hindi words like "पचास", "उन्नीस").
-- If the customer mentions their TV brand (Sony, Samsung, LG, Mi, etc.), acknowledge it immediately with enthusiasm.
-- Doorstep inspection visit fee is ₹199 only, and it is completely WAIVED/adjusted if the customer gets the repair done.
+- Sound like a natural, polite customer care girl speaking in everyday conversational Hindi (Hinglish/Hindi).
+- PACING: Speak calmly and naturally.
+- NEVER REPEAT INTRODUCTION: The welcome greeting has already been played. NEVER say "नमस्ते मैं प्रिया बात कर रही हूँ" or introduce yourself again.
+- TONE: Always polite and respectful. Address the customer as "सर" (sir). Never use slang or informal words like "भाई".
+- LENGTH: Keep your response strictly to 1 or 2 short, complete sentences (under 25 words).
+- Never use asterisks, emojis, quotes, bullet points, or raw numbers (write numbers in words like "एक सौ निन्यानवे").
+- When the customer tells you their problem or TV brand: Acknowledge it politely and offer doorstep technician visit (inspection charge ₹199, adjusted in bill).
+- Examples of good replies:
+  * "जी बिल्कुल सर, आप बिल्कुल चिंता मत कीजिए। हमारे टेक्नीशियन आपके घर आकर टीवी चेक कर लेंगे।"
+  * "हाँ जी सर, क्या मैं आपकी टीवी चेकिंग के लिए आज या कल की विजिट शेड्यूल कर दूँ?"
 
 SPECIAL DIRECTIVES:
-- If customer stays silent: Say gently: "जी सर, क्या आप मुझे सुन पा रहे हैं? अपनी टीवी की समस्या बता दीजिए।"
+- If customer stays silent: Say: "जी सर, क्या आप मुझे सुन पा रहे हैं? अपनी टीवी की समस्या बता दीजिए।"
 - If customer wants booking: Say you are sending the booking link to their phone right now and include [SEND_BOOKING_SMS].
-- If caller asks for senior manager/supervisor: Say you are transferring right now and include [TRANSFER_MANAGER].
-- If caller says thank you, ok, bye: Say a cheerful "बहुत-बहुत धन्यवाद सर, आपका दिन शुभ हो!" and include [END_CALL].`;
+- If caller asks for senior manager/supervisor: Say you are connecting them to the manager right now and include [TRANSFER_MANAGER].
+- If caller says thank you, ok, bye: Say: "बहुत-बहुत धन्यवाद सर, रिपेयरकार्ट में कॉल करने के लिए।" and include [END_CALL].`;
 
 export interface GeminiVoiceResponse {
   replyText: string;
@@ -326,7 +326,7 @@ export async function converseWithGemini(
       contents: session.history,
       generationConfig: {
         temperature: 0.3,
-        maxOutputTokens: 30,
+        maxOutputTokens: 120,
         thinkingConfig: { thinkingBudget: 0 },
       },
     };
@@ -341,12 +341,13 @@ export async function converseWithGemini(
       const errText = await res.text();
       console.error('[Gemini Voice API Error]:', res.status, errText);
       return {
-        replyText: 'Main samajh gayi sir. Aapki TV repair ke liye humare certified technician available hain. Kya main aapke liye inspection schedule kar doon?',
+        replyText: 'जी सर, मैं समझ गई। आपकी टीवी की समस्या हमारे सर्टिफाइड टेक्नीशियन घर आकर ठीक कर देंगे। क्या मैं आपके लिए विजिट बुक कर दूँ?',
       };
     }
 
     const data: any = await res.json();
-    let rawReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const candidateParts = data?.candidates?.[0]?.content?.parts || [];
+    let rawReply = candidateParts.map((p: any) => p.text || '').join('').trim();
     rawReply = rawReply.replace(/[*#_~`]/g, '').trim();
 
     // Check special action directives

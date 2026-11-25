@@ -105,7 +105,7 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Play>${protocol}://${host}/api/v1/ivr/audio/welcome_elevenlabs.mp3</Play>
-  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="2" playBeep="false" redirect="true"/>
+  <Record action="${actionUrl}" method="POST" maxLength="10" timeout="1" playBeep="false" redirect="true"/>
 </Response>`;
 
   res.set('Content-Type', 'application/xml');
@@ -169,7 +169,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Play>${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3</Play>
-  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="2" playBeep="false" redirect="true"/>
+  <Record action="${actionUrl}" method="POST" maxLength="10" timeout="1" playBeep="false" redirect="true"/>
 </Response>`;
     res.set('Content-Type', 'application/xml');
     return res.status(200).send(responseXml);
@@ -258,7 +258,7 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   ${voicePlayXml}
-  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="2" playBeep="false" redirect="true"/>
+  <Record action="${actionUrl}" method="POST" maxLength="10" timeout="1" playBeep="false" redirect="true"/>
 </Response>`;
 
   res.set('Content-Type', 'application/xml');
