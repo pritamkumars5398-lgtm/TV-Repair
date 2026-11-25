@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Request, Response } from 'express';
+const plivo = require('plivo');
 import { sendBookingReceived } from '../utils/sendSMS';
 import Lead from '../models/Lead';
 import {
@@ -101,15 +102,20 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const actionUrl = `${protocol}://${host}/api/v1/ivr/gemini-converse`;
 
   // Play ElevenLabs ultra-realistic human voice greeting and transcribe caller speech in real time
-  const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" language="hi-IN" speechEndTimeout="1" executionTimeout="10" redirect="true">
-    <Play>${protocol}://${host}/api/v1/ivr/audio/welcome_elevenlabs.mp3</Play>
-  </GetInput>
-</Response>`;
+  const r = new plivo.Response();
+  const gi = r.addGetInput({
+    action: actionUrl,
+    method: 'POST',
+    language: 'hi-IN',
+    speechModel: 'phone_call',
+    inputType: 'speech',
+    speechEndTimeout: 1,
+  });
+  gi.addPlay(`${protocol}://${host}/api/v1/ivr/audio/welcome_elevenlabs.mp3`);
+  r.addPlay(`${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3`);
 
-  res.set('Content-Type', 'application/xml');
-  return res.status(200).send(responseXml);
+  res.set('Content-Type', 'text/xml');
+  return res.status(200).send(r.toXML());
 };
 
 /**
@@ -166,14 +172,21 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
 
   // If no speech or digits (caller remained silent for full timeout)
   if (!speech && !digits && (!callerAudioBuffer || callerAudioBuffer.length < 500)) {
-    const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" language="hi-IN" speechEndTimeout="1" executionTimeout="10" redirect="true">
-    <Play>${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3</Play>
-  </GetInput>
-</Response>`;
-    res.set('Content-Type', 'application/xml');
-    return res.status(200).send(responseXml);
+    const r = new plivo.Response();
+    const gi = r.addGetInput({
+      action: actionUrl,
+      method: 'POST',
+      language: 'hi-IN',
+      speechModel: 'phone_call',
+      inputType: 'speech',
+      speechEndTimeout: 1,
+    });
+    gi.addPlay(`${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3`);
+    r.addPlay(`${protocol}://${host}/api/v1/ivr/audio/goodbye_elevenlabs.mp3`);
+    r.addHangup();
+
+    res.set('Content-Type', 'text/xml');
+    return res.status(200).send(r.toXML());
   }
 
   // Query Gemini Multimodal Conversational Voice AI
@@ -225,46 +238,52 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
 
   // Ultra-Realistic Human Voice Output:
   // 1. ElevenLabs Turbo v2.5 with Sarah voice (rich, 100% human Indian Hindi voice)
-  let voicePlayXml = '';
+  let voiceAudioUrl = '';
   try {
     const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3200));
     const elevenMp3 = await Promise.race([synthesizeElevenLabsSpeech(replyText), timeoutPromise]);
     if (elevenMp3) {
       const audioId = await storeAudio(elevenMp3, undefined, 'audio/mpeg');
-      voicePlayXml = `<Play>${protocol}://${host}/api/v1/ivr/audio/${audioId}.mp3</Play>`;
+      voiceAudioUrl = `${protocol}://${host}/api/v1/ivr/audio/${audioId}.mp3`;
     }
   } catch (err: any) {
     console.warn('[IVR Voice AI] ElevenLabs synthesis error:', err.message);
   }
 
   // 2. Google Gemini 2.5 Flash Native Speech TTS fallback (warm human neural voice)
-  if (!voicePlayXml) {
+  if (!voiceAudioUrl) {
     try {
       const geminiWav = await synthesizeGeminiSpeech(replyText);
       if (geminiWav) {
         const audioId = await storeAudio(geminiWav, undefined, 'audio/wav');
-        voicePlayXml = `<Play>${protocol}://${host}/api/v1/ivr/audio/${audioId}.wav</Play>`;
+        voiceAudioUrl = `${protocol}://${host}/api/v1/ivr/audio/${audioId}.wav`;
       }
     } catch (err: any) {
       console.warn('[IVR Voice AI] Gemini TTS fallback error:', err.message);
     }
   }
 
-  // 3. Graceful edge fallback: Clean natural Polly without cartoon pitch distortion
-  if (!voicePlayXml) {
-    voicePlayXml = `<Speak voice="Polly.Aditi" language="hi-IN">${escapeXml(replyText)}</Speak>`;
+  // Next conversational turn: Play Priya's voice and transcribe caller with SDK GetInput
+  const r = new plivo.Response();
+  const gi = r.addGetInput({
+    action: actionUrl,
+    method: 'POST',
+    language: 'hi-IN',
+    speechModel: 'phone_call',
+    inputType: 'speech',
+    speechEndTimeout: 1,
+  });
+
+  if (voiceAudioUrl) {
+    gi.addPlay(voiceAudioUrl);
+  } else {
+    gi.addSpeak(escapeXml(replyText), { voice: 'Polly.Aditi', language: 'hi-IN' });
   }
 
-  // Next conversational turn: Play Priya's voice and transcribe caller with low latency GetInput
-  const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" language="hi-IN" speechEndTimeout="1" executionTimeout="10" redirect="true">
-    ${voicePlayXml}
-  </GetInput>
-</Response>`;
+  r.addPlay(`${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3`);
 
-  res.set('Content-Type', 'application/xml');
-  return res.status(200).send(responseXml);
+  res.set('Content-Type', 'text/xml');
+  return res.status(200).send(r.toXML());
 };
 
 /**
