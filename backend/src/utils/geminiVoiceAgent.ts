@@ -295,14 +295,12 @@ export async function converseWithGemini(
   if (audioBuffer && audioBuffer.length > 0) {
     userParts.push({
       inlineData: {
-        mimeType: audioMimeType || 'audio/mp3',
+        mimeType: 'audio/mpeg',
         data: audioBuffer.toString('base64'),
       },
     });
     userParts.push({
-      text: userUtterance
-        ? `Customer audio recording attached. (Notes: ${userUtterance}). Listen carefully to what the customer speaks in Hindi or English, understand their TV issue, and reply in warm, polite Hindi (1 to 2 short sentences).`
-        : 'Customer audio recording attached. Listen to the customer speaking in Hindi/Hinglish, understand their TV issue or question, and reply in warm, polite Hindi (1 to 2 short sentences).',
+      text: 'Listen carefully to the customer speaking on the phone in Hindi or English. Understand their TV issue or greeting. Reply naturally and politely in 1 short sentence in spoken Hindi as Priya from RepairCart. If the customer audio is just "hello" or mostly silence, say: "हाँ जी सर, मैं सुन रही हूँ। बताइए आपकी टीवी में क्या परेशानी आ रही है?" NEVER introduce yourself or say your name again.',
     });
   } else {
     userParts.push({ text: userUtterance });

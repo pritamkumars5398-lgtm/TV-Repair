@@ -101,21 +101,15 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
   const actionUrl = `${protocol}://${host}/api/v1/ivr/gemini-converse`;
 
-  // Play ElevenLabs ultra-realistic human voice greeting and transcribe caller speech in real time
-  const r = new plivo.Response();
-  const gi = r.addGetInput({
-    action: actionUrl,
-    method: 'POST',
-    language: 'hi-IN',
-    speechModel: 'phone_call',
-    inputType: 'speech',
-    speechEndTimeout: 1,
-  });
-  gi.addPlay(`${protocol}://${host}/api/v1/ivr/audio/welcome_elevenlabs.mp3`);
-  r.addPlay(`${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3`);
+  // Play ElevenLabs ultra-realistic human voice greeting
+  const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Play>${protocol}://${host}/api/v1/ivr/audio/welcome_elevenlabs.mp3</Play>
+  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="2" playBeep="false" redirect="true"/>
+</Response>`;
 
-  res.set('Content-Type', 'text/xml');
-  return res.status(200).send(r.toXML());
+  res.set('Content-Type', 'application/xml');
+  return res.status(200).send(responseXml);
 };
 
 /**
@@ -172,21 +166,13 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
 
   // If no speech or digits (caller remained silent for full timeout)
   if (!speech && !digits && (!callerAudioBuffer || callerAudioBuffer.length < 500)) {
-    const r = new plivo.Response();
-    const gi = r.addGetInput({
-      action: actionUrl,
-      method: 'POST',
-      language: 'hi-IN',
-      speechModel: 'phone_call',
-      inputType: 'speech',
-      speechEndTimeout: 1,
-    });
-    gi.addPlay(`${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3`);
-    r.addPlay(`${protocol}://${host}/api/v1/ivr/audio/goodbye_elevenlabs.mp3`);
-    r.addHangup();
-
-    res.set('Content-Type', 'text/xml');
-    return res.status(200).send(r.toXML());
+    const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Play>${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3</Play>
+  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="2" playBeep="false" redirect="true"/>
+</Response>`;
+    res.set('Content-Type', 'application/xml');
+    return res.status(200).send(responseXml);
   }
 
   // Query Gemini Multimodal Conversational Voice AI
@@ -263,27 +249,22 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
     }
   }
 
-  // Next conversational turn: Play Priya's voice and transcribe caller with SDK GetInput
-  const r = new plivo.Response();
-  const gi = r.addGetInput({
-    action: actionUrl,
-    method: 'POST',
-    language: 'hi-IN',
-    speechModel: 'phone_call',
-    inputType: 'speech',
-    speechEndTimeout: 1,
-  });
-
+  let voicePlayXml = '';
   if (voiceAudioUrl) {
-    gi.addPlay(voiceAudioUrl);
+    voicePlayXml = `<Play>${voiceAudioUrl}</Play>`;
   } else {
-    gi.addSpeak(escapeXml(replyText), { voice: 'Polly.Aditi', language: 'hi-IN' });
+    voicePlayXml = `<Speak voice="Polly.Aditi" language="hi-IN">${escapeXml(replyText)}</Speak>`;
   }
 
-  r.addPlay(`${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3`);
+  // Next conversational turn: Play Priya's voice and listen with Record
+  const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  ${voicePlayXml}
+  <Record action="${actionUrl}" method="POST" maxLength="15" timeout="2" playBeep="false" redirect="true"/>
+</Response>`;
 
-  res.set('Content-Type', 'text/xml');
-  return res.status(200).send(r.toXML());
+  res.set('Content-Type', 'application/xml');
+  return res.status(200).send(responseXml);
 };
 
 /**
