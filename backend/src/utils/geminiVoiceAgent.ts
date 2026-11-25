@@ -327,7 +327,6 @@ export async function converseWithGemini(
       generationConfig: {
         temperature: 0.3,
         maxOutputTokens: 120,
-        thinkingConfig: { thinkingBudget: 0 },
       },
     };
 
