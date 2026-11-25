@@ -100,12 +100,12 @@ export const handleIncomingCall = (req: Request, res: Response) => {
   const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
   const actionUrl = `${protocol}://${host}/api/v1/ivr/gemini-converse`;
 
-  // Play ElevenLabs ultra-realistic human voice greeting (0ms in-memory serverless playback)
-  // Low latency: timeout="2" gives caller natural 2s pause before processing
+  // Play ElevenLabs ultra-realistic human voice greeting and transcribe caller speech in real time
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Play>${protocol}://${host}/api/v1/ivr/audio/welcome_elevenlabs.mp3</Play>
-  <Record action="${actionUrl}" method="POST" maxLength="10" timeout="1" playBeep="false" redirect="true"/>
+  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" language="hi-IN" speechEndTimeout="1" executionTimeout="10" redirect="true">
+    <Play>${protocol}://${host}/api/v1/ivr/audio/welcome_elevenlabs.mp3</Play>
+  </GetInput>
 </Response>`;
 
   res.set('Content-Type', 'application/xml');
@@ -168,8 +168,9 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
   if (!speech && !digits && (!callerAudioBuffer || callerAudioBuffer.length < 500)) {
     const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Play>${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3</Play>
-  <Record action="${actionUrl}" method="POST" maxLength="10" timeout="1" playBeep="false" redirect="true"/>
+  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" language="hi-IN" speechEndTimeout="1" executionTimeout="10" redirect="true">
+    <Play>${protocol}://${host}/api/v1/ivr/audio/silence_elevenlabs.mp3</Play>
+  </GetInput>
 </Response>`;
     res.set('Content-Type', 'application/xml');
     return res.status(200).send(responseXml);
@@ -254,11 +255,12 @@ export const handleGeminiConverse = async (req: Request, res: Response) => {
     voicePlayXml = `<Speak voice="Polly.Aditi" language="hi-IN">${escapeXml(replyText)}</Speak>`;
   }
 
-  // Next conversational turn: Play Priya's voice and record caller with 2s silence threshold
+  // Next conversational turn: Play Priya's voice and transcribe caller with low latency GetInput
   const responseXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  ${voicePlayXml}
-  <Record action="${actionUrl}" method="POST" maxLength="10" timeout="1" playBeep="false" redirect="true"/>
+  <GetInput action="${actionUrl}" method="POST" inputType="speech dtmf" language="hi-IN" speechEndTimeout="1" executionTimeout="10" redirect="true">
+    ${voicePlayXml}
+  </GetInput>
 </Response>`;
 
   res.set('Content-Type', 'application/xml');
